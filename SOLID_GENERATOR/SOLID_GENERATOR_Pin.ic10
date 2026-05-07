@@ -1,0 +1,88 @@
+# EN: Pin version. Set the IC screws to these devices.
+# FR: Version par broches. Reglez les vis IC vers ces appareils.
+alias Generator d0
+alias BATTERY_1 d1
+alias BATTERY_2 d2
+alias BATTERY_3 d3
+alias BATTERY_4 d4
+alias BATTERY_5 d5
+
+# EN: Start below 5%, stop above 15%.
+# FR: Demarre sous 5 %, arrete au-dessus de 15 %.
+define StartCharge 0.05
+define StopCharge 0.15
+define LoopDelay 2
+
+# EN: r15 stores the wanted generator state.
+# FR: r15 garde l'etat voulu du generateur.
+move r15 0
+
+main:
+# EN: Reset the total charge and connected battery count.
+# FR: Remet a zero la charge totale et le nombre de batteries connectees.
+move r0 0
+move r1 0
+
+# EN: Each bdns skips a battery if its pin is not set.
+# FR: Chaque bdns saute une batterie si sa broche n'est pas reglee.
+bdns BATTERY_1 checkBattery2
+l r2 BATTERY_1 Ratio
+add r0 r0 r2
+add r1 r1 1
+
+checkBattery2:
+bdns BATTERY_2 checkBattery3
+l r2 BATTERY_2 Ratio
+add r0 r0 r2
+add r1 r1 1
+
+checkBattery3:
+bdns BATTERY_3 checkBattery4
+l r2 BATTERY_3 Ratio
+add r0 r0 r2
+add r1 r1 1
+
+checkBattery4:
+bdns BATTERY_4 checkBattery5
+l r2 BATTERY_4 Ratio
+add r0 r0 r2
+add r1 r1 1
+
+checkBattery5:
+bdns BATTERY_5 decide
+l r2 BATTERY_5 Ratio
+add r0 r0 r2
+add r1 r1 1
+
+decide:
+# EN: If no battery is found, keep the generator off.
+# FR: Si aucune batterie n'est trouvee, garde le generateur eteint.
+beqz r1 noBatteries
+
+# EN: Average only the batteries that are connected.
+# FR: Fait la moyenne seulement des batteries connectees.
+div r0 r0 r1
+ble r0 StartCharge turnOn
+bge r0 StopCharge turnOff
+j applyOutput
+
+turnOn:
+move r15 1
+j applyOutput
+
+turnOff:
+move r15 0
+j applyOutput
+
+noBatteries:
+move r15 0
+
+applyOutput:
+# EN: Skip output if the generator pin is not set.
+# FR: Saute la sortie si la broche du generateur n'est pas reglee.
+bdns Generator wait
+s Generator On r15
+
+wait:
+sleep LoopDelay
+j main
