@@ -2,6 +2,8 @@
 
 This folder contains `userDefineLang.xml`, a Notepad++ user-defined language file for Stationeers IC10 scripts.
 
+The keyword lists are refreshed from the repo's IC10 logic database so current IC10 instructions and logic values are included.
+
 ## Windows Location
 
 On a Windows PC, Notepad++ stores user-defined language files here:
@@ -23,4 +25,3 @@ To open the folder quickly:
 3. Press `Enter`.
 
 Copy `userDefineLang.xml` into that folder, then restart Notepad++.
-

@@ -1,3 +1,3 @@
-# Treat Stationeers IC10 scripts as assembly-like code on GitHub.
+# GitHub does not load custom IC10 grammars from this repo.
+# Assembly is the closest built-in GitHub Linguist highlighter for IC10 scripts.
 *.ic10 linguist-language=Assembly
-
