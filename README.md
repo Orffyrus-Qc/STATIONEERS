@@ -12,6 +12,25 @@ mixing, ignition, indicator lights, and automatic ejection for selected products
 See `ADVANCE_FURNACE/README.md` for setup labels and a script-by-script
 breakdown.
 
+## Solid Generator Control
+
+The `SOLID_GENERATOR/` folder contains IC10 scripts that control a solid fuel
+generator from battery charge level. The generator turns on when the average
+battery charge drops below the configured start level, and turns off when the
+average battery charge rises above the configured stop level.
+
+Files:
+
+- `SOLID_GENERATOR_Name.ic10` - name/hash version. It finds a generator labeled
+  `Generator` or `SOLID_GENERATOR`, then checks optional batteries labeled
+  `BATTERY_1` through `BATTERY_5`.
+- `SOLID_GENERATOR_Pin.ic10` - pin version. Set IC pin `d0` to the generator and
+  pins `d1` through `d5` to the batteries you want to monitor.
+
+The battery start/stop levels can be adjusted directly in the scripts by
+changing `StartCharge` and `StopCharge`. The current defaults start the
+generator below 5 percent charge and stop it above 15 percent charge.
+
 ## IC10 Logic Database
 
 The `logic-db/` folder contains a Codex-oriented Stationeers IC10 logic database generated from Stationeers wiki/reference material verified on 2026-05-06.
