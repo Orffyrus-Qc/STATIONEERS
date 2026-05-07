@@ -1,0 +1,43 @@
+﻿{
+    "database":  "stationeers_ic10_codex_db.json",
+    "chunks":  "stationeers_ic10_codex_chunks.jsonl",
+    "schema_version":  "1.0.0",
+    "generated_at_local":  "2026-05-06T19:01:28",
+    "verified_date":  "2026-05-06",
+    "sources":  [
+                    {
+                        "id":  "stationeers_wiki_ic10",
+                        "url":  "https://stationeers-wiki.com/IC10",
+                        "role":  "Primary IC10 behavior, addressing, data-network channels, device variables, slot variables",
+                        "observed_last_modified":  "2026-04-05"
+                    },
+                    {
+                        "id":  "stationeers_wiki_ic10_instructions",
+                        "url":  "https://stationeers-wiki.com/IC10/instructions",
+                        "role":  "Instruction signatures and instruction set descriptions",
+                        "observed_last_modified":  "2026-01-17"
+                    },
+                    {
+                        "id":  "stationeers_wiki_module_ic10",
+                        "url":  "https://stationeers-wiki.com/Module:IC10",
+                        "role":  "Current wiki syntax highlighter opcode list and LogicType token list",
+                        "observed_last_modified":  "2026-03-27"
+                    },
+                    {
+                        "id":  "stationeers_wiki_data_network_category",
+                        "url":  "https://stationeers-wiki.com/Category:Data_Network",
+                        "role":  "Data Network page index",
+                        "observed_last_modified":  "2018-04-08"
+                    }
+                ],
+    "counts":  {
+                   "opcodes":  149,
+                   "instructions":  149,
+                   "logic_types":  345,
+                   "logic_slot_types":  21,
+                   "data_network_pages":  125,
+                   "device_profile_hints":  12,
+                   "script_templates":  4
+               },
+    "recommended_codex_entrypoint":  "Load stationeers_ic10_codex_db.json, then retrieve stationeers_ic10_codex_chunks.jsonl records by tag for prompt-local context."
+}
