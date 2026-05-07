@@ -1,0 +1,3 @@
+# Treat Stationeers IC10 scripts as assembly-like code on GitHub.
+*.ic10 linguist-language=Assembly
+

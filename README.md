@@ -19,4 +19,6 @@ The `markup-language/` folder contains editor support files for working with Sta
 
 The `markup-language/Notepad++/` folder contains a Notepad++ user-defined language file named `userDefineLang.xml`. It adds IC10 syntax highlighting for `.ic10` files in Notepad++.
 
+GitHub syntax highlighting for `.ic10` files is enabled through `.gitattributes`, which maps IC10 scripts to GitHub's assembly-style highlighter.
+
 See `markup-language/Notepad++/README.md` for the Windows install path and setup notes.
