@@ -13,3 +13,10 @@ Files:
 - `manifest.codex.json` - database metadata and file counts.
 - `build_stationeers_logic_db.ps1` - script used to rebuild the database.
 
+## Markup Language
+
+The `markup-language/` folder contains editor support files for working with Stationeers IC10 scripts.
+
+The `markup-language/Notepad++/` folder contains a Notepad++ user-defined language file named `userDefineLang.xml`. It adds IC10 syntax highlighting for `.ic10` files in Notepad++.
+
+See `markup-language/Notepad++/README.md` for the Windows install path and setup notes.
