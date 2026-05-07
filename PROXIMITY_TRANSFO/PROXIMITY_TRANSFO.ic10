@@ -1,0 +1,65 @@
+# PROXIMITY_TRANSFO.ic10
+# EN: Proximity-controlled transformer with AUTO/MANUAL switch.
+# FR: Transformateur controle par proximite avec interrupteur AUTO/MANUEL.
+
+# EN: Label the AUTO/MANUAL Logic Switch or Lever as modeSwitch.
+# FR: Nommer l'interrupteur logique ou le levier AUTO/MANUEL modeSwitch.
+# EN: Switch/lever OFF = MANUAL, transformer forced ON.
+# FR: Interrupteur/levier OFF = MANUEL, transformateur force ON.
+# EN: Switch/lever ON = AUTO, proximity sensor controls transformer.
+# FR: Interrupteur/levier ON = AUTO, le capteur de proximite controle le transformateur.
+
+# EN: Device prefab hashes and label/name hashes.
+# FR: Hashes des prefabs et hashes des noms/etiquettes.
+define modeSwitchName HASH("modeSwitch")
+define modeSwitchType HASH("StructureLogicSwitch2")
+define modeLeverType HASH("StructureLogicSwitch")
+define proximityType HASH("StructureProximitySensor")
+define proximityName HASH("PROXIMITY_SENSOR")
+define transfoName HASH("TRANSFO_01")
+
+# EN: Large transformer prefab is the plain StructureTransformer.
+# FR: Le prefab du grand transformateur est StructureTransformer.
+define transfoLargeType HASH("StructureTransformer")
+define transfoSmallType HASH("StructureTransformerSmall")
+define transfoSmallRevType HASH("StructureTransformerSmallReversed")
+
+# EN: Working registers.
+# FR: Registres de travail.
+alias mode r0
+alias detected r1
+alias transformerOn r2
+alias switchState r3
+alias leverState r4
+
+start:
+# EN: Read AUTO/MANUAL by name hash. Missing switch defaults to MANUAL.
+# FR: Lire AUTO/MANUEL par hash de nom. Sans interrupteur, MANUEL par defaut.
+lbn switchState modeSwitchType modeSwitchName Open Maximum
+lbn leverState modeLeverType modeSwitchName Open Maximum
+max mode switchState leverState
+bgt mode 0 auto
+
+manual:
+# EN: MANUAL mode keeps the transformer on.
+# FR: Le mode MANUEL garde le transformateur allume.
+move transformerOn 1
+j writeTransformers
+
+auto:
+# EN: AUTO mode follows the named proximity sensor.
+# FR: Le mode AUTO suit le capteur de proximite nomme.
+lbn detected proximityType proximityName Activate Maximum
+sgtz transformerOn detected
+
+writeTransformers:
+# EN: Apply state to all named small/large transformer variants.
+# FR: Appliquer l'etat a toutes les variantes petites/grandes nommees.
+sbn transfoLargeType transfoName On transformerOn
+sbn transfoSmallType transfoName On transformerOn
+sbn transfoSmallRevType transfoName On transformerOn
+
+# EN: Check once per second to reduce IC load.
+# FR: Verifier une fois par seconde pour reduire la charge IC.
+sleep 1
+j start

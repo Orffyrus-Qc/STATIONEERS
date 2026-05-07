@@ -31,6 +31,15 @@ The battery start/stop levels can be adjusted directly in the scripts by
 changing `StartCharge` and `StopCharge`. The current defaults start the
 generator below 5 percent charge and stop it above 15 percent charge.
 
+## Proximity Transformer Control
+
+The `PROXIMITY_TRANSFO/` folder contains an IC10 script that controls a
+transformer with a proximity sensor and an AUTO/MANUAL mode switch. MANUAL mode
+forces the transformer on, while AUTO mode turns the transformer on only when
+the named proximity sensor is active.
+
+See `PROXIMITY_TRANSFO/README.md` for required labels and mode behavior.
+
 ## IC10 Logic Database
 
 The `logic-db/` folder contains a Codex-oriented Stationeers IC10 logic database generated from Stationeers wiki/reference material verified on 2026-05-06.
