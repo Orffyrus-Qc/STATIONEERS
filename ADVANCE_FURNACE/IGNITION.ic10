@@ -1,0 +1,45 @@
+# Required labels:
+# ADVANCED_FURNACE = StructureAdvancedFurnace
+# START_STOP_SWITCH = StructureLogicSwitch2
+# Activates the furnace when temperature drops below the fuel flashpoint.
+# Hysteresis keeps it active until temperature rises above 570 K.
+# START_STOP_SWITCH off stops furnace ignition.
+define FURNACE_TYPE HASH("StructureAdvancedFurnace")
+define FURNACE_NAME HASH("ADVANCED_FURNACE")
+define SWITCH_TYPE HASH("StructureLogicSwitch2")
+define SWITCH_NAME HASH("START_STOP_SWITCH")
+
+define ACTIVATE_BELOW_K 570
+define HYSTERESIS_K 5
+
+start:
+move r3 ACTIVATE_BELOW_K
+add r3 r3 HYSTERESIS_K
+lbn r1 FURNACE_TYPE FURNACE_NAME Activate Maximum
+
+loop:
+lbn r4 SWITCH_TYPE SWITCH_NAME Setting Average
+beqz r4 stop_ignition
+lbn r0 FURNACE_TYPE FURNACE_NAME Temperature Average
+
+beqz r1 maybe_activate
+
+maybe_deactivate:
+sgt r2 r0 r3
+beqz r2 write_state
+move r1 0
+j write_state
+
+maybe_activate:
+slt r2 r0 ACTIVATE_BELOW_K
+beqz r2 write_state
+move r1 1
+j write_state
+
+stop_ignition:
+move r1 0
+
+write_state:
+sbn FURNACE_TYPE FURNACE_NAME Activate r1
+yield
+j loop

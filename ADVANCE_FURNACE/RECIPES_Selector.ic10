@@ -1,0 +1,147 @@
+# Selects the active recipe IC housing from a dial.
+# Keeps exactly one recipe housing turned On at a time.
+# Supports both normal and compact IC housings on the data network.
+# Required labels:
+# RECIPES_Metal
+# RECIPES_Alloy
+# RECIPES_SuperAlloy
+# Optional labeled selector dial:
+# SELECTOR_DIAL
+# Recommended device pin:
+# d0 = selector dial
+
+define DIAL_HASH HASH("StructureLogicDial")
+define IC_HASH HASH("StructureCircuitHousing")
+define IC_COMPACT_HASH HASH("StructureCircuitHousingCompact")
+
+define NAME_DIAL HASH("SELECTOR_DIAL")
+define NAME_METAL HASH("RECIPES_Metal")
+define NAME_ALLOY HASH("RECIPES_Alloy")
+define NAME_SUPERALLOY HASH("RECIPES_SuperAlloy")
+
+alias SelectorDial d0
+alias rSelected r0
+alias rLast r1
+alias rMetal r2
+alias rAlloy r3
+alias rSuper r4
+
+start:
+    move rLast -1
+    jal InitDial
+    jal ReadDial
+    jal ApplySelection
+    move rLast rSelected
+
+loop:
+    yield
+    jal ReadDial
+    jal ReadSelection
+
+    beq rSelected rLast verify_selection
+    jal ApplySelection
+    move rLast rSelected
+    j loop
+
+verify_selection:
+    beqz rSelected check_metal
+    beq rSelected 1 check_alloy
+    beq rSuper 1 loop
+    jal ApplySelection
+    j loop
+
+check_metal:
+    beq rMetal 1 loop
+    jal ApplySelection
+    j loop
+
+check_alloy:
+    beq rAlloy 1 loop
+    jal ApplySelection
+    j loop
+
+InitDial:
+    bdns SelectorDial init_dial_batch
+    s SelectorDial Mode 2
+    j ra
+
+init_dial_batch:
+    sbn DIAL_HASH NAME_DIAL Mode 2
+    j ra
+
+ReadDial:
+    move rSelected 0
+    bdns SelectorDial read_dial_batch
+    l rSelected SelectorDial Setting
+    round rSelected rSelected
+    j clamp_dial
+
+read_dial_batch:
+    lbn rSelected DIAL_HASH NAME_DIAL Setting Average
+    round rSelected rSelected
+
+clamp_dial:
+    max rSelected rSelected 0
+    blt rSelected 3 done_read_dial
+    move rSelected 2
+
+done_read_dial:
+    j ra
+
+ReadSelection:
+    lbn rMetal IC_HASH NAME_METAL On Average
+    lbn r5 IC_COMPACT_HASH NAME_METAL On Average
+    round rMetal rMetal
+    round r5 r5
+    add rMetal rMetal r5
+    sgt rMetal rMetal 0
+
+    lbn rAlloy IC_HASH NAME_ALLOY On Average
+    lbn r6 IC_COMPACT_HASH NAME_ALLOY On Average
+    round rAlloy rAlloy
+    round r6 r6
+    add rAlloy rAlloy r6
+    sgt rAlloy rAlloy 0
+
+    lbn rSuper IC_HASH NAME_SUPERALLOY On Average
+    lbn r7 IC_COMPACT_HASH NAME_SUPERALLOY On Average
+    round rSuper rSuper
+    round r7 r7
+    add rSuper rSuper r7
+    sgt rSuper rSuper 0
+    j ra
+
+ApplySelection:
+    beqz rSelected SelectMetal
+    beq rSelected 1 SelectAlloy
+    j SelectSuperAlloy
+
+SelectMetal:
+    sbn IC_HASH NAME_METAL On 1
+    sbn IC_HASH NAME_ALLOY On 0
+    sbn IC_HASH NAME_SUPERALLOY On 0
+    sbn IC_COMPACT_HASH NAME_METAL On 1
+    sbn IC_COMPACT_HASH NAME_ALLOY On 0
+    sbn IC_COMPACT_HASH NAME_SUPERALLOY On 0
+    s db Setting 0
+    j ra
+
+SelectAlloy:
+    sbn IC_HASH NAME_METAL On 0
+    sbn IC_HASH NAME_ALLOY On 1
+    sbn IC_HASH NAME_SUPERALLOY On 0
+    sbn IC_COMPACT_HASH NAME_METAL On 0
+    sbn IC_COMPACT_HASH NAME_ALLOY On 1
+    sbn IC_COMPACT_HASH NAME_SUPERALLOY On 0
+    s db Setting 1
+    j ra
+
+SelectSuperAlloy:
+    sbn IC_HASH NAME_METAL On 0
+    sbn IC_HASH NAME_ALLOY On 0
+    sbn IC_HASH NAME_SUPERALLOY On 1
+    sbn IC_COMPACT_HASH NAME_METAL On 0
+    sbn IC_COMPACT_HASH NAME_ALLOY On 0
+    sbn IC_COMPACT_HASH NAME_SUPERALLOY On 1
+    s db Setting 2
+    j ra

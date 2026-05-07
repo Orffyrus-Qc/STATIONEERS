@@ -2,6 +2,16 @@
 
 Stationeers IC10 scripts and logic reference files.
 
+## Advanced Furnace Automation
+
+The `ADVANCE_FURNACE/` folder contains an IC10 script pack for automating an
+Advanced Furnace. It covers recipe selection, temperature and pressure targets,
+start/stop control, furnace input/output control, hot/cold gas switching, fuel
+mixing, ignition, indicator lights, and automatic ejection for selected products.
+
+See `ADVANCE_FURNACE/README.md` for setup labels and a script-by-script
+breakdown.
+
 ## IC10 Logic Database
 
 The `logic-db/` folder contains a Codex-oriented Stationeers IC10 logic database generated from Stationeers wiki/reference material verified on 2026-05-06.

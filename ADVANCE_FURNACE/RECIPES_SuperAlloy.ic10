@@ -1,0 +1,98 @@
+# Required labels:
+# RECIPE_DIAL = Logic Dial
+# MEM_TEMP+   = Maximum temperature memory
+# MEM_TEMP-   = Minimum temperature memory
+# MEM_PRESS+  = Maximum pressure memory
+# MEM_PRESS-  = Minimum pressure memory
+# MEM_HASH    = Recipe hash memory
+# LED_TEMP+   = Maximum temperature display
+# LED_TEMP-   = Minimum temperature display
+# LED_PRESS+  = Maximum pressure display
+# LED_PRESS-  = Minimum pressure display
+# LED_TEMP+/-, LED_PRESS+/- can be small, medium, or large LED displays.
+define DIAL_TYPE HASH("StructureLogicDial")
+define DIAL_NAME HASH("RECIPE_DIAL")
+define MEMORY_TYPE HASH("StructureLogicMemory")
+define TEMP_MAX_MEM HASH("MEM_TEMP+")
+define TEMP_MIN_MEM HASH("MEM_TEMP-")
+define PRESS_MAX_MEM HASH("MEM_PRESS+")
+define PRESS_MIN_MEM HASH("MEM_PRESS-")
+define HASH_MEM_NAME HASH("MEM_HASH")
+define DISPLAY_SMALL_TYPE HASH("StructureConsoleLED5")
+define DISPLAY_MEDIUM_TYPE HASH("StructureConsoleLED1x2")
+define DISPLAY_LARGE_TYPE HASH("StructureConsoleLED1x3")
+define TEMP_MAX_LED_NAME HASH("LED_TEMP+")
+define TEMP_MIN_LED_NAME HASH("LED_TEMP-")
+define PRESS_MAX_LED_NAME HASH("LED_PRESS+")
+define PRESS_MIN_LED_NAME HASH("LED_PRESS-")
+
+define H_ASTRO HASH("ItemAstroloyIngot")
+define H_HASTE HASH("ItemHastelloyIngot")
+define H_INCON HASH("ItemInconelIngot")
+define H_WASPA HASH("ItemWaspaloyIngot")
+define H_STELL HASH("ItemStelliteIngot")
+
+loop:
+    lbn r0 DIAL_TYPE DIAL_NAME Setting Average
+    round r0 r0
+    beq r0 0 astro
+    beq r0 1 haste
+    beq r0 2 incon
+    beq r0 3 waspa
+    beq r0 4 stell
+    j astro
+astro:
+    move r1 1000
+    move r2 2000
+    move r3 30000
+    move r4 40000
+    move r5 H_ASTRO
+    j write
+haste:
+    move r1 950
+    move r2 1000
+    move r3 25000
+    move r4 30000
+    move r5 H_HASTE
+    j write
+incon:
+    move r1 600
+    move r2 2000
+    move r3 23500
+    move r4 24000
+    move r5 H_INCON
+    j write
+waspa:
+    move r1 400
+    move r2 800
+    move r3 50000
+    move r4 53000
+    move r5 H_WASPA
+    j write
+stell:
+    move r1 1800
+    move r2 2000
+    move r3 10000
+    move r4 20000
+    move r5 H_STELL
+    j write
+write:
+    sbn MEMORY_TYPE TEMP_MIN_MEM Setting r1
+    sbn MEMORY_TYPE TEMP_MAX_MEM Setting r2
+    sbn MEMORY_TYPE PRESS_MIN_MEM Setting r3
+    sbn MEMORY_TYPE PRESS_MAX_MEM Setting r4
+    sbn MEMORY_TYPE HASH_MEM_NAME Setting r5
+    sbn DISPLAY_SMALL_TYPE TEMP_MIN_LED_NAME Setting r1
+    sbn DISPLAY_MEDIUM_TYPE TEMP_MIN_LED_NAME Setting r1
+    sbn DISPLAY_LARGE_TYPE TEMP_MIN_LED_NAME Setting r1
+    sbn DISPLAY_SMALL_TYPE TEMP_MAX_LED_NAME Setting r2
+    sbn DISPLAY_MEDIUM_TYPE TEMP_MAX_LED_NAME Setting r2
+    sbn DISPLAY_LARGE_TYPE TEMP_MAX_LED_NAME Setting r2
+    sbn DISPLAY_SMALL_TYPE PRESS_MIN_LED_NAME Setting r3
+    sbn DISPLAY_MEDIUM_TYPE PRESS_MIN_LED_NAME Setting r3
+    sbn DISPLAY_LARGE_TYPE PRESS_MIN_LED_NAME Setting r3
+    sbn DISPLAY_SMALL_TYPE PRESS_MAX_LED_NAME Setting r4
+    sbn DISPLAY_MEDIUM_TYPE PRESS_MAX_LED_NAME Setting r4
+    sbn DISPLAY_LARGE_TYPE PRESS_MAX_LED_NAME Setting r4
+    yield
+    j loop

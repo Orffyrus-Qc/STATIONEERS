@@ -1,0 +1,233 @@
+OrffyrusAdvancedFurnace
+
+OrffyrusAdvancedFurnace is a Stationeers IC10 script pack for automating an
+Advanced Furnace. It handles recipe selection, target temperature and pressure
+memory, LED target displays, start/stop control, furnace input/output control,
+hot/cold gas switching, fuel mixing, ignition, gas-mode indicator lights, and
+automatic ejection for selected completed products.
+
+The pack is built around labeled devices and logic memories on the data network.
+Recipe scripts read the recipe dial, write the selected minimum/maximum
+temperature and pressure values, and store the selected recipe hash. The furnace
+IO controller reads those targets and adjusts the Advanced Furnace input/output
+to heat, cool, fill, trim, or vent. A shared gas-mode memory chooses whether the
+input line is supplied by hot gas or cold gas, with a purge cycle before each
+mode change.
+
+Included scripts:
+
+- RECIPES_Selector.ic10
+  Selects which recipe IC housing is active: Metal, Alloy, or SuperAlloy. It
+  supports normal and compact IC housings and can use a pinned dial or the
+  labeled SELECTOR_DIAL.
+
+- RECIPES_Metal.ic10
+  Recipe dial positions: 0 copper, 1 gold, 2 iron, 3 lead, 4 nickel,
+  5 silicon, 6 silver.
+
+- RECIPES_Alloy.ic10
+  Recipe dial positions: 0 steel, 1 electrum, 2 solder, 3 constantan,
+  4 invar.
+
+- RECIPES_SuperAlloy.ic10
+  Recipe dial positions: 0 astroloy, 1 hastelloy, 2 inconel, 3 waspaloy,
+  4 stellite.
+
+- SETTING_IO.ic10
+  Main furnace input/output controller. It only runs while memStartStop is on,
+  uses the recipe target memories, switches hot/cold gas mode as needed, and
+  vents aggressively above the configured safe pressure.
+
+- START_STOP.ic10
+  Mirrors START_STOP_SWITCH into memStartStop, turns on the auto-mode flashing
+  light, and forces the furnace input off/output to 10 when stopped.
+
+- IGNITION.ic10
+  Activates the Advanced Furnace below 570 K with hysteresis, and disables
+  ignition when START_STOP_SWITCH is off.
+
+- SwitchGas_HotCold.ic10
+  Controls hot, cold, and purge pumps. The HotCold_BUTTON toggles the shared
+  gas mode manually, while the IO controller can also set the same memory.
+
+- SwitchGas_LIGHT.ic10
+  Shows the active gas mode with indicator diodes: red for hot gas and green for
+  cold gas.
+
+- FUEL_MIXER.ic10
+  Sets the fuel mixer to 66% input 1, toggles the mixer based on fuel pressure,
+  and shuts off hot/cold ice crushers when their analyzer pressure is above the
+  configured limit.
+
+- EJECTER.ic10
+  Opens the Advanced Furnace when selected alloy or superalloy recipes complete.
+  Electrum, solder, constantan, invar, astroloy, hastelloy, inconel, stellite,
+  and waspaloy are enabled. Basic metals and steel are present in the script but
+  commented out by default.
+
+Required labels:
+
+- Furnace and automation:
+  ADVANCED_FURNACE
+  START_STOP_SWITCH
+  memStartStop
+  AUTO_MODE_ON_FLASHING_LIGHT
+
+- Recipe selection:
+  SELECTOR_DIAL
+  RECIPE_DIAL
+  RECIPES_Metal
+  RECIPES_Alloy
+  RECIPES_SuperAlloy
+
+- Recipe memories and displays:
+  MEM_TEMP+
+  MEM_TEMP-
+  MEM_PRESS+
+  MEM_PRESS-
+  MEM_HASH
+  LED_TEMP+
+  LED_TEMP-
+  LED_PRESS+
+  LED_PRESS-
+
+- Hot/cold gas switching:
+  memSwitchGas_HotCold
+  HOT_PUMP
+  COLD_PUMP
+  PURGE_PUMP
+  HotCold_BUTTON
+  FUEL_INPUT_ANALYZER
+  HOT_GAS_LIGHT
+  COLD_GAS_LIGHT
+
+- Fuel and gas supply:
+  FUEL_MIXER
+  FUEL_ANALYZER
+  COLD_ANALYZER
+  HOT_ANALYZER
+  COLD_CRUSHER
+  HOT_CRUSHER
+
+All labels are case-sensitive. The HASH("name") values in the scripts must
+match the in-game device labels exactly.
+
+--------------------------------------------------------------------------------
+---------------------------  Version francaise  --------------------------------
+--------------------------------------------------------------------------------
+
+OrffyrusAdvancedFurnace est un pack de scripts IC10 pour Stationeers qui
+automatise un Advanced Furnace. Il gere la selection des recettes, les memoires
+de temperature et de pression cibles, l'affichage LED des consignes, le
+demarrage/arret, le controle des entrees et sorties du four, le basculement
+entre gaz chaud et gaz froid, le melange du carburant, l'allumage, les voyants
+du mode gaz et l'ejection automatique de certains produits termines.
+
+Le pack repose sur des appareils etiquetes et des memoires logiques sur le
+reseau de donnees. Les scripts de recettes lisent le cadran, ecrivent les
+valeurs minimum/maximum de temperature et de pression, puis stockent le hash de
+la recette choisie. Le controleur IO du four lit ces consignes et ajuste les
+entrees/sorties de l'Advanced Furnace pour chauffer, refroidir, remplir,
+stabiliser ou ventiler. Une memoire commune choisit si la ligne d'entree recoit
+du gaz chaud ou froid, avec une purge avant chaque changement de mode.
+
+Scripts inclus :
+
+- RECIPES_Selector.ic10
+  Selectionne le logement IC de recettes actif : Metal, Alloy ou SuperAlloy.
+  Il prend en charge les logements IC normaux et compacts, avec un cadran
+  connecte en broche ou le cadran etiquete SELECTOR_DIAL.
+
+- RECIPES_Metal.ic10
+  Positions du cadran : 0 cuivre, 1 or, 2 fer, 3 plomb, 4 nickel,
+  5 silicium, 6 argent.
+
+- RECIPES_Alloy.ic10
+  Positions du cadran : 0 acier, 1 electrum, 2 soudure, 3 constantan,
+  4 invar.
+
+- RECIPES_SuperAlloy.ic10
+  Positions du cadran : 0 astroloy, 1 hastelloy, 2 inconel, 3 waspaloy,
+  4 stellite.
+
+- SETTING_IO.ic10
+  Controleur principal des entrees/sorties du four. Il fonctionne seulement
+  quand memStartStop est actif, utilise les memoires de consigne, choisit le
+  mode gaz chaud/froid au besoin et ventile fortement au-dessus de la pression
+  de securite configuree.
+
+- START_STOP.ic10
+  Copie START_STOP_SWITCH dans memStartStop, active le voyant clignotant du
+  mode automatique et force l'entree du four a zero avec la sortie reglee a 10
+  quand le systeme est arrete.
+
+- IGNITION.ic10
+  Active l'Advanced Furnace sous 570 K avec hysteresis, et coupe l'allumage
+  quand START_STOP_SWITCH est eteint.
+
+- SwitchGas_HotCold.ic10
+  Controle les pompes chaud, froid et purge. HotCold_BUTTON peut changer le
+  mode gaz manuellement, tandis que le controleur IO peut aussi ecrire dans la
+  meme memoire.
+
+- SwitchGas_LIGHT.ic10
+  Affiche le mode gaz actif avec des diodes : rouge pour le gaz chaud et vert
+  pour le gaz froid.
+
+- FUEL_MIXER.ic10
+  Regle le melangeur de carburant a 66% sur l'entree 1, active/desactive le
+  melangeur selon la pression du carburant et coupe les ice crushers chaud/froid
+  quand leur pression d'analyseur depasse la limite configuree.
+
+- EJECTER.ic10
+  Ouvre l'Advanced Furnace quand certaines recettes d'alliage ou de
+  superalliage sont terminees. Electrum, soudure, constantan, invar, astroloy,
+  hastelloy, inconel, stellite et waspaloy sont actifs. Les metaux de base et
+  l'acier sont presents dans le script, mais commentes par defaut.
+
+Etiquettes requises :
+
+- Four et automatisation :
+  ADVANCED_FURNACE
+  START_STOP_SWITCH
+  memStartStop
+  AUTO_MODE_ON_FLASHING_LIGHT
+
+- Selection des recettes :
+  SELECTOR_DIAL
+  RECIPE_DIAL
+  RECIPES_Metal
+  RECIPES_Alloy
+  RECIPES_SuperAlloy
+
+- Memoires et affichages des recettes :
+  MEM_TEMP+
+  MEM_TEMP-
+  MEM_PRESS+
+  MEM_PRESS-
+  MEM_HASH
+  LED_TEMP+
+  LED_TEMP-
+  LED_PRESS+
+  LED_PRESS-
+
+- Basculement gaz chaud/froid :
+  memSwitchGas_HotCold
+  HOT_PUMP
+  COLD_PUMP
+  PURGE_PUMP
+  HotCold_BUTTON
+  FUEL_INPUT_ANALYZER
+  HOT_GAS_LIGHT
+  COLD_GAS_LIGHT
+
+- Carburant et alimentation gaz :
+  FUEL_MIXER
+  FUEL_ANALYZER
+  COLD_ANALYZER
+  HOT_ANALYZER
+  COLD_CRUSHER
+  HOT_CRUSHER
+
+Toutes les etiquettes respectent la casse. Les valeurs HASH("name") des scripts
+doivent correspondre exactement aux etiquettes des appareils dans le jeu.

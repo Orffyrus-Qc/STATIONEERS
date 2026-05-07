@@ -1,0 +1,51 @@
+define MIXER_NAME    HASH("FUEL_MIXER")
+define FUEL_ANALYZER HASH("FUEL_ANALYZER")
+define COLD_ANALYZER HASH("COLD_ANALYZER")
+define HOT_ANALYZER  HASH("HOT_ANALYZER")
+define COLD_CRUSHER  HASH("COLD_CRUSHER")
+define HOT_CRUSHER   HASH("HOT_CRUSHER")
+
+define MIXER_TYPE    HASH("StructureGasMixer")
+define ANALYZER_TYPE HASH("StructurePipeAnalysizer")
+define CRUSHER_TYPE  HASH("StructureIceCrusher")
+
+define MIXER_INPUT1  66
+define PRESSURE_OFF  50000
+define PRESSURE_ON   45000
+
+start:
+    # Gas mixer Setting is input 1 percent; input 2 is the remainder.
+    sbn MIXER_TYPE MIXER_NAME Setting MIXER_INPUT1
+
+loop:
+    lbn r0 ANALYZER_TYPE FUEL_ANALYZER Pressure Average
+    bgt r0 PRESSURE_OFF fuel_off
+    blt r0 PRESSURE_ON fuel_on
+
+check_cold:
+    lbn r1 ANALYZER_TYPE COLD_ANALYZER Pressure Average
+    bgt r1 PRESSURE_OFF cold_off
+
+check_hot:
+    lbn r2 ANALYZER_TYPE HOT_ANALYZER Pressure Average
+    bgt r2 PRESSURE_OFF hot_off
+
+    yield
+    j loop
+
+fuel_off:
+    sbn MIXER_TYPE MIXER_NAME On 0
+    j check_cold
+
+fuel_on:
+    sbn MIXER_TYPE MIXER_NAME On 1
+    j check_cold
+
+cold_off:
+    sbn CRUSHER_TYPE COLD_CRUSHER On 0
+    j check_hot
+
+hot_off:
+    sbn CRUSHER_TYPE HOT_CRUSHER On 0
+    yield
+    j loop

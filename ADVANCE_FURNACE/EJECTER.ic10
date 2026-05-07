@@ -1,0 +1,69 @@
+# Required label:
+# ADVANCED_FURNACE = Advanced Furnace
+define FURNACE_TYPE HASH("StructureAdvancedFurnace")
+define FURNACE_NAME HASH("ADVANCED_FURNACE")
+
+# ===== BASIC =====
+define R_COPPER     HASH("ItemCopperIngot")
+define R_GOLD       HASH("ItemGoldIngot")
+define R_IRON       HASH("ItemIronIngot")
+define R_LEAD       HASH("ItemLeadIngot")
+define R_NICKEL     HASH("ItemNickelIngot")
+define R_SILICON    HASH("ItemSiliconIngot")
+define R_SILVER     HASH("ItemSilverIngot")
+
+# ===== ALLOY =====
+define R_STEEL      HASH("ItemSteelIngot")
+define R_ELECTRUM   HASH("ItemElectrumIngot")
+define R_SOLDER     HASH("ItemSolderIngot")
+define R_CONSTANTAN HASH("ItemConstantanIngot")
+define R_INVAR      HASH("ItemInvarIngot")
+
+# ===== SUPER ALLOY =====
+define R_ASTROLOY   HASH("ItemAstroloyIngot")
+define R_HASTELLOY  HASH("ItemHastelloyIngot")
+define R_INCONEL    HASH("ItemInconelIngot")
+define R_STELLITE   HASH("ItemStelliteIngot")
+define R_WASPALOY   HASH("ItemWaspaloyIngot")
+
+start:
+    sbn FURNACE_TYPE FURNACE_NAME Open 0
+
+loop:
+    # Get current recipe running in furnace.
+    lbn r0 FURNACE_TYPE FURNACE_NAME RecipeHash Maximum
+
+    # ===== BASIC =====
+   # beq r0 R_COPPER eject
+   # beq r0 R_GOLD eject
+   # beq r0 R_IRON eject
+   # beq r0 R_LEAD eject
+   # beq r0 R_NICKEL eject
+   # beq r0 R_SILICON eject
+   # beq r0 R_SILVER eject
+
+    # ===== ALLOY =====
+    # beq r0 R_STEEL eject
+    beq r0 R_ELECTRUM eject
+    beq r0 R_SOLDER eject
+    beq r0 R_CONSTANTAN eject
+    beq r0 R_INVAR eject
+
+    # ===== SUPER ALLOY =====
+    beq r0 R_ASTROLOY eject
+    beq r0 R_HASTELLOY eject
+    beq r0 R_INCONEL eject
+    beq r0 R_STELLITE eject
+    beq r0 R_WASPALOY eject
+
+close:
+    sbn FURNACE_TYPE FURNACE_NAME Open 0
+    yield
+    j loop
+
+eject:
+    sbn FURNACE_TYPE FURNACE_NAME Open 1
+    yield
+    sbn FURNACE_TYPE FURNACE_NAME Open 0
+    yield
+    j loop

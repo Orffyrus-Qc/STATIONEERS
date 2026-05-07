@@ -1,0 +1,22 @@
+# Required labels:
+# memSwitchGas_HotCold = Logic Memory shared with hot/cold IC
+# HOT_GAS_LIGHT        = Hot gas indicator diode
+# COLD_GAS_LIGHT       = Cold gas indicator diode
+define MEM HASH("memSwitchGas_HotCold")
+define HOT_LIGHT HASH("HOT_GAS_LIGHT")
+define COLD_LIGHT HASH("COLD_GAS_LIGHT")
+define MEMORY HASH("StructureLogicMemory")
+define LIGHT HASH("StructureDiode")
+define GREEN 2
+define RED 4
+start:
+loop:
+yield
+lbn r8 MEMORY MEM Setting Average
+round r8 r8
+sbn LIGHT HOT_LIGHT Color RED
+sbn LIGHT HOT_LIGHT On r8
+sub r11 1 r8
+sbn LIGHT COLD_LIGHT Color GREEN
+sbn LIGHT COLD_LIGHT On r11
+j loop

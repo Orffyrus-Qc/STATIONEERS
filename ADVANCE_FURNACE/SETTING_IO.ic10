@@ -1,0 +1,126 @@
+define FURNACE_TYPE HASH("StructureAdvancedFurnace")
+define FURNACE_NAME HASH("ADVANCED_FURNACE")
+define MEMORY_TYPE HASH("StructureLogicMemory")
+define TEMP_MAX_MEM HASH("MEM_TEMP+")
+define TEMP_MIN_MEM HASH("MEM_TEMP-")
+define PRESS_MAX_MEM HASH("MEM_PRESS+")
+define PRESS_MIN_MEM HASH("MEM_PRESS-")
+define M_GAS HASH("memSwitchGas_HotCold")
+define M_START_STOP HASH("memStartStop")
+define GAS_HOT 1
+define GAS_COLD 0
+define SAFE_PRESSURE 57000
+define OUT_VENT 10
+define OUT_EMERGENCY 100
+start:
+move r8 SAFE_PRESSURE
+move r9 0
+sbn FURNACE_TYPE FURNACE_NAME SettingInput 0
+sbn FURNACE_TYPE FURNACE_NAME SettingOutput 0
+sbn MEMORY_TYPE M_GAS Setting GAS_HOT
+loop:
+yield
+move r5 0
+move r6 0
+lbn r14 MEMORY_TYPE M_START_STOP Setting Average
+beq r14 0 loop
+lbn r10 MEMORY_TYPE TEMP_MIN_MEM Setting Average
+lbn r11 MEMORY_TYPE TEMP_MAX_MEM Setting Average
+lbn r12 MEMORY_TYPE PRESS_MIN_MEM Setting Average
+lbn r13 MEMORY_TYPE PRESS_MAX_MEM Setting Average
+beq r10 0 apply
+beq r11 0 apply
+beq r12 0 apply
+beq r13 0 apply
+bgt r10 r11 apply
+bgt r12 r13 apply
+lbn r0 FURNACE_TYPE FURNACE_NAME Temperature Average
+lbn r1 FURNACE_TYPE FURNACE_NAME Pressure Average
+bgt r1 SAFE_PRESSURE vent_now
+bgt r1 r13 vent_now
+bgt r1 r8 vent_now
+move r8 SAFE_PRESSURE
+blt r0 r10 heat_latch
+bgt r0 r11 cool_mode
+bgt r9 r0 heat_mode
+move r9 0
+j trim_mode
+heat_latch:
+add r9 r10 25
+heat_mode:
+sbn MEMORY_TYPE M_GAS Setting GAS_HOT
+sub r3 r10 r0
+sub r4 r12 r1
+bgt r3 150 heat_high
+bgt r4 150 heat_high
+bgt r3 60 heat_med
+bgt r4 75 heat_med
+move r5 2
+j apply
+heat_high:
+move r5 30
+j apply
+heat_med:
+move r5 15
+j apply
+cool_mode:
+move r9 0
+sbn MEMORY_TYPE M_GAS Setting GAS_COLD
+sub r3 r0 r11
+sub r4 r12 r1
+bgt r4 150 cool_med
+bgt r3 60 cool_low
+move r5 2
+j apply
+cool_med:
+move r5 15
+j apply
+cool_low:
+move r5 8
+j apply
+trim_mode:
+blt r1 r12 trim_select
+move r5 0
+j apply
+trim_select:
+add r2 r10 r11
+div r2 r2 2
+blt r0 r2 trim_hot
+sbn MEMORY_TYPE M_GAS Setting GAS_COLD
+j trim_fill
+trim_hot:
+sbn MEMORY_TYPE M_GAS Setting GAS_HOT
+trim_fill:
+sub r4 r12 r1
+bgt r4 75 trim_low
+move r5 2
+j apply
+trim_low:
+move r5 8
+j apply
+vent_now:
+add r8 r12 r13
+div r8 r8 2
+move r5 0
+move r6 OUT_VENT
+sbn FURNACE_TYPE FURNACE_NAME SettingInput r5
+ble r1 SAFE_PRESSURE vent_wait
+move r6 OUT_EMERGENCY
+vent_wait:
+sleep 0.25
+j apply
+apply:
+sbn FURNACE_TYPE FURNACE_NAME SettingInput r5
+sbn FURNACE_TYPE FURNACE_NAME SettingOutput r6
+bgt r5 0 fuel_break
+sleep 0.05
+j loop
+fuel_break:
+sleep 0.05
+sbn FURNACE_TYPE FURNACE_NAME SettingInput 0
+bgt r5 4 fuel_heat_break
+sleep 1
+j loop
+fuel_heat_break:
+sleep 0.25
+j loop
