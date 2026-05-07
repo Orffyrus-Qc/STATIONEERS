@@ -34,6 +34,8 @@ generator below 5 percent charge and stop it above 15 percent charge.
 ## IC10 Logic Database
 
 The `logic-db/` folder contains a Codex-oriented Stationeers IC10 logic database generated from Stationeers wiki/reference material verified on 2026-05-06.
+The `stationeers_ic10_codex_db.json` file can be given to an AI as reference
+material to help build your own Stationeers IC10 scripts.
 
 Files:
 
