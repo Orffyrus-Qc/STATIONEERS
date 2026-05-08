@@ -17,8 +17,9 @@ if errorlevel 1 (
     if errorlevel 1 (
         echo [ERROR] Could not reopen this script as Administrator.
         pause
+        exit /b 1
     )
-    exit /b 1
+    exit /b 0
 )
 
 title STATIONEERS FULL INSTALLER
