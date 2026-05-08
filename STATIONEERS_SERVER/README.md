@@ -129,6 +129,9 @@ Adjust the launch settings at the bottom of `STATIONEERS_SERVER_v1.7.bat` before
 running if you want a different world, save, port, visibility, player count, or
 server name.
 
+For the possible `-file start` world, difficulty, start condition, and spawn
+location values, see `FILE_START_CONFIGS.md`.
+
 ## Troubleshooting
 
 - If SteamCMD download or update fails, rerun the batch file. The server update
