@@ -1,0 +1,57 @@
+# ============================================================
+# Stationeers IC10 - Multi Centrifuge Auto Eject
+# EN: Automatically opens centrifuges when they error, then
+#     keeps them open until their reagents are mostly emptied.
+# FR: Ouvre automatiquement les centrifugeuses en erreur, puis
+#     les garde ouvertes jusqu'a presque vider leurs reagents.
+# ============================================================
+
+# EN: Prefab hash for the normal Centrifuge structure.
+# FR: Hash prefab pour la structure Centrifuge normale.
+define centrifuge HASH("StructureCentrifuge")
+
+# ================= CHANGE THESE TO YOUR EXACT IN-GAME LABELS =================
+# EN: Label each centrifuge with the Labeler tool. Spelling is case-sensitive.
+# FR: Nommez chaque centrifugeuse avec le Labeler. La casse doit etre exacte.
+define cent1 HASH("Centrifuge1")
+define cent2 HASH("Centrifuge2")
+
+# EN: Add more centrifuges by copying a full block below and changing the number.
+# FR: Ajoutez d'autres centrifugeuses en copiant un bloc complet plus bas.
+# Example / Exemple:
+# define cent3 HASH("Centrifuge3")
+
+# EN: Register aliases used by each repeated centrifuge block.
+# FR: Alias des registres utilises par chaque bloc de centrifugeuse.
+alias error r0        # EN: 1 if the centrifuge is in error. FR: 1 si elle est en erreur.
+alias reagents r1     # EN: Current reagent amount. FR: Quantite actuelle de reagents.
+alias door_open r2    # EN: 1 if already open. FR: 1 si elle est deja ouverte.
+alias has_reagents r3 # EN: 1 if reagents are above threshold. FR: 1 si reagents > seuil.
+alias should_open r4  # EN: Final open/close command. FR: Commande finale ouvrir/fermer.
+
+main:
+    # EN: Wait between checks so the IC does not spam commands.
+    # FR: Pause entre les controles pour eviter trop de commandes.
+    sleep 5
+
+    # === Centrifuge 1 / Centrifugeuse 1 ===
+    lbn error centrifuge cent1 Error Maximum       # Read error state.
+    lbn reagents centrifuge cent1 Reagents Maximum # Read reagent amount.
+    lbn door_open centrifuge cent1 Open Maximum    # Read open state.
+    sgt has_reagents reagents 5                    # Keep ejecting while reagents > 5.
+    max should_open error door_open                # Start if error or already open.
+    min should_open should_open has_reagents       # Close once mostly empty.
+    sbn centrifuge cent1 Open should_open          # Write open command.
+
+    # === Centrifuge 2 / Centrifugeuse 2 ===
+    lbn error centrifuge cent2 Error Maximum       # Read error state.
+    lbn reagents centrifuge cent2 Reagents Maximum # Read reagent amount.
+    lbn door_open centrifuge cent2 Open Maximum    # Read open state.
+    sgt has_reagents reagents 5                    # Keep ejecting while reagents > 5.
+    max should_open error door_open                # Start if error or already open.
+    min should_open should_open has_reagents       # Close once mostly empty.
+    sbn centrifuge cent2 Open should_open          # Write open command.
+
+    # EN: Repeat forever.
+    # FR: Recommencer en boucle.
+    j main

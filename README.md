@@ -12,6 +12,15 @@ mixing, ignition, indicator lights, and automatic ejection for selected products
 See `ADVANCE_FURNACE/README.md` for setup labels and a script-by-script
 breakdown.
 
+## Centrifuge Auto Eject
+
+The `CENTRIFUGE/` folder contains an IC10 script that watches multiple named
+centrifuges and automatically opens any centrifuge that enters an error state.
+Once opened, it keeps the centrifuge ejecting until the reagent amount drops
+below the configured threshold, then closes it again.
+
+See `CENTRIFUGE/README.md` for required labels, setup notes, and behavior.
+
 ## Solid Generator Control
 
 The `SOLID_GENERATOR/` folder contains IC10 scripts that control a solid fuel
