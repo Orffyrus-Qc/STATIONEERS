@@ -2,6 +2,17 @@
 
 Stationeers IC10 scripts and logic reference files.
 
+## Stationeers Dedicated Server Installer
+
+The `STATIONEERS_SERVER/` folder contains a Windows batch installer for a
+modded Stationeers dedicated server. It self-elevates through UAC, installs or
+updates SteamCMD and the dedicated server, installs BepInEx and
+StationeersLaunchPad, downloads the configured Workshop mods, writes
+`modconfig.xml`, and launches the server.
+
+See `STATIONEERS_SERVER/README.md` for requirements, generated files, security
+notes, mod IDs, and launch settings.
+
 ## Advanced Furnace Automation
 
 The `ADVANCE_FURNACE/` folder contains an IC10 script pack for automating an
