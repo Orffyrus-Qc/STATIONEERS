@@ -1,0 +1,9 @@
+# Default to ON on every IC boot before entering the timed cycle.
+sbn HASH("StructureGrowLight") HASH("GrowLight_1") On 1   # Turn lights ON
+
+start:
+sleep 840                            # 14 minutes (840 seconds)
+sbn HASH("StructureGrowLight") HASH("GrowLight_1") On 0   # Turn lights OFF
+sleep 360                            # 6 minutes (360 seconds)
+sbn HASH("StructureGrowLight") HASH("GrowLight_1") On 1   # Turn lights ON
+j start
