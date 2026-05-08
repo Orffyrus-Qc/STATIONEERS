@@ -21,6 +21,15 @@ below the configured threshold, then closes it again.
 
 See `CENTRIFUGE/README.md` for required labels, setup notes, and behavior.
 
+## Garage Door Control
+
+The `GARAGE_DOOR/` folder contains an IC10 script for controlling a named garage
+or hangar door from interior and exterior buttons. It can keep a composite door
+closed as a safety barrier and optionally play klaxon warning sounds before
+closing.
+
+See `GARAGE_DOOR/README.md` for labels, feature toggles, and timing values.
+
 ## Grow Light Cycle
 
 The `GROW_LIGHT/` folder contains an IC10 script that cycles named grow lights

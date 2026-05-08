@@ -1,0 +1,125 @@
+define USE_DOOR 0 # 1 = enable garage door, 0 = disable
+define USE_ALARM 0 # 1 = enable klaxon, 0 = disable
+define USE_COMP 1 # 1 = enable composite door, 0 = disable
+define DOOR_TYPE HASH("StructureMediumHangerDoor")
+define DOOR_NAME HASH("GDOOR_B")
+define COMP_TYPE HASH("StructureCompositeDoor")
+define COMP_NAME HASH("CDOOR_B")
+define BTN_TYPE HASH("StructureLogicButton")
+define BTN_INT HASH("Button_GDoorB_INT")
+define BTN_EXT HASH("Button_GDoorB_EXT")
+define ALARM_TYPE HASH("StructureKlaxon")
+define ALARM_NAME HASH("KLAXON_GDOOR_B")
+define AUTO_CLOSE_TICKS 60
+define WARNING_TICKS 45
+define CLOSING_TICKS 55
+define MODE_WARNING 16
+define MODE_CLOSING 17
+define ALARM_VOLUME 100
+start:
+move r3 0 # r3 = timer
+move r4 0 # r4 = warning played
+move r5 0 # r5 = closing played
+move r6 0 # r6 = previous button state
+move r7 0 # r7 = door state
+beq USE_DOOR 0 skip_door_init # init door
+sbn DOOR_TYPE DOOR_NAME On 1
+sbn DOOR_TYPE DOOR_NAME Open 0
+skip_door_init:
+beq USE_COMP 0 skip_comp_init # init composite
+sbn COMP_TYPE COMP_NAME On 1
+sbn COMP_TYPE COMP_NAME Open 0
+skip_comp_init:
+beq USE_ALARM 0 skip_alarm_init # init alarm
+sbn ALARM_TYPE ALARM_NAME On 0
+sbn ALARM_TYPE ALARM_NAME Volume ALARM_VOLUME
+skip_alarm_init:
+loop:
+beq USE_COMP 0 skip_comp_loop # keep composite closed if enabled
+sbn COMP_TYPE COMP_NAME On 1
+sbn COMP_TYPE COMP_NAME Open 0
+skip_comp_loop:
+beq USE_DOOR 0 skip_door_power # keep door powered if enabled
+sbn DOOR_TYPE DOOR_NAME On 1
+skip_door_power:
+# read buttons
+lbn r0 BTN_TYPE BTN_INT Setting Maximum
+lbn r1 BTN_TYPE BTN_EXT Setting Maximum
+add r2 r0 r1 # r0 = INT button | r1 = EXT button | r2 = any button pressed
+# new press only
+ble r2 0 auto_logic
+bgt r6 0 auto_logic
+beq r7 0 do_open
+j do_close_manual
+do_open:
+move r7 1
+move r3 0
+move r4 0
+move r5 0
+beq USE_ALARM 0 no_alarm_open
+sbn ALARM_TYPE ALARM_NAME On 0
+no_alarm_open:
+beq USE_DOOR 0 save
+sbn DOOR_TYPE DOOR_NAME Open 1
+j save
+do_close_manual:
+move r7 0
+move r3 0
+move r4 0
+move r5 0
+beq USE_ALARM 0 no_alarm_close
+sbn ALARM_TYPE ALARM_NAME On 0
+no_alarm_close:
+beq USE_DOOR 0 save
+sbn DOOR_TYPE DOOR_NAME Open 0
+j save
+auto_logic:
+beq r7 0 closed_state
+add r3 r3 1
+blt r3 WARNING_TICKS check_closing # warning
+beq r4 0 play_warning
+j check_closing
+play_warning:
+beq USE_ALARM 0 skip_warn
+sbn ALARM_TYPE ALARM_NAME On 0
+sbn ALARM_TYPE ALARM_NAME Mode MODE_WARNING
+yield
+sbn ALARM_TYPE ALARM_NAME On 1
+skip_warn:
+move r4 1
+j check_closing
+check_closing:
+blt r3 CLOSING_TICKS check_close
+beq r5 0 play_closing
+j check_close
+play_closing:
+beq USE_ALARM 0 skip_close_sound
+sbn ALARM_TYPE ALARM_NAME On 0
+sbn ALARM_TYPE ALARM_NAME Mode MODE_CLOSING
+yield
+sbn ALARM_TYPE ALARM_NAME On 1
+skip_close_sound:
+move r5 1
+j check_close
+check_close:
+blt r3 AUTO_CLOSE_TICKS save
+move r7 0
+move r3 0
+move r4 0
+move r5 0
+beq USE_DOOR 0 no_auto_close
+sbn DOOR_TYPE DOOR_NAME Open 0
+no_auto_close:
+beq USE_ALARM 0 save
+sbn ALARM_TYPE ALARM_NAME On 0
+j save
+closed_state:
+move r3 0
+move r4 0
+move r5 0
+beq USE_ALARM 0 save
+sbn ALARM_TYPE ALARM_NAME On 0
+save:
+move r6 r2
+yield
+j loop
