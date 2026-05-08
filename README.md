@@ -40,6 +40,16 @@ the named proximity sensor is active.
 
 See `PROXIMITY_TRANSFO/README.md` for required labels and mode behavior.
 
+## Solar Panel Tracking
+
+The `SOLAR_PANEL/` folder contains an IC10 script that aims normal and
+reinforced solar panels from a daylight sensor. It also includes optional
+maintenance parking and optional auto-door closing features that can be enabled
+in the script.
+
+See `SOLAR_PANEL/README.md` for pin setup, configurable options, and supported
+panel types.
+
 ## IC10 Logic Database
 
 The `logic-db/` folder contains a Codex-oriented Stationeers IC10 logic database generated from Stationeers wiki/reference material verified on 2026-05-06.

@@ -1,0 +1,92 @@
+# d0 : Capteur de lumiere du jour
+# d1 : Porte a fermeture automatique
+# d2 : Bouton de maintenance - StructureLogicButton
+#
+# Panneaux solaires :           StructureSolarPanel           -2045627372
+# Panneaux solaires renforces : StructureSolarPanelReinforced -934345724
+#
+# Options : mettre 1 pour activer, 0 pour desactiver
+# ENABLE_MAINTENANCE = 1 : le bouton d2 active/desactive le mode maintenance.
+# ENABLE_MAINTENANCE = 0 : le bouton d2 est ignore par ce script.
+# ENABLE_AUTO_DOOR = 1 : la porte d1 est fermee automatiquement a chaque boucle.
+# ENABLE_AUTO_DOOR = 0 : la porte d1 n'est pas controlee par ce script.
+define ENABLE_MAINTENANCE 0
+define ENABLE_AUTO_DOOR 0
+
+start:
+# Boucle principale :
+# 1. Verifier si le mode maintenance doit etre active.
+# 2. Fermer la porte automatique si l'option est activee.
+# 3. Orienter les panneaux solaires vers le soleil.
+
+# --- Verification du bouton de maintenance ---
+# Si la maintenance est desactivee, on saute toute lecture du bouton d2.
+move r3 ENABLE_MAINTENANCE
+beqz r3 skip_maintenance_check
+l r2 d2 Activate
+bgt r2 0 maintenance_entry
+skip_maintenance_check:
+
+# --- Controle de la porte automatique ---
+# Quand ENABLE_AUTO_DOOR vaut 1, la porte d1 est forcee fermee.
+# Quand ENABLE_AUTO_DOOR vaut 0, le script laisse la porte tranquille.
+move r3 ENABLE_AUTO_DOOR
+beqz r3 skip_door_control
+s d1 Open 0
+skip_door_control:
+
+# --- Suivi solaire ---
+# Lecture des angles horizontal et vertical du capteur de lumiere.
+l r0 d0 Horizontal
+l r1 d0 Vertical
+# Correction de l'angle horizontal pour aligner les panneaux.
+add r0 r0 270
+mod r0 r0 360
+# Conversion de l'angle vertical du capteur vers l'inclinaison des panneaux.
+div r1 r1 1.8
+sub r1 90 r1
+
+# Envoi des memes angles a tous les panneaux solaires normaux et renforces.
+sb -934345724 Horizontal r0
+sb -934345724 Vertical r1
+sb -2045627372 Horizontal r0
+sb -2045627372 Vertical r1
+
+# yield relance vite la boucle et permet de verifier le bouton souvent,
+# au lieu de bloquer le script avec un long sleep.
+yield
+j start
+
+maintenance_entry:
+# --- Entree en mode maintenance ---
+# Anti-rebond : on remet le bouton a 0 pour eviter un double clic involontaire.
+s d2 Activate 0
+# Les panneaux sont gares a plat pour faciliter la maintenance.
+sb -934345724 Horizontal 0
+sb -934345724 Vertical 0
+sb -2045627372 Horizontal 0
+sb -2045627372 Vertical 0
+# Pause courte pour laisser le bouton se relacher.
+sleep 1 
+
+maintenance_loop:
+yield
+# --- Verification du bouton pour sortir de la maintenance ---
+# Un nouvel appui sur d2 quitte le mode maintenance.
+l r2 d2 Activate
+bgt r2 0 exit_maintenance
+
+# Tant que la maintenance est active, on garde les panneaux gares a plat.
+sb -934345724 Horizontal 0
+sb -934345724 Vertical 0
+sb -2045627372 Horizontal 0
+sb -2045627372 Vertical 0
+
+j maintenance_loop
+
+exit_maintenance:
+# --- Sortie du mode maintenance ---
+# Anti-rebond : on remet le bouton a 0 avant de reprendre le suivi solaire.
+s d2 Activate 0
+sleep 1
+j start
