@@ -1,5 +1,26 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
+
+REM =========================================================
+REM ADMIN CHECK / SELF-ELEVATION
+REM =========================================================
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$principal = New-Object Security.Principal.WindowsPrincipal -ArgumentList ([Security.Principal.WindowsIdentity]::GetCurrent()); if ($principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { exit 0 } exit 1"
+if errorlevel 1 (
+    echo.
+    echo [ADMIN REQUIRED] STATIONEERS_SERVER_v1.7.bat must run as Administrator.
+    echo [INFO] A Windows UAC prompt will open now. Choose Yes to continue.
+    echo.
+    timeout /t 2 /nobreak >nul
+    set "__STATIONEERS_BATCH=%~f0"
+    set "__STATIONEERS_DIR=%~dp0"
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process -FilePath $env:__STATIONEERS_BATCH -WorkingDirectory $env:__STATIONEERS_DIR -Verb RunAs"
+    if errorlevel 1 (
+        echo [ERROR] Could not reopen this script as Administrator.
+        pause
+    )
+    exit /b 1
+)
+
 title STATIONEERS FULL INSTALLER
 
 goto :MAIN
