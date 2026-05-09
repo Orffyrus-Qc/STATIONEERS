@@ -145,18 +145,29 @@ namespace TerraformingMod
     [HarmonyPatch(typeof(WorldManager), "StartWorld")]
     public class WorldManagerStartWorldPatch
     {
-        [HarmonyPrefix]
-        public static void Prefix()
+        [HarmonyPostfix]
+        public static void Postfix()
         {
-            if (NetworkManager.IsClient) // on clients, bail out here, settings are not loaded yet.
-                return;
+            try
+            {
+                if (NetworkManager.IsClient) // on clients, bail out here, settings are not loaded yet.
+                    return;
 
-            LightManager.SunPathTraceWorldAtmos = true;
-            TerraformingFunctions.ThisGlobalPrecise = new GlobalAtmospherePrecise(Mathf.Abs(WorldSetting.Current.Gravity));
-            TerraformingFunctions.ThisGlobalPrecise.OnLoadMix = TerraformingFunctions.CreateWorldGlobalGasMixture();
+                TerraformingFunctions.InitialiseGlobalPrecise("server");
+            }
+            catch (Exception ex)
+            {
+                ConsoleWindow.Print("Terraforming: Failed to initialise on world start: " + ex.Message, ConsoleColor.Red);
+                TerraformingMod.Log(ex.ToString());
+            }
+        }
+    }
 
-            // load saved atmosphere
-            if (XmlSaveLoad.Instance.CurrentWorldSave != null)
+    public static class TerraformingInitialisation
+    {
+        public static void LoadSavedAtmosphereIfAvailable()
+        {
+            if (XmlSaveLoad.Instance?.CurrentWorldSave != null)
             {
                 var fileName = TerraformingSaveFile.GetCurrentSaveFileName();
 
@@ -174,20 +185,6 @@ namespace TerraformingMod
                         ConsoleWindow.Print("Terraforming: No stored GasMix found");
                 }
             }
-
-            // ensure the global atmosphere is being synced as needed
-            TerraformingFunctions.ReloadGlobalAtmosphere();
-            var globalAtmo = TerraformingFunctions.GlobalAtmosphere;
-            if (globalAtmo != null)
-                AtmosphericsManager.AllAtmospheres.Add(globalAtmo);
-            else
-                ConsoleWindow.Print("Terraforming: Global Atmosphere is not valid");
-
-            // update Solar Irradiance now for an accurate value right from here on out
-            var value = typeof(OrbitalSimulation).GetMethod("CalculateSolarIrradiance", BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[0], null).Invoke(OrbitalSimulation.System, null);
-            Traverse.Create(typeof(OrbitalSimulation)).Property("SolarIrradiance").SetValue(value);
-
-            ConsoleWindow.Print($"Terraforming: GlobalPrecise generated (Terraforming mod loaded on server)");
         }
     }
 
@@ -197,14 +194,18 @@ namespace TerraformingMod
         [HarmonyPostfix]
         public static void Postfix()
         {
-            if (!NetworkManager.IsClient) // on server, this should not fire
-                return;
+            try
+            {
+                if (!NetworkManager.IsClient) // on server, this should not fire
+                    return;
 
-            LightManager.SunPathTraceWorldAtmos = true;
-            TerraformingFunctions.ThisGlobalPrecise = new GlobalAtmospherePrecise(Mathf.Abs(WorldSetting.Current.Gravity));
-            TerraformingFunctions.ThisGlobalPrecise.OnLoadMix = TerraformingFunctions.CreateWorldGlobalGasMixture();
-            TerraformingFunctions.ReloadGlobalAtmosphere();
-            ConsoleWindow.Print("GlobalPrecise generated (Terraforming mod loaded on client)");
+                TerraformingFunctions.InitialiseGlobalPrecise("client");
+            }
+            catch (Exception ex)
+            {
+                ConsoleWindow.Print("Terraforming: Failed to initialise on join: " + ex.Message, ConsoleColor.Red);
+                TerraformingMod.Log(ex.ToString());
+            }
         }
     }
 
@@ -389,6 +390,45 @@ namespace TerraformingMod
         public static bool JoinInProgress = false;
 
         public static Atmosphere GlobalAtmosphere;
+
+        public static void InitialiseGlobalPrecise(string side)
+        {
+            if (WorldSetting.Current == null)
+            {
+                ConsoleWindow.Print("Terraforming: WorldSetting.Current is not ready; initialisation skipped", ConsoleColor.Yellow);
+                return;
+            }
+
+            LightManager.SunPathTraceWorldAtmos = true;
+            ThisGlobalPrecise = new GlobalAtmospherePrecise(Mathf.Abs(WorldSetting.Current.Gravity));
+            ThisGlobalPrecise.OnLoadMix = CreateWorldGlobalGasMixture();
+
+            if (!NetworkManager.IsClient)
+                TerraformingInitialisation.LoadSavedAtmosphereIfAvailable();
+
+            ReloadGlobalAtmosphere();
+            var globalAtmo = GlobalAtmosphere;
+            if (globalAtmo != null && AtmosphericsManager.AllAtmospheres != null)
+                AtmosphericsManager.AllAtmospheres.Add(globalAtmo);
+            else
+                ConsoleWindow.Print("Terraforming: Global Atmosphere is not valid or atmospheres list is not ready", ConsoleColor.Yellow);
+
+            RecalculateSolarIrradiance();
+            ConsoleWindow.Print($"Terraforming: GlobalPrecise generated (Terraforming mod loaded on {side})");
+        }
+
+        private static void RecalculateSolarIrradiance()
+        {
+            if (OrbitalSimulation.System == null)
+                return;
+
+            var calculateSolarIrradiance = typeof(OrbitalSimulation).GetMethod("CalculateSolarIrradiance", BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[0], null);
+            if (calculateSolarIrradiance == null)
+                return;
+
+            var value = calculateSolarIrradiance.Invoke(OrbitalSimulation.System, null);
+            Traverse.Create(typeof(OrbitalSimulation)).Property("SolarIrradiance").SetValue(value);
+        }
 
         public static void ReloadGlobalAtmosphere()
         {
