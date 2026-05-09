@@ -15,7 +15,7 @@ namespace TerraformingMod
     {
         public const string pluginGuid = "net.elmo.stationeers.Terraforming";
         public const string pluginName = "Terraforming Mod";
-        public const string pluginVersion = "0.24.8";
+        public const string pluginVersion = "0.24.9";
 
         internal static ConfigEntry<bool> EnableTestCommands;
         internal static ConfigEntry<double> TestChangeMultiplier;

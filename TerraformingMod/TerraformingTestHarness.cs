@@ -159,6 +159,7 @@ namespace TerraformingMod
             }
 
             _lastResult = result.Length == 0 ? "Command file contained no executable commands." : result.ToString().TrimEnd();
+            ApplyCurrentState(globalAtmosphere);
             WriteStatus(globalAtmosphere, _lastResult);
         }
 
@@ -174,6 +175,7 @@ namespace TerraformingMod
                 case "help":
                     return HelpText();
                 case "status":
+                    ApplyCurrentState(globalAtmosphere);
                     WriteStatus(globalAtmosphere, "Manual status command.");
                     return "Wrote status.";
                 case "add":
@@ -205,6 +207,18 @@ namespace TerraformingMod
                 default:
                     throw new InvalidOperationException("Unknown command '" + parts[0] + "'. Use 'help'.");
             }
+        }
+
+        private static void ApplyCurrentState(Atmosphere globalAtmosphere)
+        {
+            if (globalAtmosphere == null || TerraformingFunctions.ThisGlobalPrecise == null)
+                return;
+
+            float temp;
+            if (!TryGetForcedTemperature(out temp))
+                temp = TerraformingFunctions.GetTemperature(OrbitalSimulation.TimeOfDay, globalAtmosphere.GasMixture);
+
+            TerraformingFunctions.ThisGlobalPrecise.UpdateGlobalAtmosphere(temp, globalAtmosphere);
         }
 
         private static string AddGas(string gasName, double moles)
