@@ -11,12 +11,13 @@ define minTemp  10
 define maxTemp  35
 define kelvin   273.15
 define showTime 4
+define pressLock 2
 
 alias target   r0
 alias curr     r1
 alias timer    r2
-alias prevUp   r3
-alias prevDown r4
+alias upLock   r3
+alias downLock r4
 alias tmp      r5
 alias hyst     r6
 
@@ -35,24 +36,32 @@ main:
     # Read current temperature in C
     lb curr sensor Temperature Average
     sub curr curr 273.15
+    sub upLock upLock 1
+    sub downLock downLock 1
 
     # === Increase button (+ ) ===
     lbn tmp button upName Activate Sum
-    blt tmp 0.5 noUp
+    blt tmp 0.5 upReleased
     move timer showTime
-    beq prevUp 1 noUp
+    bgt upLock 0 noUp
         add target target 1
+        move upLock pressLock
+    j noUp
+upReleased:
+    move upLock 0
 noUp:
-    move prevUp tmp
 
     # === Decrease button (- ) ===
     lbn tmp button downName Activate Sum
-    blt tmp 0.5 noDown
+    blt tmp 0.5 downReleased
     move timer showTime
-    beq prevDown 1 noDown
+    bgt downLock 0 noDown
         sub target target 1
+        move downLock pressLock
+    j noDown
+downReleased:
+    move downLock 0
 noDown:
-    move prevDown tmp
 
     # Clamp target 10-35 C
     blt target minTemp clampMin
