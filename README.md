@@ -13,6 +13,15 @@ StationeersLaunchPad, downloads the configured Workshop mods, writes
 See `STATIONEERS_SERVER/README.md` for requirements, generated files, security
 notes, mod IDs, and launch settings.
 
+## TerraformingMod Maintenance
+
+The `TerraformingMod/` folder contains the maintained Stationeers TerraformingMod
+fork, including the release DLL under `TerraformingMod/dist/` and the
+server-only debug command/config mode for fast atmosphere testing.
+
+See `TerraformingMod/README.md` for build notes, install location, and debug
+commands such as `preset breathable`, `status`, and `reset`.
+
 ## Advanced Furnace Automation
 
 The `ADVANCE_FURNACE/` folder contains an IC10 script pack for automating an
