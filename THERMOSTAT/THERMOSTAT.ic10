@@ -1,0 +1,108 @@
+define sensor   HASH("StructureGasSensor")
+define display  HASH("ModularDeviceLEDdisplay2")
+define button   HASH("ModularDeviceUtilityButton2x2")
+define heater   HASH("StructurePipeHeater")
+define cooler   HASH("StructureAirConditioner")
+
+define upName   HASH("ThermostatUp")
+define downName HASH("ThermostatDown")
+
+define minTemp  10
+define maxTemp  35
+define kelvin   273.15
+
+alias target   r0
+alias curr     r1
+alias timer    r2
+alias prevUp   r3
+alias prevDown r4
+alias tmp      r5
+alias hyst     r6
+
+init:
+    move target 22
+    move hyst 1.0           # hysteresis (deadband), change to 0.5 or 2.0 if you want
+    add tmp minTemp kelvin
+    sb display On 1
+    sb display Mode 0        # 0 = plain number (best for temperature)
+    sb heater On 0
+    sb cooler On 1
+    sb cooler Setting tmp
+    sb cooler Mode 0
+
+main:
+    # Read current temperature in C
+    lb curr sensor Temperature Average
+    sub curr curr 273.15
+
+    # === Increase button (+ ) ===
+    lbn tmp button upName Activate Sum
+    blt tmp 0.5 noUp
+    beq prevUp 1 noUp
+        add target target 1
+        move timer 4
+noUp:
+    move prevUp tmp
+
+    # === Decrease button (- ) ===
+    lbn tmp button downName Activate Sum
+    blt tmp 0.5 noDown
+    beq prevDown 1 noDown
+        sub target target 1
+        move timer 4
+noDown:
+    move prevDown tmp
+
+    # Clamp target 10-35 C
+    blt target minTemp clampMin
+    bgt target maxTemp clampMax
+    j show
+clampMin:
+    move target minTemp
+    j show
+clampMax:
+    move target maxTemp
+
+show:
+    sb display On 1
+
+    # Show target temperature for ~3 seconds when button pressed
+    bgt timer 0 showTarget
+
+    # Normal display: current temperature
+    round tmp curr
+    sb display Setting tmp
+    j control
+
+showTarget:
+    round tmp target
+    sb display Setting tmp
+    sub timer timer 1
+
+control:
+    # Heater / Cooler logic with hysteresis
+    sub tmp target hyst
+    blt curr tmp doHeat
+
+    add tmp target hyst
+    bgt curr tmp doCool
+
+    # In deadband, both off
+    sb heater On 0
+    sb cooler Mode 0
+    j end
+
+doHeat:
+    sb heater On 1
+    sb cooler Mode 0
+    j end
+
+doCool:
+    sb heater On 0
+    sb cooler On 1
+    sb cooler Mode 1
+    j end
+
+end:
+    yield
+    j main
