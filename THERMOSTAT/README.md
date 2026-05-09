@@ -61,7 +61,7 @@ The script also sets the air conditioner's `Setting` to `minTemp + 273.15`, beca
 
 ## Display Behavior
 
-Normally the LED display shows the rounded current temperature in Celsius. After pressing either target button, it briefly shows the rounded target temperature before returning to the current temperature.
+Normally the LED display shows the rounded current temperature in Celsius. Pressing either target button shows the rounded target temperature and refreshes the display timer. Holding a button keeps the timer refreshed, but the target only changes once per press edge.
 
 ## Customization
 
@@ -69,5 +69,6 @@ Change these values in `THERMOSTAT.ic10` to tune the behavior:
 
 - `minTemp` - minimum target temperature and AC setpoint floor.
 - `maxTemp` - maximum target temperature.
+- `showTime` - target-display timer value refreshed by button presses.
 - `move target 22` - boot target temperature.
 - `move hyst 1.0` - heating/cooling deadband size.
