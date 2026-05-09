@@ -23,11 +23,11 @@ Device hashes used by the script:
 Both buttons use the same prefab hash, so the script identifies them by name. Rename the two utility buttons in-game exactly:
 
 ```text
-ThermostatUp
-ThermostatDown
++
+-
 ```
 
-`ThermostatUp` increases the target by 1 C. `ThermostatDown` decreases it by 1 C.
+`+` increases the target by 1 C. `-` decreases it by 1 C.
 
 ## Temperature Behavior
 
