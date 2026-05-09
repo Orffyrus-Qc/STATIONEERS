@@ -1,6 +1,6 @@
 # TerraformingMod Maintenance
 
-This private repository is an attempt to continue maintaining Elmotrix's Stationeers TerraformingMod so it works with the current version of the game.
+This repository is an attempt to continue maintaining Elmotrix's Stationeers TerraformingMod so it works with the current version of the game.
 
 The original project is by Elmotrix: https://github.com/Elmotrix/TerraformingMod
 
