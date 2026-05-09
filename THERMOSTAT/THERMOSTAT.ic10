@@ -10,6 +10,7 @@ define downName HASH("-")
 define minTemp  10
 define maxTemp  35
 define kelvin   273.15
+define showTime 4
 
 alias target   r0
 alias curr     r1
@@ -38,18 +39,18 @@ main:
     # === Increase button (+ ) ===
     lbn tmp button upName Activate Sum
     blt tmp 0.5 noUp
+    move timer showTime
     beq prevUp 1 noUp
         add target target 1
-        move timer 4
 noUp:
     move prevUp tmp
 
     # === Decrease button (- ) ===
     lbn tmp button downName Activate Sum
     blt tmp 0.5 noDown
+    move timer showTime
     beq prevDown 1 noDown
         sub target target 1
-        move timer 4
 noDown:
     move prevDown tmp
 
@@ -66,7 +67,7 @@ clampMax:
 show:
     sb display On 1
 
-    # Show target temperature for ~3 seconds when button pressed
+    # Show target temperature while the button timer is active
     bgt timer 0 showTarget
 
     # Normal display: current temperature
