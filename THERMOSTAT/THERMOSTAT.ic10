@@ -4,8 +4,8 @@ define button   HASH("ModularDeviceUtilityButton2x2")
 define heater   HASH("StructurePipeHeater")
 define cooler   HASH("StructureAirConditioner")
 
-define upName   HASH("ThermostatUp")
-define downName HASH("ThermostatDown")
+define upName   HASH("+")
+define downName HASH("-")
 
 define minTemp  10
 define maxTemp  35
