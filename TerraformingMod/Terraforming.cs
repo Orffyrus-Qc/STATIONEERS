@@ -442,16 +442,33 @@ namespace TerraformingMod
 
         public static void ReloadGlobalAtmosphere()
         {
-            GlobalAtmosphere = AtmosphericsController.ReadonlyGlobalAtmosphere(new Grid3(0));
+            GlobalAtmosphere = PlanetaryAtmosphereSimulation.ReadOnlyGlobal(new WorldGrid(new Grid3(0)));
         }
 
         public static GasMixture CreateWorldGlobalGasMixture()
         {
+            var readOnlyGlobal = PlanetaryAtmosphereSimulation.ReadOnlyGlobal(new WorldGrid(new Grid3(0)));
+            if (readOnlyGlobal != null)
+                return CreateGasOnlyMixture(readOnlyGlobal.GasMixture);
+
             var data = WorldSetting.Current?.Data?.GlobalAtmosphereData;
             if (data != null)
-                return CreateGasOnlyMixture(GlobalGasMix.Create(data).ToInstancedGasMixture());
+                return CreateScaledWorldGasMixture(GlobalGasMix.Create(data));
 
             return GasMixtureHelper.Create();
+        }
+
+        private static GasMixture CreateScaledWorldGasMixture(GlobalGasMix globalMix)
+        {
+            var gasMixture = globalMix.ToInstancedGasMixture();
+            double gasVolume = globalMix.VolumeForGas().ToDouble();
+            if (gasVolume > double.Epsilon)
+            {
+                double scale = Chemistry.GridVolume.ToDouble() / gasVolume;
+                gasMixture.Scale(scale, AtmosphereHelper.MatterState.Gas);
+            }
+
+            return CreateGasOnlyMixture(gasMixture);
         }
 
         public static GasMixture CreateGasOnlyMixture(GasMixture source)
