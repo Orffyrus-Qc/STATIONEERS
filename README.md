@@ -10,5 +10,6 @@ The original project is by Elmotrix: https://github.com/Elmotrix/TerraformingMod
 - Ported compile-time API changes for current Stationeers assemblies.
 - Built against the Stationeers install at `C:\Program Files (x86)\Steam\steamapps\common\Stationeers`.
 - Release DLL is staged under `dist/BepInEx/plugins/TerraformingMod/`.
+- Added a server-only test command harness for disposable saves. Enable it in the BepInEx config, then create `BepInEx/config/TerraformingMod.TestCommands.txt` with commands such as `status`, `add O2 10`, `preset breathable`, `temp 293.15`, or `reset`. Results are written to `BepInEx/config/TerraformingMod.TestStatus.txt`.
 
 Runtime testing in a disposable save is still recommended before using this on an important world.

@@ -73,6 +73,7 @@
     <Compile Include="Hashing.cs" />
     <Compile Include="Serializer.cs" />
     <Compile Include="Terraforming.cs" />
+    <Compile Include="TerraformingTestHarness.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TerraformingSaveFile.cs" />
   </ItemGroup>

@@ -375,7 +375,11 @@ namespace TerraformingMod
                 if (globalAtmosphere == null)
                     return;
 
-                float temp = TerraformingFunctions.GetTemperature(OrbitalSimulation.TimeOfDay, globalAtmosphere.GasMixture);
+                TerraformingTestHarness.Tick(globalAtmosphere);
+
+                float temp;
+                if (!TerraformingTestHarness.TryGetForcedTemperature(out temp))
+                    temp = TerraformingFunctions.GetTemperature(OrbitalSimulation.TimeOfDay, globalAtmosphere.GasMixture);
                 TerraformingFunctions.ThisGlobalPrecise.UpdateGlobalAtmosphere(temp, globalAtmosphere);
             }
         }
@@ -796,6 +800,10 @@ namespace TerraformingMod
         {
             lock (this)
             {
+                double testMultiplier = TerraformingTestHarness.GetChangeMultiplier();
+                if (Math.Abs(testMultiplier - 1.0) > double.Epsilon)
+                    change.Scale(testMultiplier);
+
                 // add to accumulator, and only update the global atmosphere if there is a significant change
                 GasMixAccumulatorMoles += GasMixAccumulater.Add(change);
                 if (Math.Abs(GasMixAccumulatorMoles) <= 1)

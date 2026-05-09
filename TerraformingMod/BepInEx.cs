@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BepInEx.Configuration;
 using UnityEngine;
 
 namespace TerraformingMod
@@ -14,7 +15,13 @@ namespace TerraformingMod
     {
         public const string pluginGuid = "net.elmo.stationeers.Terraforming";
         public const string pluginName = "Terraforming Mod";
-        public const string pluginVersion = "0.24.5";
+        public const string pluginVersion = "0.24.6";
+
+        internal static ConfigEntry<bool> EnableTestCommands;
+        internal static ConfigEntry<double> TestChangeMultiplier;
+        internal static ConfigEntry<float> TestCommandPollSeconds;
+        internal static ConfigEntry<float> TestStatusPollSeconds;
+
         public static void Log(string line)
         {
             Debug.Log("[" + pluginName + "]: " + line);
@@ -23,6 +30,12 @@ namespace TerraformingMod
         {
             try
             {
+                EnableTestCommands = Config.Bind("Testing", "EnableTestCommands", false, "Enables server-only file-driven terraforming test commands.");
+                TestChangeMultiplier = Config.Bind("Testing", "ChangeMultiplier", 1.0, "Multiplies terraforming atmosphere changes while test commands are enabled.");
+                TestCommandPollSeconds = Config.Bind("Testing", "CommandPollSeconds", 2f, "Seconds between checks for TerraformingMod.TestCommands.txt.");
+                TestStatusPollSeconds = Config.Bind("Testing", "StatusPollSeconds", 10f, "Seconds between automatic writes to TerraformingMod.TestStatus.txt.");
+                TerraformingTestHarness.Configure(EnableTestCommands, TestChangeMultiplier, TestCommandPollSeconds, TestStatusPollSeconds);
+
                 var harmony = new Harmony(pluginGuid);
                 harmony.PatchAll();
                 Log("Patch succeeded");
