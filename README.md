@@ -49,6 +49,15 @@ minutes, turns them off for 6 minutes, then repeats.
 
 See `GROW_LIGHT/README.md` for the required label and timing notes.
 
+## Thermostat Controller
+
+The `THERMOSTAT/` folder contains a hash-based IC10 thermostat script that reads
+room temperature from gas sensors, shows current or target temperature on an LED
+display, and controls pipe heaters plus air conditioners with hysteresis.
+
+See `THERMOSTAT/README.md` for button labels, device hashes, clamp values, and
+AC mode behavior.
+
 ## Solid Generator Control
 
 The `SOLID_GENERATOR/` folder contains IC10 scripts that control a solid fuel
