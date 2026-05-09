@@ -10,6 +10,47 @@ The original project is by Elmotrix: https://github.com/Elmotrix/TerraformingMod
 - Ported compile-time API changes for current Stationeers assemblies.
 - Built against the Stationeers install at `C:\Program Files (x86)\Steam\steamapps\common\Stationeers`.
 - Release DLL is staged under `dist/BepInEx/plugins/TerraformingMod/`.
-- Added a server-only test command harness for disposable saves. Enable it in the BepInEx config, then create `BepInEx/config/TerraformingMod.TestCommands.txt` with commands such as `status`, `add O2 10`, `preset breathable`, `temp 293.15`, or `reset`. Results are written to `BepInEx/config/TerraformingMod.TestStatus.txt`.
+- Added a server-only debug command/config mode for disposable saves. It is disabled by default and is controlled through the BepInEx config.
 
 Runtime testing in a disposable save is still recommended before using this on an important world.
+
+## Debug Command Mode
+
+Debug commands are intended for fast terraforming tests without waiting through normal gameplay progression. Enable them only on a server or disposable test save.
+
+Config file:
+
+`BepInEx/config/net.elmo.stationeers.Terraforming.cfg`
+
+Required config:
+
+```ini
+[Testing]
+EnableTestCommands = true
+ChangeMultiplier = 1
+CommandPollSeconds = 1
+StatusPollSeconds = 5
+```
+
+Command file:
+
+`BepInEx/config/TerraformingMod.TestCommands.txt`
+
+The server consumes this file automatically. Create it again whenever you want to run another command batch.
+
+Useful commands:
+
+```txt
+status
+preset breathable
+preset co2
+add O2 10
+set CO2 0.5
+temp 293.15
+multiplier 1000
+reset
+```
+
+Results and atmosphere diagnostics are written to:
+
+`BepInEx/config/TerraformingMod.TestStatus.txt`
