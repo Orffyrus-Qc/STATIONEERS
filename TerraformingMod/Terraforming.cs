@@ -404,7 +404,17 @@ namespace TerraformingMod
             ThisGlobalPrecise.OnLoadMix = CreateWorldGlobalGasMixture();
 
             if (!NetworkManager.IsClient)
-                TerraformingInitialisation.LoadSavedAtmosphereIfAvailable();
+            {
+                try
+                {
+                    TerraformingInitialisation.LoadSavedAtmosphereIfAvailable();
+                }
+                catch (Exception ex)
+                {
+                    ConsoleWindow.Print("Terraforming: Failed to load saved atmosphere, using world defaults: " + ex.Message, ConsoleColor.Yellow);
+                    TerraformingMod.Log(ex.ToString());
+                }
+            }
 
             ReloadGlobalAtmosphere();
             var globalAtmo = GlobalAtmosphere;
