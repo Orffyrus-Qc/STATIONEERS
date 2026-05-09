@@ -76,6 +76,21 @@ namespace TerraformingMod
             }
         }
 
+        public static void TickCurrentGlobal()
+        {
+            if (!IsEnabled() || NetworkManager.IsClient || TerraformingFunctions.ThisGlobalPrecise == null)
+                return;
+
+            var globalAtmosphere = TerraformingFunctions.GlobalAtmosphere;
+            if (globalAtmosphere == null)
+            {
+                TerraformingFunctions.ReloadGlobalAtmosphere();
+                globalAtmosphere = TerraformingFunctions.GlobalAtmosphere;
+            }
+
+            Tick(globalAtmosphere);
+        }
+
         private static bool IsEnabled()
         {
             return _enabled != null && _enabled.Value;

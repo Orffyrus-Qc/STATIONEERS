@@ -163,6 +163,35 @@ namespace TerraformingMod
         }
     }
 
+    [HarmonyPatch]
+    public class GameManagerUpdatePatch
+    {
+        [HarmonyTargetMethod]
+        public static MethodBase TargetMethod()
+        {
+            return typeof(GameManager).GetMethod("Update", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        }
+
+        [HarmonyPrepare]
+        public static bool Prepare()
+        {
+            return TargetMethod() != null;
+        }
+
+        [HarmonyPostfix]
+        public static void Postfix()
+        {
+            try
+            {
+                TerraformingTestHarness.TickCurrentGlobal();
+            }
+            catch (Exception ex)
+            {
+                TerraformingMod.Log("GameManager test harness tick failed: " + ex);
+            }
+        }
+    }
+
     public static class TerraformingInitialisation
     {
         public static void LoadSavedAtmosphereIfAvailable()

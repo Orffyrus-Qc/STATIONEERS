@@ -15,7 +15,7 @@ namespace TerraformingMod
     {
         public const string pluginGuid = "net.elmo.stationeers.Terraforming";
         public const string pluginName = "Terraforming Mod";
-        public const string pluginVersion = "0.24.6";
+        public const string pluginVersion = "0.24.8";
 
         internal static ConfigEntry<bool> EnableTestCommands;
         internal static ConfigEntry<double> TestChangeMultiplier;
@@ -43,6 +43,19 @@ namespace TerraformingMod
             catch (Exception e)
             {
                 Log("Patch Failed");
+                Log(e.ToString());
+            }
+        }
+
+        void Update()
+        {
+            try
+            {
+                TerraformingTestHarness.TickCurrentGlobal();
+            }
+            catch (Exception e)
+            {
+                Log("Test harness update failed");
                 Log(e.ToString());
             }
         }
