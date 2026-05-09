@@ -16,13 +16,14 @@ namespace TerraformingMod
     static class TerraformingSaveFile
     {
         //XmlSaveLoad.DeleteEachFilesOldAutoSaves(worldDirectory, XmlSaveLoad.WorldFileName);
-        private static MethodInfo getBackupIndex =
-            AccessTools.PropertyGetter(typeof(XmlSaveLoad), "BackupWorldIndex");
-
         private static string filenamePattern = "terraforming_atmosphere{0}{1}.xml";
 
         public static uint GetBackupIndex()
         {
+            var getBackupIndex = typeof(XmlSaveLoad).GetProperty("BackupWorldIndex", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.GetGetMethod(true);
+            if (getBackupIndex == null)
+                return 0;
+
             return (uint)getBackupIndex.Invoke(XmlSaveLoad.Instance, Array.Empty<object>());
         }
 

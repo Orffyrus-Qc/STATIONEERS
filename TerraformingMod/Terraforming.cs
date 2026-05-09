@@ -26,7 +26,7 @@ namespace TerraformingMod
         [HarmonyTargetMethod]
         public static MethodBase TargetMethod()
         {
-            return AccessTools.Method(typeof(Atmosphere), "LerpAtmosphere");
+            return typeof(Atmosphere).GetMethod("LerpAtmosphere", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         }
 
         [HarmonyPrepare]
