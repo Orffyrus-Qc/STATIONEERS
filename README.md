@@ -88,14 +88,14 @@ generator below 5 percent charge and stop it above 15 percent charge.
 
 ## Proximity Switch Control
 
-The `PROXIMITY_TRANSFO/` folder contains `PROXIMITY_SWITCH.ic10`, an IC10
-script that controls a transformer with a proximity sensor and an AUTO/MANUAL
-mode switch. MANUAL mode forces the transformer on and turns `activeLIGHT` off.
-AUTO mode lets the proximity sensor control the transformer and turns
-`activeLIGHT` on.
+The `PROXIMITY_SWITCH/` folder contains `PROXIMITY_SWITCH.ic10`, an IC10 script
+that controls a transformer with a proximity sensor and an AUTO/MANUAL mode
+switch. MANUAL mode forces the transformer on and turns `activeLIGHT` off. AUTO
+mode lets the proximity sensor control the transformer and turns `activeLIGHT`
+on.
 
-See `PROXIMITY_TRANSFO/README.md` for required labels, supported lights, and
-mode behavior.
+See `PROXIMITY_SWITCH/README.md` for required labels, supported lights, and mode
+behavior.
 
 ## Solar Panel Tracking
 
