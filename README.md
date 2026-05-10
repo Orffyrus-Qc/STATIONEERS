@@ -15,12 +15,13 @@ notes, mod IDs, and launch settings.
 
 ## TerraformingMod Maintenance
 
-The `TerraformingMod/` folder contains the maintained Stationeers TerraformingMod
-fork, including the release DLL under `TerraformingMod/dist/` and the
-server-only debug command/config mode for fast atmosphere testing.
+The `TerraformingMod-maintained/` folder contains the maintained Stationeers
+TerraformingMod fork, including the release DLL under
+`TerraformingMod-maintained/dist/` and the server-only debug command/config mode
+for fast atmosphere testing.
 
-See `TerraformingMod/README.md` for build notes, install location, and debug
-commands such as `preset breathable`, `status`, and `reset`.
+See `TerraformingMod-maintained/README.md` for build notes, install location,
+and debug commands such as `preset breathable`, `status`, and `reset`.
 
 ## Advanced Furnace Automation
 

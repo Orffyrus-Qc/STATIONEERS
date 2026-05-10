@@ -1,5 +1,9 @@
 # TerraformingMod Maintenance
 
+Maintained inside the main Stationeers repository:
+
+https://github.com/Orffyrus-Qc/STATIONEERS/tree/main/TerraformingMod-maintained
+
 This repository is an attempt to continue maintaining Elmotrix's Stationeers TerraformingMod so it works with the current version of the game.
 
 The original project is by Elmotrix: https://github.com/Elmotrix/TerraformingMod
