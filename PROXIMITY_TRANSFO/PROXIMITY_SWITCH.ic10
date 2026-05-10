@@ -1,0 +1,108 @@
+# PROXIMITY_SWITCH.ic10
+# EN: Proximity-controlled transformer with AUTO/MANUAL switch and status light.
+# FR: Transformateur controle par proximite avec interrupteur AUTO/MANUEL
+# FR: et lumiere d'etat.
+
+# EN: Label the AUTO/MANUAL Logic Switch or Lever as modeSwitch.
+# FR: Nommer l'interrupteur logique ou le levier AUTO/MANUEL modeSwitch.
+# EN: Switch/lever OFF = MANUAL, transformer forced ON, activeLIGHT OFF.
+# FR: Interrupteur/levier OFF = MANUEL, transformateur force ON,
+# FR: activeLIGHT eteinte.
+# EN: Switch/lever ON = AUTO, proximity sensor controls transformer,
+# EN: activeLIGHT ON.
+# FR: Interrupteur/levier ON = AUTO, le capteur de proximite controle
+# FR: le transformateur, activeLIGHT allumee.
+# EN: Label any supported light type as activeLIGHT.
+# FR: Nommer n'importe quel type de lumiere supporte activeLIGHT.
+
+# EN: Device prefab hashes and label/name hashes.
+# FR: Hashes des prefabs et hashes des noms/etiquettes.
+define modeSwitchName HASH("modeSwitch")
+define modeSwitchType HASH("StructureLogicSwitch2")
+define modeLeverType HASH("StructureLogicSwitch")
+define proximityType HASH("StructureProximitySensor")
+define proximityName HASH("PROXIMITY_SENSOR")
+define transfoName HASH("TRANSFO_01")
+define activeLightName HASH("activeLIGHT")
+
+# EN: Light prefab hashes.
+# FR: Hashes des prefabs de lumieres.
+define lightType HASH("StructureLight")
+define wallLightType HASH("StructureWallLight")
+define batteryLightType HASH("StructureLightBattery")
+define flashingLightType HASH("StructureFlashingLight")
+define lightFlashingType HASH("StructureLightFlashing")
+define longLightType HASH("StructureLightLong")
+define longAngledLightType HASH("StructureLightLongAngled")
+define longWideLightType HASH("StructureLightLongWide")
+define roundLightType HASH("StructureLightRound")
+define roundAngledLightType HASH("StructureLightRoundAngled")
+define roundSmallLightType HASH("StructureLightRoundSmall")
+define growLightType HASH("StructureGrowLight")
+define ledLightType HASH("StructureDiode")
+
+# EN: Large transformer prefab is the plain StructureTransformer.
+# FR: Le prefab du grand transformateur est StructureTransformer.
+define transfoLargeType HASH("StructureTransformer")
+define transfoSmallType HASH("StructureTransformerSmall")
+define transfoSmallRevType HASH("StructureTransformerSmallReversed")
+
+# EN: Working registers.
+# FR: Registres de travail.
+alias mode r0
+alias detected r1
+alias transformerOn r2
+alias switchState r3
+alias leverState r4
+alias lightOn r5
+
+start:
+# EN: Read AUTO/MANUAL by name hash. Missing switch defaults to MANUAL.
+# FR: Lire AUTO/MANUEL par hash de nom. Sans interrupteur, MANUEL par defaut.
+lbn switchState modeSwitchType modeSwitchName Open Maximum
+lbn leverState modeLeverType modeSwitchName Open Maximum
+max mode switchState leverState
+sgtz lightOn mode
+bgt mode 0 auto
+
+manual:
+# EN: MANUAL mode keeps the transformer on and the status light off.
+# FR: Le mode MANUEL garde le transformateur allume
+# FR: et la lumiere d'etat eteinte.
+move transformerOn 1
+j writeOutputs
+
+auto:
+# EN: AUTO mode follows the named proximity sensor and turns the status light on.
+# FR: Le mode AUTO suit le capteur de proximite nomme
+# FR: et allume la lumiere d'etat.
+lbn detected proximityType proximityName Activate Maximum
+sgtz transformerOn detected
+
+writeOutputs:
+# EN: Apply state to all named small/large transformer variants.
+# FR: Appliquer l'etat a toutes les variantes petites/grandes nommees.
+sbn transfoLargeType transfoName On transformerOn
+sbn transfoSmallType transfoName On transformerOn
+sbn transfoSmallRevType transfoName On transformerOn
+
+# EN: The activeLIGHT follows the AUTO/MANUAL switch or lever directly.
+# FR: activeLIGHT suit directement l'interrupteur ou le levier AUTO/MANUEL.
+sbn lightType activeLightName On lightOn
+sbn wallLightType activeLightName On lightOn
+sbn batteryLightType activeLightName On lightOn
+sbn flashingLightType activeLightName On lightOn
+sbn lightFlashingType activeLightName On lightOn
+sbn longLightType activeLightName On lightOn
+sbn longAngledLightType activeLightName On lightOn
+sbn longWideLightType activeLightName On lightOn
+sbn roundLightType activeLightName On lightOn
+sbn roundAngledLightType activeLightName On lightOn
+sbn roundSmallLightType activeLightName On lightOn
+sbn growLightType activeLightName On lightOn
+sbn ledLightType activeLightName On lightOn
+
+# EN: Check once per second to reduce IC load.
+# FR: Verifier une fois par seconde pour reduire la charge IC.
+sleep 1
+j start
