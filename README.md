@@ -86,14 +86,16 @@ The battery start/stop levels can be adjusted directly in the scripts by
 changing `StartCharge` and `StopCharge`. The current defaults start the
 generator below 5 percent charge and stop it above 15 percent charge.
 
-## Proximity Transformer Control
+## Proximity Switch Control
 
-The `PROXIMITY_TRANSFO/` folder contains an IC10 script that controls a
-transformer with a proximity sensor and an AUTO/MANUAL mode switch. MANUAL mode
-forces the transformer on, while AUTO mode turns the transformer on only when
-the named proximity sensor is active.
+The `PROXIMITY_TRANSFO/` folder contains `PROXIMITY_SWITCH.ic10`, an IC10
+script that controls a transformer with a proximity sensor and an AUTO/MANUAL
+mode switch. MANUAL mode forces the transformer on and turns `activeLIGHT` off.
+AUTO mode lets the proximity sensor control the transformer and turns
+`activeLIGHT` on.
 
-See `PROXIMITY_TRANSFO/README.md` for required labels and mode behavior.
+See `PROXIMITY_TRANSFO/README.md` for required labels, supported lights, and
+mode behavior.
 
 ## Solar Panel Tracking
 
