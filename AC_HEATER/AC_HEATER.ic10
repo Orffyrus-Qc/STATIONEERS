@@ -15,7 +15,8 @@ define HEATER_NAME HASH("HEATER")
 
 # EN: Air Conditioner modes used by this script.
 # FR: Modes du climatiseur utilises par ce script.
-define MODE_ACTIVE 1
+define MODE_MIN 0
+define MODE_MAX 1
 
 # EN: Working registers.
 # FR: Registres de travail.
@@ -33,9 +34,12 @@ main:
 # FR: Lire le Mode du climatiseur nomme par hash de prefab et de nom.
 lbn acMode AC_TYPE AC_NAME Mode Maximum
 
-# EN: Heater is on only while the AC Mode is Active.
-# FR: Le chauffage est allume seulement quand le Mode AC est Actif.
-seq heaterOn acMode MODE_ACTIVE
+# EN: Force AC Mode to an integer 0-1 before using it as heater state.
+# FR: Forcer le Mode AC en entier 0-1 avant de l'utiliser comme etat.
+round acMode acMode
+max acMode acMode MODE_MIN
+min acMode acMode MODE_MAX
+move heaterOn acMode
 
 # EN: Write only when the requested state changes.
 # FR: Ecrire seulement quand l'etat demande change.
