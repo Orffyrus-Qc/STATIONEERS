@@ -68,6 +68,15 @@ display, and controls pipe heaters plus air conditioners with hysteresis.
 See `THERMOSTAT/README.md` for button labels, device hashes, clamp values, and
 AC mode behavior.
 
+## AC Heater Follower
+
+The `AC_HEATER/` folder contains an IC10 script that uses a named Air
+Conditioner as the control state for pipe heaters. When the `AC_HEATER`
+StructureAirConditioner Mode is Active, all `HEATER` StructurePipeHeater
+devices turn on; when it returns to Idle, the heaters turn off.
+
+See `AC_HEATER/README.md` for labels, mode behavior, and setup notes.
+
 ## Solid Generator Control
 
 The `SOLID_GENERATOR/` folder contains IC10 scripts that control a solid fuel
