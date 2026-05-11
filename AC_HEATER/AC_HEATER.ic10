@@ -1,30 +1,27 @@
 # AC_HEATER.ic10
 # EN: Put this IC10 chip in the Air Conditioner named AC_HEATER.
 # FR: Mettre cette puce IC10 dans le climatiseur nomme AC_HEATER.
-# EN: It follows AC Mode 1 Active and drives the d0 heater named HEATER.
-# FR: Il suit le Mode 1 Actif et controle le chauffage d0 nomme HEATER.
+# EN: It follows AC Mode 1 Active and drives pipe heaters named HEATER.
+# FR: Il suit le Mode 1 Actif et controle les chauffages nommes HEATER.
 # EN: Mode 0 Idle turns the heaters off.
 # FR: Le Mode 0 Idle eteint les chauffages.
 
-# EN: Set IC pin d0 to the StructurePipeHeater named HEATER.
-# FR: Regler la broche IC d0 au StructurePipeHeater nomme HEATER.
-alias heater d0
-
-# EN: Required heater name hash.
-# FR: Hash de nom requis pour le chauffage.
+# EN: Device prefab hashes and label/name hashes.
+# FR: Hashes des prefabs et hashes des noms/etiquettes.
+define AC_TYPE HASH("StructureAirConditioner")
+define AC_NAME HASH("AC_HEATER")
+define HEATER_TYPE HASH("StructurePipeHeater")
 define HEATER_NAME HASH("HEATER")
 
 # EN: Air Conditioner modes used by this script.
 # FR: Modes du climatiseur utilises par ce script.
-define MODE_MIN 0
-define MODE_MAX 1
+define MODE_ACTIVE 1
 
 # EN: Working registers.
 # FR: Registres de travail.
 alias acMode r0
 alias heaterOn r1
 alias lastOn r2
-alias heaterName r3
 
 init:
 # EN: -1 forces one write after boot to match the current AC mode.
@@ -32,29 +29,18 @@ init:
 move lastOn -1
 
 main:
-# EN: Read Mode from the Air Conditioner holding this IC chip.
-# FR: Lire le Mode du climatiseur qui contient cette puce IC.
-l acMode db Mode
+# EN: Read the named Air Conditioner Mode by prefab and name hash.
+# FR: Lire le Mode du climatiseur nomme par hash de prefab et de nom.
+lbn acMode AC_TYPE AC_NAME Mode Maximum
 
-# EN: Force AC Mode to an integer 0-1 before using it as heater state.
-# FR: Forcer le Mode AC en entier 0-1 avant de l'utiliser comme etat.
-round acMode acMode
-max acMode acMode MODE_MIN
-min acMode acMode MODE_MAX
-move heaterOn acMode
+# EN: Heater is on only while the AC Mode is Active.
+# FR: Le chauffage est allume seulement quand le Mode AC est Actif.
+seq heaterOn acMode MODE_ACTIVE
 
 # EN: Write only when the requested state changes.
 # FR: Ecrire seulement quand l'etat demande change.
 beq heaterOn lastOn wait
-
-# EN: Use d0 only if its NameHash is HEATER and On is writable.
-# FR: Utiliser d0 seulement si son NameHash est HEATER et On modifiable.
-bdns heater wait
-bdnvs heater NameHash wait
-bdnvs heater On wait
-l heaterName heater NameHash
-bne heaterName HEATER_NAME wait
-s heater On heaterOn
+sbn HEATER_TYPE HEATER_NAME On heaterOn
 move lastOn heaterOn
 
 wait:
