@@ -6,10 +6,10 @@ heater enable signal.
 ## Purpose
 
 `AC_HEATER.ic10` watches the integer `Mode` of the `StructureAirConditioner`
-that holds the IC10 chip, then mirrors that state to the named
-`StructurePipeHeater` on the data network. When the Air Conditioner named
-`AC_HEATER` has Mode `1`, the pipe heater named `HEATER` turns on. When it
-returns to Mode `0`, the heater turns off.
+that holds the IC10 chip, then mirrors that state to every
+`StructurePipeHeater` on the same data network. When the Air Conditioner named
+`AC_HEATER` has Mode `1`, the pipe heaters turn on. When it returns to Mode
+`0`, the heaters turn off.
 
 This is useful when another controller already changes the Air Conditioner
 between Idle and Active, and you want pipe heaters to follow that same control
@@ -23,7 +23,7 @@ in-game device labels exactly.
 | Label | Device |
 | --- | --- |
 | `AC_HEATER` | Air Conditioner that holds the IC10 chip. |
-| `HEATER` | Pipe heater controlled by the Air Conditioner mode. |
+| `HEATER` | Script constant for the `StructurePipeHeater` prefab hash. |
 
 ## Installation
 
@@ -31,16 +31,15 @@ in-game device labels exactly.
    `AC_HEATER`.
 2. Connect the Air Conditioner and all target pipe heaters to the same data
    network.
-3. Name the target `StructurePipeHeater` as `HEATER`.
+3. Put only the pipe heaters you want controlled on that same data network.
 4. Keep the Air Conditioner and pipe heaters powered.
 
-No IC housing pins are required. The script reads the host device with `db`,
-finds the named pipe heater by `ReferenceId`, and writes to that device:
+No IC housing pins are required. The script reads the host device with `db`
+and writes to all pipe heaters by the `HEATER` prefab hash:
 
 ```ic10
 l acMode db Mode
-lbn heaterId HEATER_TYPE HEATER_NAME ReferenceId Maximum
-s heaterId On heaterOn
+sb HEATER On heaterOn
 ```
 
 ## Mode Behavior
@@ -57,11 +56,10 @@ Air Conditioner mode.
 
 ## Notes
 
-- The script controls the `StructurePipeHeater` named `HEATER`.
-- If no valid `HEATER` pipe heater is found, the write is skipped safely.
+- The script controls all `StructurePipeHeater` devices on the data network.
+- Use a separate data network if other pipe heaters should not be controlled.
 - Use one Air Conditioner named `AC_HEATER` for predictable behavior.
 - The IC loop uses `yield`, so it checks every tick without a long sleep.
-- Change `HEATER_NAME` in the script if you rename the pipe heaters.
 
 ## Files
 
