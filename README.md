@@ -72,10 +72,11 @@ AC mode behavior.
 
 The `AC_HEATER/` folder contains an IC10 script that uses the Air Conditioner
 holding the IC chip as the control state for pipe heaters. When that host Air
-Conditioner Mode is Active, all `HEATER` StructurePipeHeater devices turn on;
-when it returns to Idle, the heaters turn off.
+Conditioner Mode is Active, all `HEATER` StructurePipeHeater devices turn on,
+unless `TemperatureOutput2` is above `200`; heaters resume at `180` or lower.
 
-See `AC_HEATER/README.md` for labels, mode behavior, and setup notes.
+See `AC_HEATER/README.md` for labels, mode behavior, temperature lockout, and
+setup notes.
 
 ## Solid Generator Control
 
