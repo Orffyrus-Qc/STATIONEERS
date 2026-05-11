@@ -1,10 +1,18 @@
 # AC_HEATER.ic10
 # EN: Put this IC10 chip in the Air Conditioner named AC_HEATER.
 # FR: Mettre cette puce IC10 dans le climatiseur nomme AC_HEATER.
-# EN: It follows AC Mode 1 Active and drives heaters named HEATER.
-# FR: Il suit le Mode 1 Actif et controle les chauffages nommes HEATER.
+# EN: It follows AC Mode 1 Active and drives the d0 heater named HEATER.
+# FR: Il suit le Mode 1 Actif et controle le chauffage d0 nomme HEATER.
 # EN: Mode 0 Idle turns the heaters off.
 # FR: Le Mode 0 Idle eteint les chauffages.
+
+# EN: Set IC pin d0 to the StructurePipeHeater named HEATER.
+# FR: Regler la broche IC d0 au StructurePipeHeater nomme HEATER.
+alias heater d0
+
+# EN: Required heater name hash.
+# FR: Hash de nom requis pour le chauffage.
+define HEATER_NAME HASH("HEATER")
 
 # EN: Air Conditioner modes used by this script.
 # FR: Modes du climatiseur utilises par ce script.
@@ -16,6 +24,7 @@ define MODE_MAX 1
 alias acMode r0
 alias heaterOn r1
 alias lastOn r2
+alias heaterName r3
 
 init:
 # EN: -1 forces one write after boot to match the current AC mode.
@@ -37,7 +46,15 @@ move heaterOn acMode
 # EN: Write only when the requested state changes.
 # FR: Ecrire seulement quand l'etat demande change.
 beq heaterOn lastOn wait
-sbn HASH("StructurePipeHeater") HASH("HEATER") On heaterOn
+
+# EN: Use d0 only if its NameHash is HEATER and On is writable.
+# FR: Utiliser d0 seulement si son NameHash est HEATER et On modifiable.
+bdns heater wait
+bdnvs heater NameHash wait
+bdnvs heater On wait
+l heaterName heater NameHash
+bne heaterName HEATER_NAME wait
+s heater On heaterOn
 move lastOn heaterOn
 
 wait:
