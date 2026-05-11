@@ -73,7 +73,8 @@ AC mode behavior.
 The `AC_HEATER/` folder contains an IC10 script that uses the Air Conditioner
 holding the IC chip as the control state for pipe heaters. When that host Air
 Conditioner Mode is Active, all `HEATER` StructurePipeHeater devices turn on,
-unless `TemperatureOutput2` is above `200`; heaters resume at `180` or lower.
+unless `TemperatureOutput2` is above `200 C`; heaters resume at `180 C` or
+lower after converting that output temperature to Celsius.
 
 See `AC_HEATER/README.md` for labels, mode behavior, temperature lockout, and
 setup notes.
