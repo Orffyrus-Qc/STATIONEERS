@@ -1,0 +1,50 @@
+# AC_HEATER.ic10
+# EN: Put this IC10 chip in the Air Conditioner named AC_HEATER.
+# FR: Mettre cette puce IC10 dans le climatiseur nomme AC_HEATER.
+# EN: It follows AC Mode 1 Active and drives pipe heaters named HEATER.
+# FR: Il suit le Mode 1 Actif et controle les chauffages nommes HEATER.
+# EN: Mode 0 Idle turns the heaters off.
+# FR: Le Mode 0 Idle eteint les chauffages.
+
+# EN: Device prefab hashes and label/name hashes.
+# FR: Hashes des prefabs et hashes des noms/etiquettes.
+define AC_TYPE HASH("StructureAirConditioner")
+define AC_NAME HASH("AC_HEATER")
+define HEATER_TYPE HASH("StructurePipeHeater")
+define HEATER_NAME HASH("HEATER")
+
+# EN: Air Conditioner modes used by this script.
+# FR: Modes du climatiseur utilises par ce script.
+define MODE_ACTIVE 1
+
+# EN: Working registers.
+# FR: Registres de travail.
+alias acMode r0
+alias heaterOn r1
+alias lastOn r2
+
+init:
+# EN: -1 forces one write after boot to match the current AC mode.
+# FR: -1 force une ecriture au demarrage selon le mode actuel.
+move lastOn -1
+
+main:
+# EN: Read the named Air Conditioner Mode by prefab and name hash.
+# FR: Lire le Mode du climatiseur nomme par hash de prefab et de nom.
+lbn acMode AC_TYPE AC_NAME Mode Maximum
+
+# EN: Heater is on only while the AC Mode is Active.
+# FR: Le chauffage est allume seulement quand le Mode AC est Actif.
+seq heaterOn acMode MODE_ACTIVE
+
+# EN: Write only when the requested state changes.
+# FR: Ecrire seulement quand l'etat demande change.
+beq heaterOn lastOn wait
+sbn HEATER_TYPE HEATER_NAME On heaterOn
+move lastOn heaterOn
+
+wait:
+# EN: Yield every tick to keep the IC responsive.
+# FR: Yield a chaque tick pour garder l'IC reactive.
+yield
+j main
