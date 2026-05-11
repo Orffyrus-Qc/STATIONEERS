@@ -3,38 +3,61 @@
 # FR: Mettre cette puce IC10 dans le climatiseur a surveiller.
 # EN: It follows AC Mode 1 Active and drives pipe heaters named HEATER.
 # FR: Il suit le Mode 1 Actif et controle les chauffages nommes HEATER.
-# EN: Mode 0 Idle turns the heaters off.
-# FR: Le Mode 0 Idle eteint les chauffages.
+# EN: High TemperatureOutput2 locks heaters off until cooled.
+# FR: TemperatureOutput2 elevee bloque les chauffages jusqu'au refroidissement.
 
 # EN: Pipe heater prefab hash and label/name hash.
 # FR: Hash du prefab et du nom/etiquette du chauffage.
 define HEATER_TYPE HASH("StructurePipeHeater")
 define HEATER_NAME HASH("HEATER")
 
-# EN: Air Conditioner modes used by this script.
-# FR: Modes du climatiseur utilises par ce script.
+# EN: Air Conditioner modes and output temperature safety limits.
+# FR: Modes du climatiseur et limites de securite TemperatureOutput2.
 define MODE_ACTIVE 1
+define TEMP_STOP 200
+define TEMP_RESUME 180
 
 # EN: Working registers.
 # FR: Registres de travail.
 alias acMode r0
 alias heaterOn r1
 alias lastOn r2
+alias outputTemp r3
+alias tempLock r4
 
 init:
 # EN: -1 forces one write after boot to match the current AC mode.
 # FR: -1 force une ecriture au demarrage selon le mode actuel.
 move lastOn -1
+move tempLock 0
 
 main:
-# EN: Read Mode from the Air Conditioner holding this IC chip.
-# FR: Lire le Mode du climatiseur qui contient cette puce IC.
+# EN: Read Mode and TemperatureOutput2 from the host Air Conditioner.
+# FR: Lire Mode et TemperatureOutput2 du climatiseur qui contient l'IC.
 l acMode db Mode
+l outputTemp db TemperatureOutput2
 
-# EN: Heater is on only while the AC Mode is Active.
-# FR: Le chauffage est allume seulement quand le Mode AC est Actif.
+# EN: Lock heaters off above 200; unlock when cooled to 180 or lower.
+# FR: Bloquer au-dessus de 200; debloquer a 180 ou moins.
+bgt outputTemp TEMP_STOP lockHot
+ble outputTemp TEMP_RESUME unlockCool
+j checkMode
+
+lockHot:
+move tempLock 1
+j checkMode
+
+unlockCool:
+move tempLock 0
+
+checkMode:
+# EN: Heater follows AC Active mode unless the temperature lock is set.
+# FR: Chauffage suit le mode Actif sauf si le verrou temperature est actif.
 seq heaterOn acMode MODE_ACTIVE
+beq tempLock 0 writeState
+move heaterOn 0
 
+writeState:
 # EN: Write only when the requested state changes.
 # FR: Ecrire seulement quand l'etat demande change.
 beq heaterOn lastOn wait
