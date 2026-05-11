@@ -5,11 +5,11 @@ heater enable signal.
 
 ## Purpose
 
-`AC_HEATER.ic10` watches the integer `Mode` of a named
-`StructureAirConditioner` and mirrors that state to every named
+`AC_HEATER.ic10` watches the integer `Mode` of the `StructureAirConditioner`
+that holds the IC10 chip, then mirrors that state to every named
 `StructurePipeHeater` on the data network. When the Air Conditioner named
-`AC_HEATER` has Mode `1`, all pipe heaters named `HEATER` turn on. When the
-Air Conditioner returns to Mode `0`, the heaters turn off.
+`AC_HEATER` has Mode `1`, all pipe heaters named `HEATER` turn on. When it
+returns to Mode `0`, the heaters turn off.
 
 This is useful when another controller already changes the Air Conditioner
 between Idle and Active, and you want pipe heaters to follow that same control
@@ -34,10 +34,11 @@ in-game device labels exactly.
 3. Name every target `StructurePipeHeater` as `HEATER`.
 4. Keep the Air Conditioner and pipe heaters powered.
 
-No IC housing pins are required. The script uses name/hash batch logic:
+No IC housing pins are required. The script reads the host device with `db`
+and controls heaters with name/hash batch logic:
 
 ```ic10
-lbn acMode AC_TYPE AC_NAME Mode Maximum
+l acMode db Mode
 sbn HEATER_TYPE HEATER_NAME On heaterOn
 ```
 
@@ -57,9 +58,8 @@ Air Conditioner mode.
 
 - The script controls all `StructurePipeHeater` devices named `HEATER`.
 - Use one Air Conditioner named `AC_HEATER` for predictable behavior.
-- If multiple `AC_HEATER` devices exist, `Maximum` means any Active unit wins.
 - The IC loop uses `yield`, so it checks every tick without a long sleep.
-- Change `AC_NAME` or `HEATER_NAME` in the script if you rename devices.
+- Change `HEATER_NAME` in the script if you rename the pipe heaters.
 
 ## Files
 
