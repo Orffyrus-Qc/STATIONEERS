@@ -6,10 +6,10 @@ heater enable signal.
 ## Purpose
 
 `AC_HEATER.ic10` watches the integer `Mode` of the `StructureAirConditioner`
-that holds the IC10 chip, then mirrors that state to `StructurePipeHeater`
-devices named `HEATER`. When the Air Conditioner named `AC_HEATER` has Mode
-`1`, the named pipe heaters turn on. When it returns to Mode `0`, they turn
-off.
+that holds the IC10 chip, then mirrors that state to the pipe heater selected
+on IC pin `d0`. Before writing, it checks that the heater's `NameHash` equals
+`HASH("HEATER")`. When the Air Conditioner named `AC_HEATER` has Mode `1`, the
+heater turns on. When it returns to Mode `0`, the heater turns off.
 
 This is useful when another controller already changes the Air Conditioner
 between Idle and Active, and you want pipe heaters to follow that same control
@@ -23,22 +23,24 @@ in-game device labels exactly.
 | Label | Device |
 | --- | --- |
 | `AC_HEATER` | Air Conditioner that holds the IC10 chip. |
-| `HEATER` | One or more pipe heaters targeted by name hash. |
+| `HEATER` | Pipe heater selected on IC pin `d0`, validated by name hash. |
 
 ## Installation
 
 1. Put the IC10 chip running `AC_HEATER.ic10` in the Air Conditioner named
    `AC_HEATER`.
-2. Name each target `StructurePipeHeater` exactly `HEATER`.
-3. Connect the Air Conditioner and named pipe heaters to the same data network.
-4. Keep the Air Conditioner and pipe heaters powered.
+2. Name the target `StructurePipeHeater` exactly `HEATER`.
+3. Use the IC pin selector to set `d0` to that pipe heater.
+4. Keep the Air Conditioner and pipe heater powered.
 
-The script reads the Air Conditioner through `db` and writes pipe heaters by
-direct prefab hash plus the direct `HEATER` name hash:
+The script reads the Air Conditioner through `db`, validates the heater name
+hash through `d0`, and writes the heater through that pin:
 
 ```ic10
 l acMode db Mode
-sbn HASH("StructurePipeHeater") HASH("HEATER") On heaterOn
+l heaterName heater NameHash
+bne heaterName HEATER_NAME wait
+s heater On heaterOn
 ```
 
 ## Mode Behavior
@@ -55,11 +57,11 @@ Air Conditioner mode.
 
 ## Notes
 
-- The write uses `HASH("HEATER")` directly in the `sbn` command.
-- The write targets only `StructurePipeHeater` devices named `HEATER`.
+- `HEATER_NAME` is defined as `HASH("HEATER")` in the script.
+- The script skips the write if `d0` is not named `HEATER`.
 - Use one Air Conditioner named `AC_HEATER` for predictable behavior.
 - The IC loop uses `yield`, so it checks every tick without a long sleep.
 
 ## Files
 
-- `AC_HEATER.ic10` - name/hash script for AC mode to pipe heater control.
+- `AC_HEATER.ic10` - pin script with HEATER name-hash validation.
