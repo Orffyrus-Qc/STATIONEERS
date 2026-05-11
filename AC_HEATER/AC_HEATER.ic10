@@ -21,6 +21,7 @@ define MODE_MAX 1
 alias acMode r0
 alias heaterOn r1
 alias lastOn r2
+alias heaterId r3
 
 init:
 # EN: -1 forces one write after boot to match the current AC mode.
@@ -42,7 +43,14 @@ move heaterOn acMode
 # EN: Write only when the requested state changes.
 # FR: Ecrire seulement quand l'etat demande change.
 beq heaterOn lastOn wait
-sbn HEATER_TYPE HEATER_NAME On heaterOn
+
+# EN: Find the named heater and skip if missing or not writable.
+# FR: Trouver le chauffage nomme et ignorer s'il manque ou est invalide.
+lbn heaterId HEATER_TYPE HEATER_NAME ReferenceId Maximum
+bnan heaterId wait
+ble heaterId ninf wait
+bdnvs heaterId On wait
+s heaterId On heaterOn
 move lastOn heaterOn
 
 wait:
