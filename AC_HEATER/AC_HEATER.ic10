@@ -6,11 +6,6 @@
 # EN: Mode 0 Idle turns the heaters off.
 # FR: Le Mode 0 Idle eteint les chauffages.
 
-# EN: Device prefab hash and heater label/name hash.
-# FR: Hash du prefab et hash du nom/etiquette du chauffage.
-define PIPE_HEATER HASH("StructurePipeHeater")
-define HEATER HASH("HEATER")
-
 # EN: Air Conditioner modes used by this script.
 # FR: Modes du climatiseur utilises par ce script.
 define MODE_MIN 0
@@ -42,7 +37,7 @@ move heaterOn acMode
 # EN: Write only when the requested state changes.
 # FR: Ecrire seulement quand l'etat demande change.
 beq heaterOn lastOn wait
-sbn PIPE_HEATER HEATER On heaterOn
+sbn HASH("StructurePipeHeater") HASH("HEATER") On heaterOn
 move lastOn heaterOn
 
 wait:
