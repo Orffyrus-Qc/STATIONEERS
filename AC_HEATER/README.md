@@ -34,11 +34,11 @@ in-game device labels exactly.
 4. Keep the Air Conditioner and pipe heaters powered.
 
 The script reads the Air Conditioner through `db` and writes pipe heaters by
-prefab hash plus the `HEATER` name hash:
+direct prefab hash plus the direct `HEATER` name hash:
 
 ```ic10
 l acMode db Mode
-sbn PIPE_HEATER HEATER On heaterOn
+sbn HASH("StructurePipeHeater") HASH("HEATER") On heaterOn
 ```
 
 ## Mode Behavior
@@ -55,7 +55,7 @@ Air Conditioner mode.
 
 ## Notes
 
-- `HEATER` is defined as `HASH("HEATER")` in the script.
+- The write uses `HASH("HEATER")` directly in the `sbn` command.
 - The write targets only `StructurePipeHeater` devices named `HEATER`.
 - Use one Air Conditioner named `AC_HEATER` for predictable behavior.
 - The IC loop uses `yield`, so it checks every tick without a long sleep.
