@@ -72,8 +72,8 @@ AC mode behavior.
 
 The `AC_HEATER/` folder contains an IC10 script that uses a named Air
 Conditioner's integer Mode as the control state for pipe heaters. When the
-`AC_HEATER` StructureAirConditioner Mode is `1`, the `HEATER`
-StructurePipeHeater turns on; when Mode is `0`, the heater turns off.
+`AC_HEATER` StructureAirConditioner Mode is `1`, all StructurePipeHeater
+devices on the same data network turn on; when Mode is `0`, they turn off.
 
 See `AC_HEATER/README.md` for labels, mode behavior, and setup notes.
 
