@@ -1,14 +1,14 @@
 # AC_HEATER.ic10
 # EN: Put this IC10 chip in the Air Conditioner named AC_HEATER.
 # FR: Mettre cette puce IC10 dans le climatiseur nomme AC_HEATER.
-# EN: It follows AC Mode 1 Active and drives pipe heaters named HEATER.
-# FR: Il suit le Mode 1 Actif et controle les chauffages nommes HEATER.
+# EN: It follows AC Mode 1 Active and drives the d0 heater named HEATER.
+# FR: Il suit le Mode 1 Actif et controle le chauffage d0 nomme HEATER.
 # EN: Mode 0 Idle turns the heaters off.
 # FR: Le Mode 0 Idle eteint les chauffages.
 
-# EN: HEATER is the StructurePipeHeater prefab hash.
-# FR: HEATER est le hash prefab StructurePipeHeater.
-define HEATER HASH("StructurePipeHeater")
+# EN: Set IC pin d0 to the StructurePipeHeater named HEATER.
+# FR: Regler la broche IC d0 au StructurePipeHeater nomme HEATER.
+alias HEATER d0
 
 # EN: Air Conditioner modes used by this script.
 # FR: Modes du climatiseur utilises par ce script.
@@ -41,7 +41,9 @@ move heaterOn acMode
 # EN: Write only when the requested state changes.
 # FR: Ecrire seulement quand l'etat demande change.
 beq heaterOn lastOn wait
-sb HEATER On heaterOn
+bdns HEATER wait
+bdnvs HEATER On wait
+s HEATER On heaterOn
 move lastOn heaterOn
 
 wait:
