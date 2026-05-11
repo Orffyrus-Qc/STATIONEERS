@@ -1,15 +1,13 @@
 # AC_HEATER.ic10
-# EN: Put this IC10 chip in the Air Conditioner named AC_HEATER.
-# FR: Mettre cette puce IC10 dans le climatiseur nomme AC_HEATER.
+# EN: Put this IC10 chip in the Air Conditioner to watch.
+# FR: Mettre cette puce IC10 dans le climatiseur a surveiller.
 # EN: It follows AC Mode 1 Active and drives pipe heaters named HEATER.
 # FR: Il suit le Mode 1 Actif et controle les chauffages nommes HEATER.
 # EN: Mode 0 Idle turns the heaters off.
 # FR: Le Mode 0 Idle eteint les chauffages.
 
-# EN: Device prefab hashes and label/name hashes.
-# FR: Hashes des prefabs et hashes des noms/etiquettes.
-define AC_TYPE HASH("StructureAirConditioner")
-define AC_NAME HASH("AC_HEATER")
+# EN: Pipe heater prefab hash and label/name hash.
+# FR: Hash du prefab et du nom/etiquette du chauffage.
 define HEATER_TYPE HASH("StructurePipeHeater")
 define HEATER_NAME HASH("HEATER")
 
@@ -29,9 +27,9 @@ init:
 move lastOn -1
 
 main:
-# EN: Read the named Air Conditioner Mode by prefab and name hash.
-# FR: Lire le Mode du climatiseur nomme par hash de prefab et de nom.
-lbn acMode AC_TYPE AC_NAME Mode Maximum
+# EN: Read Mode from the Air Conditioner holding this IC chip.
+# FR: Lire le Mode du climatiseur qui contient cette puce IC.
+l acMode db Mode
 
 # EN: Heater is on only while the AC Mode is Active.
 # FR: Le chauffage est allume seulement quand le Mode AC est Actif.
