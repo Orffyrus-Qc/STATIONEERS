@@ -6,10 +6,8 @@
 # EN: Mode 0 Idle turns the heaters off.
 # FR: Le Mode 0 Idle eteint les chauffages.
 
-# EN: Device prefab hashes and label/name hashes.
-# FR: Hashes des prefabs et hashes des noms/etiquettes.
-define AC_TYPE HASH("StructureAirConditioner")
-define AC_NAME HASH("AC_HEATER")
+# EN: Pipe heater prefab and label/name hash.
+# FR: Prefab du chauffage et hash du nom/etiquette.
 define HEATER_TYPE HASH("StructurePipeHeater")
 define HEATER_NAME HASH("HEATER")
 
@@ -30,9 +28,9 @@ init:
 move lastOn -1
 
 main:
-# EN: Read the named Air Conditioner Mode by prefab and name hash.
-# FR: Lire le Mode du climatiseur nomme par hash de prefab et de nom.
-lbn acMode AC_TYPE AC_NAME Mode Maximum
+# EN: Read Mode from the Air Conditioner holding this IC chip.
+# FR: Lire le Mode du climatiseur qui contient cette puce IC.
+l acMode db Mode
 
 # EN: Force AC Mode to an integer 0-1 before using it as heater state.
 # FR: Forcer le Mode AC en entier 0-1 avant de l'utiliser comme etat.
