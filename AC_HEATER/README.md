@@ -5,11 +5,11 @@ heater enable signal.
 
 ## Purpose
 
-`AC_HEATER.ic10` watches the `Mode` of a named `StructureAirConditioner` and
-mirrors that state to every named `StructurePipeHeater` on the data network.
-When the Air Conditioner named `AC_HEATER` is Active, all pipe heaters named
-`HEATER` turn on. When the Air Conditioner returns to Idle, the heaters turn
-off.
+`AC_HEATER.ic10` watches the integer `Mode` of a named
+`StructureAirConditioner` and mirrors that state to every named
+`StructurePipeHeater` on the data network. When the Air Conditioner named
+`AC_HEATER` has Mode `1`, all pipe heaters named `HEATER` turn on. When the
+Air Conditioner returns to Mode `0`, the heaters turn off.
 
 This is useful when another controller already changes the Air Conditioner
 between Idle and Active, and you want pipe heaters to follow that same control
@@ -48,8 +48,10 @@ sbn HEATER_TYPE HEATER_NAME On heaterOn
 | `0` | Idle | Off |
 | `1` | Active | On |
 
-The script writes to the heaters only when the requested state changes. On boot,
-it forces one write so the heaters match the current Air Conditioner mode.
+The script rounds and clamps Air Conditioner `Mode` to an integer `0` or `1`
+before writing that value to the heaters. It writes only when the requested
+state changes. On boot, it forces one write so the heaters match the current
+Air Conditioner mode.
 
 ## Notes
 
