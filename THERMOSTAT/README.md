@@ -62,9 +62,9 @@ move hyst 1.0
 
 With the defaults, heating starts below target minus 1 C, cooling starts above target plus 1 C, and both outputs stay idle inside the deadband.
 
-Pipe heaters also have a high-temperature safety cutoff. The named
-`HEATING_PIPE` pipe analyzer turns pipe heaters off above 1000 C and lets them
-turn on again below 900 C.
+All `HEATING` outputs also have a high-temperature safety cutoff. The named
+`HEATING_PIPE` pipe analyzer turns heating off above 1000 C and lets it turn on
+again below 900 C.
 
 ## Enable/Disable Options
 

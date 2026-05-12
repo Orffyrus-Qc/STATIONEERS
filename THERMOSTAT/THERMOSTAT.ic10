@@ -110,11 +110,11 @@ pipeCool:
 pipeWrite:
     mul tmp heatOn pipeSafe
     sbn pipeHeater heatName On tmp
-    sbn pump heatName On heatOn
-    sbn turboPump heatName On heatOn
-    sbn activeVent heatName On heatOn
-    sbn largeVent heatName On heatOn
-    sbn airConditioner heatName Mode heatOn
+    sbn pump heatName On tmp
+    sbn turboPump heatName On tmp
+    sbn activeVent heatName On tmp
+    sbn largeVent heatName On tmp
+    sbn airConditioner heatName Mode tmp
     sbn pump coolName On coolOn
     sbn turboPump coolName On coolOn
     sbn activeVent coolName On coolOn
