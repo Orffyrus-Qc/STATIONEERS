@@ -8,8 +8,8 @@ define hotValveName HASH("HOT_DIGITAL_VALVE")
 define coldName     HASH("COLD_DIGITAL_VALVE")
 define upName       HASH("+")
 define downName     HASH("-")
-define minTemp      10
-define maxTemp      35
+define minTemp      -59
+define maxTemp      59
 define kelvin       273.15
 define showTime     4
 define pressLock    2
