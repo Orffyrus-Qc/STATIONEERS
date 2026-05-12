@@ -4,7 +4,7 @@ define turboPump      HASH("StructureTurboVolumePump")
 define activeVent     HASH("StructureActiveVent")
 define largeVent      HASH("StructurePoweredVentLarge")
 define airConditioner HASH("StructureAirConditioner")
-define analyzerName   HASH("ANALYZER")
+define analyzerName   HASH("COOLING_ANALYZER")
 define loopPumpName   HASH("COOLING_LOOP_PUMP")
 define coolName       HASH("COOLING")
 define coldMinK       173.15

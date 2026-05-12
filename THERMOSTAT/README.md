@@ -51,7 +51,7 @@ Required labels:
 
 | Label | Device type | Purpose |
 | --- | --- | --- |
-| `ANALYZER` | `StructurePipeAnalysizer` | Hot loop temperature input. |
+| `HEATING_ANALYZER` | `StructurePipeAnalysizer` | Hot loop temperature input. |
 | `HEATING_LOOP_PUMP` | `StructureTurboVolumePump` | Hot loop circulation. |
 | `HEATING` | Heating output devices | Hot loop heat source group. |
 | `COOLING` | Cooling output devices | Hot loop cooling group. |
@@ -76,7 +76,7 @@ Required labels:
 
 | Label | Device type | Purpose |
 | --- | --- | --- |
-| `ANALYZER` | `StructurePipeAnalysizer` | Cold loop temperature input. |
+| `COOLING_ANALYZER` | `StructurePipeAnalysizer` | Cold loop temperature input. |
 | `COOLING_LOOP_PUMP` | `StructureTurboVolumePump` | Cold loop circulation. |
 | `COOLING` | Cooling output devices | Cold loop cooling group. |
 
