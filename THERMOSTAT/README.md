@@ -32,8 +32,8 @@ Required labels:
 Default values:
 
 ```ic10
-define minTemp 10
-define maxTemp 35
+define minTemp -59
+define maxTemp 59
 move target 22
 move hyst 1.0
 ```
