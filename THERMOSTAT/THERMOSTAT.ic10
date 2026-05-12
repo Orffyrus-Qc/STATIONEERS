@@ -38,9 +38,13 @@ init:
     sb display On 1
     sb display Mode 0        # 0 = plain number (best for temperature)
     add tmp maxTemp kelvin
+    sbn airConditioner heatName On 1
     sbn airConditioner heatName Setting tmp
+    sbn airConditioner heatName Mode 0
     add tmp minTemp kelvin
+    sbn airConditioner coolName On 1
     sbn airConditioner coolName Setting tmp
+    sbn airConditioner coolName Mode 0
 
 main:
     # Read current temperature in C
@@ -124,13 +128,11 @@ writeOutputs:
     sbn turboPump heatName On heatOn
     sbn activeVent heatName On heatOn
     sbn largeVent heatName On heatOn
-    sbn airConditioner heatName On heatOn
     sbn airConditioner heatName Mode heatOn
 
     sbn turboPump coolName On coolOn
     sbn activeVent coolName On coolOn
     sbn largeVent coolName On coolOn
-    sbn airConditioner coolName On coolOn
     sbn airConditioner coolName Mode coolOn
 
 end:

@@ -82,7 +82,7 @@ Set either value to `0` to keep that side off while the rest of the thermostat c
 
 ## Air Conditioner Notes
 
-Named air conditioners are powered on and switched to active mode only when their side is running:
+Named air conditioners are powered on once at boot and then switched between idle and active with `Mode`:
 
 ```ic10
 sbn airConditioner coolName Mode 0  # idle
@@ -90,6 +90,8 @@ sbn airConditioner coolName Mode 1  # active
 ```
 
 The script sets cooling air conditioners to `minTemp + 273.15` and heating air conditioners to `maxTemp + 273.15`, because the AC setting is stored in kelvin.
+
+Other heating/cooling device types are controlled with `On 0` and `On 1`.
 
 ## Display Behavior
 
