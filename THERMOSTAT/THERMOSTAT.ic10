@@ -1,18 +1,20 @@
-define sensor   HASH("StructureGasSensor")
-define display  HASH("ModularDeviceLEDdisplay2")
-define button   HASH("ModularDeviceUtilityButton2x2")
-define heater   HASH("StructurePipeHeater")
-define cooler   HASH("StructureAirConditioner")
-
-define upName   HASH("+")
-define downName HASH("-")
-
-define minTemp  10
-define maxTemp  35
-define kelvin   273.15
-define showTime 4
-define pressLock 2
-
+define sensor       HASH("StructureGasSensor")
+define display      HASH("ModularDeviceLEDdisplay2")
+define button       HASH("ModularDeviceUtilityButton2x2")
+define valve        HASH("StructureDigitalValve")
+define sensorName   HASH("SENSOR")
+define displayName  HASH("DISPLAY")
+define hotValveName HASH("HOT_DIGITAL_VALVE")
+define coldName     HASH("COLD_DIGITAL_VALVE")
+define upName       HASH("+")
+define downName     HASH("-")
+define minTemp      -59
+define maxTemp      59
+define kelvin       273.15
+define showTime     4
+define pressLock    2
+define enableHeat   1
+define enableCool   1
 alias target   r0
 alias curr     r1
 alias timer    r2
@@ -20,26 +22,18 @@ alias upLock   r3
 alias downLock r4
 alias tmp      r5
 alias hyst     r6
-
+alias heatOn   r7
+alias coolOn   r8
 init:
     move target 22
-    move hyst 1.0           # hysteresis (deadband), change to 0.5 or 2.0 if you want
-    add tmp minTemp kelvin
-    sb display On 1
-    sb display Mode 0        # 0 = plain number (best for temperature)
-    sb heater On 0
-    sb cooler On 1
-    sb cooler Setting tmp
-    sb cooler Mode 0
-
+    move hyst 1.0
+    sbn display displayName On 1
+    sbn display displayName Mode 0
 main:
-    # Read current temperature in C
-    lb curr sensor Temperature Average
-    sub curr curr 273.15
+    lbn curr sensor sensorName Temperature Average
+    sub curr curr kelvin
     sub upLock upLock 1
     sub downLock downLock 1
-
-    # === Increase button (+ ) ===
     lbn tmp button upName Activate Sum
     blt tmp 0.5 upReleased
     move timer showTime
@@ -50,8 +44,6 @@ main:
 upReleased:
     move upLock 0
 noUp:
-
-    # === Decrease button (- ) ===
     lbn tmp button downName Activate Sum
     blt tmp 0.5 downReleased
     move timer showTime
@@ -62,57 +54,36 @@ noUp:
 downReleased:
     move downLock 0
 noDown:
-
-    # Clamp target 10-35 C
-    blt target minTemp clampMin
-    bgt target maxTemp clampMax
-    j show
-clampMin:
-    move target minTemp
-    j show
-clampMax:
-    move target maxTemp
+    max target target minTemp
+    min target target maxTemp
 
 show:
-    sb display On 1
-
-    # Show target temperature while the button timer is active
     bgt timer 0 showTarget
-
-    # Normal display: current temperature
     round tmp curr
-    sb display Setting tmp
+    sbn display displayName Setting tmp
     j control
 
 showTarget:
     round tmp target
-    sb display Setting tmp
+    sbn display displayName Setting tmp
     sub timer timer 1
-
 control:
-    # Heater / Cooler logic with hysteresis
+    move heatOn 0
+    move coolOn 0
     sub tmp target hyst
     blt curr tmp doHeat
-
     add tmp target hyst
     bgt curr tmp doCool
-
-    # In deadband, both off
-    sb heater On 0
-    sb cooler Mode 0
-    j end
+    j writeValves
 
 doHeat:
-    sb heater On 1
-    sb cooler Mode 0
-    j end
-
+    move heatOn enableHeat
+    j writeValves
 doCool:
-    sb heater On 0
-    sb cooler On 1
-    sb cooler Mode 1
-    j end
-
+    move coolOn enableCool
+writeValves:
+    sbn valve hotValveName On heatOn
+    sbn valve coldName On coolOn
 end:
     yield
     j main

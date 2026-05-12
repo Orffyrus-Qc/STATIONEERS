@@ -1,77 +1,88 @@
-# Thermostat Controller
+# Multi-Room Temperature Control
 
-The `THERMOSTAT.ic10` script is a room temperature controller for Stationeers. It reads the average temperature from gas sensors, shows the current or target temperature on an LED display, adjusts the target with named buttons, and controls pipe heaters plus air conditioners with a hysteresis deadband.
+This folder contains a split IC10 temperature-control system for multiple
+rooms. Each room gets its own thermostat IC made from modular console parts.
+Separate loop-controller ICs maintain the shared hot and cold pipe loops.
 
 ## Files
 
-- `THERMOSTAT.ic10` - hash-based IC10 thermostat script.
+- `THERMOSTAT.ic10` - per-room thermostat and radiator valve controller.
+- `HEATING_LOOP.ic10` - hot closed-loop pipe controller.
+- `COOLING_LOOP.ic10` - cold closed-loop pipe controller.
 
-## Required Devices
+Each `.ic10` file is kept under 128 lines and 90 characters per line.
 
-The script uses prefab hashes, so the devices only need to be on the IC network. It does not require fixed `d0`, `d1`, or other pin assignments for the main devices.
+## Room Thermostat IC
 
-Device hashes used by the script:
+The room thermostat reads a named room gas sensor, displays the current or
+target temperature, and opens one radiator valve when the room needs heating or
+cooling.
 
-- `StructureGasSensor` - temperature input. Multiple sensors are averaged.
-- `ModularDeviceLEDdisplay2` - shows current or target temperature.
-- `ModularDeviceUtilityButton2x2` - target temperature up/down buttons.
-- `StructurePipeHeater` - heating output.
-- `StructureAirConditioner` - cooling output.
+Required labels:
 
-## Required Button Names
+| Label | Device type | Purpose |
+| --- | --- | --- |
+| `SENSOR` | `StructureGasSensor` | Room temperature input. |
+| `DISPLAY` | `ModularDeviceLEDdisplay2` | Temperature display. |
+| `+` | `ModularDeviceUtilityButton2x2` | Increase target by 1 C. |
+| `-` | `ModularDeviceUtilityButton2x2` | Decrease target by 1 C. |
+| `HOT_DIGITAL_VALVE` | `StructureDigitalValve` | Hot radiator valve. |
+| `COLD_DIGITAL_VALVE` | `StructureDigitalValve` | Cold radiator valve. |
 
-Both buttons use the same prefab hash, so the script identifies them by name. Rename the two utility buttons in-game exactly:
-
-```text
-+
--
-```
-
-`+` increases the target by 1 C. `-` decreases it by 1 C.
-
-## Temperature Behavior
-
-Default values near the top of the script:
+Default values:
 
 ```ic10
-define minTemp  10
-define maxTemp  35
-```
-
-The target temperature is clamped between `minTemp` and `maxTemp`. The default target at boot is 22 C.
-
-The script uses this hysteresis value:
-
-```ic10
+define minTemp -59
+define maxTemp 59
+move target 22
 move hyst 1.0
 ```
 
-With the defaults, heating starts below target minus 1 C, cooling starts above target plus 1 C, and both outputs stay idle inside the deadband.
+Heating demand opens `HOT_DIGITAL_VALVE`. Cooling demand opens
+`COLD_DIGITAL_VALVE`. Both valves stay closed inside the deadband.
 
-## Air Conditioner Notes
+## Heating Loop IC
 
-The air conditioner is left powered with `On 1`, then started and stopped with `Mode`:
+The heating loop IC keeps the hot closed pipe loop circulating with a turbo pump
+named `HEATING_LOOP_PUMP`. It controls the devices named `HEATING` on that loop
+from the named pipe analyzer.
 
-```ic10
-sb cooler Mode 0  # idle
-sb cooler Mode 1  # active
-```
+Required labels:
 
-The script also sets the air conditioner's `Setting` to `minTemp + 273.15`, because the AC setting is stored in kelvin. With the default `minTemp` of 10 C, the AC setting is written as 283.15 K.
+| Label | Device type | Purpose |
+| --- | --- | --- |
+| `HEATING_ANALYZER` | `StructurePipeAnalysizer` | Hot loop temperature input. |
+| `HEATING_LOOP_PUMP` | `StructureTurboVolumePump` | Hot loop circulation. |
+| `HEATING` | Heating output devices | Hot loop heat source group. |
 
-## Display Behavior
+Supported `HEATING` outputs are `StructurePipeHeater`, `StructureVolumePump`,
+`StructureTurboVolumePump`, `StructureActiveVent`, `StructurePoweredVentLarge`,
+and `StructureAirConditioner`.
 
-Normally the LED display shows the rounded current temperature in Celsius. Pressing either target button shows the rounded target temperature and refreshes the display timer.
+The hot loop turns `HEATING` off above 1000 C. It turns `HEATING` back on below
+900 C.
 
-Button presses use a short `pressLock` timer instead of a strict previous-state edge check. If the IC samples the button release, the lock resets immediately. If it misses the release, the lock expires on its own, which makes repeated taps more reliable.
+## Cooling Loop IC
 
-## Customization
+The cooling loop IC keeps the cold pipe loop circulating with a turbo pump named
+`COOLING_LOOP_PUMP`. It controls the devices named `COOLING` on that loop from
+the named pipe analyzer.
 
-Change these values in `THERMOSTAT.ic10` to tune the behavior:
+Required labels:
 
-- `minTemp` - minimum target temperature and AC setpoint floor.
-- `maxTemp` - maximum target temperature.
-- `showTime` - target-display timer value refreshed by button presses.
-- `pressLock` - short lockout after each accepted button press.
-- `move target 22` - boot target temperature.
-- `move hyst 1.0` - heating/cooling deadband size.
+| Label | Device type | Purpose |
+| --- | --- | --- |
+| `COOLING_ANALYZER` | `StructurePipeAnalysizer` | Cold loop temperature input. |
+| `COOLING_LOOP_PUMP` | `StructureTurboVolumePump` | Cold loop circulation. |
+| `COOLING` | Cooling output devices | Cold loop cooling group. |
+
+Supported `COOLING` outputs are `StructureVolumePump`, `StructureTurboVolumePump`,
+`StructureActiveVent`, `StructurePoweredVentLarge`, and `StructureAirConditioner`.
+
+The cold loop turns `COOLING` off below -100 C. It turns `COOLING` back on above
+-90 C.
+
+## Control Notes
+
+Air conditioners are powered on once at boot and controlled with `Mode 0` or
+`Mode 1`. Other supported output devices use `On 0` or `On 1`.
