@@ -2,6 +2,7 @@ define sensor         HASH("StructureGasSensor")
 define display        HASH("ModularDeviceLEDdisplay2")
 define button         HASH("ModularDeviceUtilityButton2x2")
 define pipeAnalyzer   HASH("StructurePipeAnalysizer")
+define sensorName     HASH("SENSOR")
 define displayName    HASH("DISPLAY")
 define heatName       HASH("HEATING")
 define coolName       HASH("COOLING")
@@ -46,7 +47,7 @@ init:
     sbn airConditioner coolName On 1
     sbn airConditioner coolName Setting tmp
 main:
-    lb curr sensor Temperature Average
+    lbn curr sensor sensorName Temperature Average
     sub curr curr kelvin
     sub upLock upLock 1
     sub downLock downLock 1

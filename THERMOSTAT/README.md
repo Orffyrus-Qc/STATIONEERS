@@ -12,7 +12,7 @@ The script uses prefab hashes, so the devices only need to be on the IC network.
 
 Device hashes used by the script:
 
-- `StructureGasSensor` - temperature input. Multiple sensors are averaged.
+- `StructureGasSensor` - temperature input. Multiple named sensors are averaged.
 - `ModularDeviceLEDdisplay2` - shows current or target temperature.
 - `ModularDeviceUtilityButton2x2` - target temperature up/down buttons.
 - `StructurePipeAnalysizer` - pipe temperature input for heater cutoff.
@@ -29,6 +29,7 @@ All labels are case-sensitive. Rename devices in-game as follows:
 
 | Label | Device types | Purpose |
 | --- | --- | --- |
+| `SENSOR` | `StructureGasSensor` | Room temperature input. |
 | `DISPLAY` | `ModularDeviceLEDdisplay2` | Temperature display. |
 | `+` | `ModularDeviceUtilityButton2x2` | Increase target by 1 C. |
 | `-` | `ModularDeviceUtilityButton2x2` | Decrease target by 1 C. |
