@@ -15,6 +15,7 @@ Device hashes used by the script:
 - `StructureGasSensor` - temperature input. Multiple sensors are averaged.
 - `ModularDeviceLEDdisplay2` - shows current or target temperature.
 - `ModularDeviceUtilityButton2x2` - target temperature up/down buttons.
+- `StructurePipeAnalysizer` - pipe temperature input for heater cutoff.
 - `StructurePipeHeater` - heating output.
 - `StructureVolumePump` - heating or cooling output.
 - `StructureTurboVolumePump` - heating or cooling output.
@@ -22,34 +23,25 @@ Device hashes used by the script:
 - `StructurePoweredVentLarge` - heating or cooling output.
 - `StructureAirConditioner` - heating or cooling output.
 
-## Required Output Names
+## Required Labels
 
-Rename heating output devices exactly:
+All labels are case-sensitive. Rename devices in-game as follows:
 
-```text
-HEATING
-```
+| Label | Device types | Purpose |
+| --- | --- | --- |
+| `DISPLAY` | `ModularDeviceLEDdisplay2` | Temperature display. |
+| `+` | `ModularDeviceUtilityButton2x2` | Increase target by 1 C. |
+| `-` | `ModularDeviceUtilityButton2x2` | Decrease target by 1 C. |
+| `HEATING_PIPE` | `StructurePipeAnalysizer` | Pipe heater safety temperature. |
+| `HEATING` | Heating output devices | Heating control group. |
+| `COOLING` | Cooling output devices | Cooling control group. |
 
-Supported heating outputs are `StructurePipeHeater`, `StructureVolumePump`, `StructureTurboVolumePump`, `StructureActiveVent`, `StructurePoweredVentLarge`, and `StructureAirConditioner`.
+Supported `HEATING` outputs are `StructurePipeHeater`, `StructureVolumePump`,
+`StructureTurboVolumePump`, `StructureActiveVent`, `StructurePoweredVentLarge`,
+and `StructureAirConditioner`.
 
-Rename cooling output devices exactly:
-
-```text
-COOLING
-```
-
-Supported cooling outputs are `StructureVolumePump`, `StructureTurboVolumePump`, `StructureActiveVent`, `StructurePoweredVentLarge`, and `StructureAirConditioner`.
-
-## Required Button Names
-
-Both buttons use the same prefab hash, so the script identifies them by name. Rename the two utility buttons in-game exactly:
-
-```text
-+
--
-```
-
-`+` increases the target by 1 C. `-` decreases it by 1 C.
+Supported `COOLING` outputs are `StructureVolumePump`, `StructureTurboVolumePump`,
+`StructureActiveVent`, `StructurePoweredVentLarge`, and `StructureAirConditioner`.
 
 ## Temperature Behavior
 
@@ -69,6 +61,10 @@ move hyst 1.0
 ```
 
 With the defaults, heating starts below target minus 1 C, cooling starts above target plus 1 C, and both outputs stay idle inside the deadband.
+
+Pipe heaters also have a high-temperature safety cutoff. The named
+`HEATING_PIPE` pipe analyzer turns pipe heaters off above 1000 C and lets them
+turn on again below 900 C.
 
 ## Enable/Disable Options
 

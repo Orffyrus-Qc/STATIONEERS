@@ -1,8 +1,11 @@
 define sensor         HASH("StructureGasSensor")
 define display        HASH("ModularDeviceLEDdisplay2")
 define button         HASH("ModularDeviceUtilityButton2x2")
+define pipeAnalyzer   HASH("StructurePipeAnalysizer")
+define displayName    HASH("DISPLAY")
 define heatName       HASH("HEATING")
 define coolName       HASH("COOLING")
+define pipeName       HASH("HEATING_PIPE")
 define pipeHeater     HASH("StructurePipeHeater")
 define pump           HASH("StructureVolumePump")
 define turboPump      HASH("StructureTurboVolumePump")
@@ -18,6 +21,8 @@ define showTime 4
 define pressLock 2
 define enableHeating 1
 define enableCooling 1
+define pipeMaxK 1273.15
+define pipeResetK 1173.15
 alias target   r0
 alias curr     r1
 alias timer    r2
@@ -27,27 +32,24 @@ alias tmp      r5
 alias hyst     r6
 alias heatOn   r7
 alias coolOn   r8
+alias pipeSafe r9
 init:
     move target 22
-    move hyst 1.0           # hysteresis (deadband), change to 0.5 or 2.0 if you want
-    sb display On 1
-    sb display Mode 0        # 0 = plain number (best for temperature)
+    move hyst 1.0
+    move pipeSafe 1
+    sbn display displayName On 1
+    sbn display displayName Mode 0
     add tmp maxTemp kelvin
     sbn airConditioner heatName On 1
     sbn airConditioner heatName Setting tmp
-    sbn airConditioner heatName Mode 0
     add tmp minTemp kelvin
     sbn airConditioner coolName On 1
     sbn airConditioner coolName Setting tmp
-    sbn airConditioner coolName Mode 0
 main:
-    # Read current temperature in C
     lb curr sensor Temperature Average
-    sub curr curr 273.15
+    sub curr curr kelvin
     sub upLock upLock 1
     sub downLock downLock 1
-
-    # === Increase button (+ ) ===
     lbn tmp button upName Activate Sum
     blt tmp 0.5 upReleased
     move timer showTime
@@ -58,7 +60,6 @@ main:
 upReleased:
     move upLock 0
 noUp:
-    # === Decrease button (- ) ===
     lbn tmp button downName Activate Sum
     blt tmp 0.5 downReleased
     move timer showTime
@@ -69,31 +70,20 @@ noUp:
 downReleased:
     move downLock 0
 noDown:
-    # Clamp target 10-35 C
-    blt target minTemp clampMin
-    bgt target maxTemp clampMax
-    j show
-clampMin:
-    move target minTemp
-    j show
-clampMax:
-    move target maxTemp
+    max target target minTemp
+    min target target maxTemp
 
 show:
-    sb display On 1
-    # Show target temperature while the button timer is active
     bgt timer 0 showTarget
-    # Normal display: current temperature
     round tmp curr
-    sb display Setting tmp
+    sbn display displayName Setting tmp
     j control
 
 showTarget:
     round tmp target
-    sb display Setting tmp
+    sbn display displayName Setting tmp
     sub timer timer 1
 control:
-    # Heater / Cooler logic with hysteresis
     move heatOn 0
     move coolOn 0
     sub tmp target hyst
@@ -108,7 +98,18 @@ doHeat:
 doCool:
     move coolOn enableCooling
 writeOutputs:
-    sbn pipeHeater heatName On heatOn
+    lbn tmp pipeAnalyzer pipeName Temperature Average
+    bgt tmp pipeMaxK pipeHot
+    blt tmp pipeResetK pipeCool
+    j pipeWrite
+pipeHot:
+    move pipeSafe 0
+    j pipeWrite
+pipeCool:
+    move pipeSafe 1
+pipeWrite:
+    mul tmp heatOn pipeSafe
+    sbn pipeHeater heatName On tmp
     sbn pump heatName On heatOn
     sbn turboPump heatName On heatOn
     sbn activeVent heatName On heatOn
