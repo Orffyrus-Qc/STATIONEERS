@@ -1,6 +1,6 @@
 # Thermostat Controller
 
-The `THERMOSTAT.ic10` script is a room temperature controller for Stationeers. It reads the average temperature from gas sensors, shows the current or target temperature on an LED display, adjusts the target with named buttons, and controls pipe heaters plus air conditioners with a hysteresis deadband.
+The `THERMOSTAT.ic10` script is a room temperature controller for Stationeers. It reads the average temperature from gas sensors, shows the current or target temperature on an LED display, adjusts the target with named buttons, and controls named heating/cooling output groups with a hysteresis deadband.
 
 ## Files
 
@@ -8,7 +8,7 @@ The `THERMOSTAT.ic10` script is a room temperature controller for Stationeers. I
 
 ## Required Devices
 
-The script uses prefab hashes, so the devices only need to be on the IC network. It does not require fixed `d0`, `d1`, or other pin assignments for the main devices.
+The script uses prefab hashes, so the devices only need to be on the IC network. It does not require fixed `d0`, `d1`, or other pin assignments for the main devices. Heating and cooling outputs are separated by device name.
 
 Device hashes used by the script:
 
@@ -16,7 +16,28 @@ Device hashes used by the script:
 - `ModularDeviceLEDdisplay2` - shows current or target temperature.
 - `ModularDeviceUtilityButton2x2` - target temperature up/down buttons.
 - `StructurePipeHeater` - heating output.
-- `StructureAirConditioner` - cooling output.
+- `StructureTurboVolumePump` - heating or cooling output.
+- `StructureActiveVent` - heating or cooling output.
+- `StructurePoweredVentLarge` - heating or cooling output.
+- `StructureAirConditioner` - heating or cooling output.
+
+## Required Output Names
+
+Rename heating output devices exactly:
+
+```text
+HEATING
+```
+
+Supported heating outputs are `StructurePipeHeater`, `StructureTurboVolumePump`, `StructureActiveVent`, `StructurePoweredVentLarge`, and `StructureAirConditioner`.
+
+Rename cooling output devices exactly:
+
+```text
+COOLING
+```
+
+Supported cooling outputs are `StructureTurboVolumePump`, `StructureActiveVent`, `StructurePoweredVentLarge`, and `StructureAirConditioner`.
 
 ## Required Button Names
 
@@ -48,16 +69,27 @@ move hyst 1.0
 
 With the defaults, heating starts below target minus 1 C, cooling starts above target plus 1 C, and both outputs stay idle inside the deadband.
 
-## Air Conditioner Notes
+## Enable/Disable Options
 
-The air conditioner is left powered with `On 1`, then started and stopped with `Mode`:
+Heating and cooling can be disabled independently near the top of `THERMOSTAT.ic10`:
 
 ```ic10
-sb cooler Mode 0  # idle
-sb cooler Mode 1  # active
+define enableHeating 1
+define enableCooling 1
 ```
 
-The script also sets the air conditioner's `Setting` to `minTemp + 273.15`, because the AC setting is stored in kelvin. With the default `minTemp` of 10 C, the AC setting is written as 283.15 K.
+Set either value to `0` to keep that side off while the rest of the thermostat continues running.
+
+## Air Conditioner Notes
+
+Named air conditioners are powered on and switched to active mode only when their side is running:
+
+```ic10
+sbn airConditioner coolName Mode 0  # idle
+sbn airConditioner coolName Mode 1  # active
+```
+
+The script sets cooling air conditioners to `minTemp + 273.15` and heating air conditioners to `maxTemp + 273.15`, because the AC setting is stored in kelvin.
 
 ## Display Behavior
 
@@ -73,5 +105,7 @@ Change these values in `THERMOSTAT.ic10` to tune the behavior:
 - `maxTemp` - maximum target temperature.
 - `showTime` - target-display timer value refreshed by button presses.
 - `pressLock` - short lockout after each accepted button press.
+- `enableHeating` - set to `0` to disable heating outputs.
+- `enableCooling` - set to `0` to disable cooling outputs.
 - `move target 22` - boot target temperature.
 - `move hyst 1.0` - heating/cooling deadband size.
