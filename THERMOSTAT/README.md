@@ -44,8 +44,8 @@ Heating demand opens `HOT_DIGITAL_VALVE`. Cooling demand opens
 ## Heating Loop IC
 
 The heating loop IC keeps the hot closed pipe loop circulating with a turbo pump
-named `HEATING_LOOP_PUMP`. It controls the devices named `HEATING` and
-`COOLING` on that loop from the named pipe analyzer.
+named `HEATING_LOOP_PUMP`. It controls the devices named `HEATING` on that loop
+from the named pipe analyzer.
 
 Required labels:
 
@@ -54,17 +54,13 @@ Required labels:
 | `HEATING_ANALYZER` | `StructurePipeAnalysizer` | Hot loop temperature input. |
 | `HEATING_LOOP_PUMP` | `StructureTurboVolumePump` | Hot loop circulation. |
 | `HEATING` | Heating output devices | Hot loop heat source group. |
-| `COOLING` | Cooling output devices | Hot loop cooling group. |
 
 Supported `HEATING` outputs are `StructurePipeHeater`, `StructureVolumePump`,
 `StructureTurboVolumePump`, `StructureActiveVent`, `StructurePoweredVentLarge`,
 and `StructureAirConditioner`.
 
-Supported `COOLING` outputs are `StructureVolumePump`, `StructureTurboVolumePump`,
-`StructureActiveVent`, `StructurePoweredVentLarge`, and `StructureAirConditioner`.
-
-The hot loop turns `HEATING` off and `COOLING` on above 1000 C. It turns
-`HEATING` back on and `COOLING` off below 900 C.
+The hot loop turns `HEATING` off above 1000 C. It turns `HEATING` back on below
+900 C.
 
 ## Cooling Loop IC
 
