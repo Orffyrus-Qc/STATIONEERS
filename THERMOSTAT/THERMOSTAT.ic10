@@ -4,6 +4,7 @@ define button         HASH("ModularDeviceUtilityButton2x2")
 define heatName       HASH("HEATING")
 define coolName       HASH("COOLING")
 define pipeHeater     HASH("StructurePipeHeater")
+define pump           HASH("StructureVolumePump")
 define turboPump      HASH("StructureTurboVolumePump")
 define activeVent     HASH("StructureActiveVent")
 define largeVent      HASH("StructurePoweredVentLarge")
@@ -108,10 +109,12 @@ doCool:
     move coolOn enableCooling
 writeOutputs:
     sbn pipeHeater heatName On heatOn
+    sbn pump heatName On heatOn
     sbn turboPump heatName On heatOn
     sbn activeVent heatName On heatOn
     sbn largeVent heatName On heatOn
     sbn airConditioner heatName Mode heatOn
+    sbn pump coolName On coolOn
     sbn turboPump coolName On coolOn
     sbn activeVent coolName On coolOn
     sbn largeVent coolName On coolOn

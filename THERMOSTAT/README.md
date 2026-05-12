@@ -16,6 +16,7 @@ Device hashes used by the script:
 - `ModularDeviceLEDdisplay2` - shows current or target temperature.
 - `ModularDeviceUtilityButton2x2` - target temperature up/down buttons.
 - `StructurePipeHeater` - heating output.
+- `StructureVolumePump` - heating or cooling output.
 - `StructureTurboVolumePump` - heating or cooling output.
 - `StructureActiveVent` - heating or cooling output.
 - `StructurePoweredVentLarge` - heating or cooling output.
@@ -29,7 +30,7 @@ Rename heating output devices exactly:
 HEATING
 ```
 
-Supported heating outputs are `StructurePipeHeater`, `StructureTurboVolumePump`, `StructureActiveVent`, `StructurePoweredVentLarge`, and `StructureAirConditioner`.
+Supported heating outputs are `StructurePipeHeater`, `StructureVolumePump`, `StructureTurboVolumePump`, `StructureActiveVent`, `StructurePoweredVentLarge`, and `StructureAirConditioner`.
 
 Rename cooling output devices exactly:
 
@@ -37,7 +38,7 @@ Rename cooling output devices exactly:
 COOLING
 ```
 
-Supported cooling outputs are `StructureTurboVolumePump`, `StructureActiveVent`, `StructurePoweredVentLarge`, and `StructureAirConditioner`.
+Supported cooling outputs are `StructureVolumePump`, `StructureTurboVolumePump`, `StructureActiveVent`, `StructurePoweredVentLarge`, and `StructureAirConditioner`.
 
 ## Required Button Names
 
