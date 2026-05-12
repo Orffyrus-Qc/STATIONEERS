@@ -61,12 +61,12 @@ See `GROW_LIGHT/README.md` for the required label and timing notes.
 
 ## Thermostat Controller
 
-The `THERMOSTAT/` folder contains a hash-based IC10 thermostat script that reads
-room temperature from gas sensors, shows current or target temperature on an LED
-display, and controls pipe heaters plus air conditioners with hysteresis.
+The `THERMOSTAT/` folder contains a multi-room temperature-control script pack.
+Each room thermostat controls hot/cold radiator digital valves, while separate
+ICs maintain the hot and cold closed pipe loops.
 
-See `THERMOSTAT/README.md` for button labels, device hashes, clamp values, and
-AC mode behavior.
+See `THERMOSTAT/README.md` for the script list, required labels, clamp values,
+and hot/cold loop hysteresis behavior.
 
 ## AC Heater Follower
 

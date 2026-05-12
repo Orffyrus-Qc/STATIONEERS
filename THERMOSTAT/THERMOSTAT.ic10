@@ -1,29 +1,20 @@
-define sensor         HASH("StructureGasSensor")
-define display        HASH("ModularDeviceLEDdisplay2")
-define button         HASH("ModularDeviceUtilityButton2x2")
-define pipeAnalyzer   HASH("StructurePipeAnalysizer")
-define sensorName     HASH("SENSOR")
-define displayName    HASH("DISPLAY")
-define analyzerName   HASH("ANALYZER")
-define heatName       HASH("HEATING")
-define coolName       HASH("COOLING")
-define pipeHeater     HASH("StructurePipeHeater")
-define pump           HASH("StructureVolumePump")
-define turboPump      HASH("StructureTurboVolumePump")
-define activeVent     HASH("StructureActiveVent")
-define largeVent      HASH("StructurePoweredVentLarge")
-define airConditioner HASH("StructureAirConditioner")
-define upName   HASH("+")
-define downName HASH("-")
-define minTemp  10
-define maxTemp  35
-define kelvin   273.15
-define showTime 4
-define pressLock 2
-define enableHeating 1
-define enableCooling 1
-define pipeMaxK 1273.15
-define pipeResetK 1173.15
+define sensor       HASH("StructureGasSensor")
+define display      HASH("ModularDeviceLEDdisplay2")
+define button       HASH("ModularDeviceUtilityButton2x2")
+define valve        HASH("StructureDigitalValve")
+define sensorName   HASH("SENSOR")
+define displayName  HASH("DISPLAY")
+define hotValveName HASH("HOT_DIGITAL_VALVE")
+define coldName     HASH("COLD_DIGITAL_VALVE")
+define upName       HASH("+")
+define downName     HASH("-")
+define minTemp      10
+define maxTemp      35
+define kelvin       273.15
+define showTime     4
+define pressLock    2
+define enableHeat   1
+define enableCool   1
 alias target   r0
 alias curr     r1
 alias timer    r2
@@ -33,19 +24,11 @@ alias tmp      r5
 alias hyst     r6
 alias heatOn   r7
 alias coolOn   r8
-alias pipeSafe r9
 init:
     move target 22
     move hyst 1.0
-    move pipeSafe 1
     sbn display displayName On 1
     sbn display displayName Mode 0
-    add tmp maxTemp kelvin
-    sbn airConditioner heatName On 1
-    sbn airConditioner heatName Setting tmp
-    add tmp minTemp kelvin
-    sbn airConditioner coolName On 1
-    sbn airConditioner coolName Setting tmp
 main:
     lbn curr sensor sensorName Temperature Average
     sub curr curr kelvin
@@ -91,36 +74,16 @@ control:
     blt curr tmp doHeat
     add tmp target hyst
     bgt curr tmp doCool
-    j writeOutputs
+    j writeValves
 
 doHeat:
-    move heatOn enableHeating
-    j writeOutputs
+    move heatOn enableHeat
+    j writeValves
 doCool:
-    move coolOn enableCooling
-writeOutputs:
-    lbn tmp pipeAnalyzer analyzerName Temperature Average
-    bgt tmp pipeMaxK pipeHot
-    blt tmp pipeResetK pipeCool
-    j pipeWrite
-pipeHot:
-    move pipeSafe 0
-    j pipeWrite
-pipeCool:
-    move pipeSafe 1
-pipeWrite:
-    mul tmp heatOn pipeSafe
-    sbn pipeHeater heatName On tmp
-    sbn pump heatName On tmp
-    sbn turboPump heatName On tmp
-    sbn activeVent heatName On tmp
-    sbn largeVent heatName On tmp
-    sbn airConditioner heatName Mode tmp
-    sbn pump coolName On coolOn
-    sbn turboPump coolName On coolOn
-    sbn activeVent coolName On coolOn
-    sbn largeVent coolName On coolOn
-    sbn airConditioner coolName Mode coolOn
+    move coolOn enableCool
+writeValves:
+    sbn valve hotValveName On heatOn
+    sbn valve coldName On coolOn
 end:
     yield
     j main

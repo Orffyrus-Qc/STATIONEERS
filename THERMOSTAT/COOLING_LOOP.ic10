@@ -1,0 +1,36 @@
+define analyzer       HASH("StructurePipeAnalysizer")
+define pump           HASH("StructureVolumePump")
+define turboPump      HASH("StructureTurboVolumePump")
+define activeVent     HASH("StructureActiveVent")
+define largeVent      HASH("StructurePoweredVentLarge")
+define airConditioner HASH("StructureAirConditioner")
+define analyzerName   HASH("ANALYZER")
+define loopPumpName   HASH("COOLING_LOOP_PUMP")
+define coolName       HASH("COOLING")
+define coldMinK       173.15
+define coldResetK     183.15
+alias temp   r0
+alias coolOn r1
+init:
+    move coolOn 1
+    sbn turboPump loopPumpName On 1
+    sbn airConditioner coolName On 1
+loop:
+    yield
+    sbn turboPump loopPumpName On 1
+    lbn temp analyzer analyzerName Temperature Average
+    blt temp coldMinK coldLoopLow
+    bgt temp coldResetK coldLoopHigh
+    j writeOutputs
+coldLoopLow:
+    move coolOn 0
+    j writeOutputs
+coldLoopHigh:
+    move coolOn 1
+writeOutputs:
+    sbn pump coolName On coolOn
+    sbn turboPump coolName On coolOn
+    sbn activeVent coolName On coolOn
+    sbn largeVent coolName On coolOn
+    sbn airConditioner coolName Mode coolOn
+    j loop
