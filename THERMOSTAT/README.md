@@ -33,7 +33,7 @@ All labels are case-sensitive. Rename devices in-game as follows:
 | `DISPLAY` | `ModularDeviceLEDdisplay2` | Temperature display. |
 | `+` | `ModularDeviceUtilityButton2x2` | Increase target by 1 C. |
 | `-` | `ModularDeviceUtilityButton2x2` | Decrease target by 1 C. |
-| `HEATING_PIPE` | `StructurePipeAnalysizer` | Pipe heater safety temperature. |
+| `ANALYZER` | `StructurePipeAnalysizer` | Heating safety temperature. |
 | `HEATING` | Heating output devices | Heating control group. |
 | `COOLING` | Cooling output devices | Cooling control group. |
 
@@ -64,7 +64,7 @@ move hyst 1.0
 With the defaults, heating starts below target minus 1 C, cooling starts above target plus 1 C, and both outputs stay idle inside the deadband.
 
 All `HEATING` outputs also have a high-temperature safety cutoff. The named
-`HEATING_PIPE` pipe analyzer turns heating off above 1000 C and lets it turn on
+`ANALYZER` pipe analyzer turns heating off above 1000 C and lets it turn on
 again below 900 C.
 
 ## Enable/Disable Options

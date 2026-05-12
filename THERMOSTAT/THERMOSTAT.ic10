@@ -4,9 +4,9 @@ define button         HASH("ModularDeviceUtilityButton2x2")
 define pipeAnalyzer   HASH("StructurePipeAnalysizer")
 define sensorName     HASH("SENSOR")
 define displayName    HASH("DISPLAY")
+define analyzerName   HASH("ANALYZER")
 define heatName       HASH("HEATING")
 define coolName       HASH("COOLING")
-define pipeName       HASH("HEATING_PIPE")
 define pipeHeater     HASH("StructurePipeHeater")
 define pump           HASH("StructureVolumePump")
 define turboPump      HASH("StructureTurboVolumePump")
@@ -99,7 +99,7 @@ doHeat:
 doCool:
     move coolOn enableCooling
 writeOutputs:
-    lbn tmp pipeAnalyzer pipeName Temperature Average
+    lbn tmp pipeAnalyzer analyzerName Temperature Average
     bgt tmp pipeMaxK pipeHot
     blt tmp pipeResetK pipeCool
     j pipeWrite
