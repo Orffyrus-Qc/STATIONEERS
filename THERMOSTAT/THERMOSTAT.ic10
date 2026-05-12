@@ -1,19 +1,15 @@
 define sensor         HASH("StructureGasSensor")
 define display        HASH("ModularDeviceLEDdisplay2")
 define button         HASH("ModularDeviceUtilityButton2x2")
-
 define heatName       HASH("HEATING")
 define coolName       HASH("COOLING")
-
 define pipeHeater     HASH("StructurePipeHeater")
 define turboPump      HASH("StructureTurboVolumePump")
 define activeVent     HASH("StructureActiveVent")
 define largeVent      HASH("StructurePoweredVentLarge")
 define airConditioner HASH("StructureAirConditioner")
-
 define upName   HASH("+")
 define downName HASH("-")
-
 define minTemp  10
 define maxTemp  35
 define kelvin   273.15
@@ -21,7 +17,6 @@ define showTime 4
 define pressLock 2
 define enableHeating 1
 define enableCooling 1
-
 alias target   r0
 alias curr     r1
 alias timer    r2
@@ -31,7 +26,6 @@ alias tmp      r5
 alias hyst     r6
 alias heatOn   r7
 alias coolOn   r8
-
 init:
     move target 22
     move hyst 1.0           # hysteresis (deadband), change to 0.5 or 2.0 if you want
@@ -45,7 +39,6 @@ init:
     sbn airConditioner coolName On 1
     sbn airConditioner coolName Setting tmp
     sbn airConditioner coolName Mode 0
-
 main:
     # Read current temperature in C
     lb curr sensor Temperature Average
@@ -64,7 +57,6 @@ main:
 upReleased:
     move upLock 0
 noUp:
-
     # === Decrease button (- ) ===
     lbn tmp button downName Activate Sum
     blt tmp 0.5 downReleased
@@ -76,7 +68,6 @@ noUp:
 downReleased:
     move downLock 0
 noDown:
-
     # Clamp target 10-35 C
     blt target minTemp clampMin
     bgt target maxTemp clampMax
@@ -89,10 +80,8 @@ clampMax:
 
 show:
     sb display On 1
-
     # Show target temperature while the button timer is active
     bgt timer 0 showTarget
-
     # Normal display: current temperature
     round tmp curr
     sb display Setting tmp
@@ -102,39 +91,31 @@ showTarget:
     round tmp target
     sb display Setting tmp
     sub timer timer 1
-
 control:
     # Heater / Cooler logic with hysteresis
     move heatOn 0
     move coolOn 0
-
     sub tmp target hyst
     blt curr tmp doHeat
-
     add tmp target hyst
     bgt curr tmp doCool
-
     j writeOutputs
 
 doHeat:
     move heatOn enableHeating
     j writeOutputs
-
 doCool:
     move coolOn enableCooling
-
 writeOutputs:
     sbn pipeHeater heatName On heatOn
     sbn turboPump heatName On heatOn
     sbn activeVent heatName On heatOn
     sbn largeVent heatName On heatOn
     sbn airConditioner heatName Mode heatOn
-
     sbn turboPump coolName On coolOn
     sbn activeVent coolName On coolOn
     sbn largeVent coolName On coolOn
     sbn airConditioner coolName Mode coolOn
-
 end:
     yield
     j main
