@@ -1,7 +1,3 @@
-# LIGHT_HOUSE.ic10
-# Rotating lighthouse beam for LIGHT_01 through LIGHT_20.
-# Label a Logic Switch or Lever as LIGHTHOUSE_SWITCH.
-
 define switchName HASH("LIGHTHOUSE_SWITCH")
 define switchType HASH("StructureLogicSwitch2")
 define leverType HASH("StructureLogicSwitch")
@@ -94,10 +90,17 @@ sleep 1
 j main
 
 readSwitch:
-lbn switchState switchType switchName Open Maximum
-lbn leverState leverType switchName Open Maximum
+lbn switchState switchType switchName Setting Maximum
+sgtz switchState switchState
+lbn leverState leverType switchName Setting Maximum
+sgtz leverState leverState
 max systemOn switchState leverState
-sgtz systemOn systemOn
+lbn switchState switchType switchName Open Maximum
+sgtz switchState switchState
+max systemOn systemOn switchState
+lbn leverState leverType switchName Open Maximum
+sgtz leverState leverState
+max systemOn systemOn leverState
 j ra
 
 allOff:

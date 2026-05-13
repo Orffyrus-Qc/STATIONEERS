@@ -16,10 +16,11 @@ in-game device label exactly.
 
 ## Behavior
 
-When `LIGHTHOUSE_SWITCH` is on, the script advances one light every `0.6`
-seconds. With 20 lights, one full rotation takes about 12 seconds. The beam keeps
-three adjacent lights on at a time so the sweep feels closer to a real rotating
-lighthouse lens instead of a single hard blinking dot.
+When `LIGHTHOUSE_SWITCH` is on, the script reads its `Setting` and `Open` values
+and advances one light every `0.6` seconds. With 20 lights, one full rotation
+takes about 12 seconds. The beam keeps three adjacent lights on at a time so the
+sweep feels closer to a real rotating lighthouse lens instead of a single hard
+blinking dot.
 
 When the switch is off, the script turns all named lights off and checks the
 switch again once per second.
