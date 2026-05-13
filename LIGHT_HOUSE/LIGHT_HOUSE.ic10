@@ -5,7 +5,7 @@ define leverType HASH("StructureLogicSwitch")
 define NameBase 0
 define TypeBase 20
 define LightCount 20
-define TypeCount 15
+define TypeCount 13
 define BeamWidth 3
 define StepDelay 0.6
 
@@ -43,21 +43,19 @@ put db 17 HASH("LIGHT_18")
 put db 18 HASH("LIGHT_19")
 put db 19 HASH("LIGHT_20")
 
-put db 20 HASH("StructureLight")
-put db 21 HASH("StructureWallLight")
-put db 22 HASH("StructureLightBattery")
-put db 23 HASH("StructureWallLightBattery")
-put db 24 HASH("StructureFlashingLight")
-put db 25 HASH("StructureLightFlashing")
-put db 26 HASH("StructureLightLong")
-put db 27 HASH("StructureLightLongAngled")
-put db 28 HASH("StructureLightLongWide")
-put db 29 HASH("StructureLightRound")
-put db 30 HASH("StructureLightRoundAngled")
-put db 31 HASH("StructureLightRoundSmall")
-put db 32 HASH("StructureGrowLight")
-put db 33 HASH("StructureDiode")
-put db 34 HASH("StructureDiodeSlide")
+put db 20 -1860064656
+put db 21 797794350
+put db 22 555215790
+put db 23 1847265835
+put db 24 -1306415132
+put db 25 1514476632
+put db 26 1592905386
+put db 27 1436121888
+put db 28 1944485013
+put db 29 576516101
+put db 30 -1758710260
+put db 31 HASH("StructureFlashingLight")
+put db 32 HASH("StructureLightFlashing")
 
 move phase 0
 jal allOff

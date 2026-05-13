@@ -27,26 +27,28 @@ switch again once per second.
 
 ## Supported Light Prefabs
 
-The script uses hash names and writes to all supported light variants with the
-requested labels:
+The script writes `On`, not `Power`. For Stationeers lights, `Power` is a
+read-only output that reports whether the light is on and receiving power.
 
-| Prefab hash name | Light type |
+The script uses exact prefab hashes from the current Stationeers wiki for Kit
+(Lights), LED, Diode Slide, and Grow Light variants. Flashing lights still use
+prefab hash names:
+
+| Prefab hash | Light type |
 | --- | --- |
-| `StructureLight` | Light |
-| `StructureWallLight` | Wall Light |
-| `StructureLightBattery` | Battery Light |
-| `StructureWallLightBattery` | Wall Light Battery |
+| `-1860064656` | Wall Light / Regular |
+| `797794350` | Wall Light Long |
+| `555215790` | Wall Light Wide Long / Long Wide |
+| `1847265835` | Wall Light Long Angled |
+| `-1306415132` | Wall Light Battery |
+| `1514476632` | Light Round |
+| `1592905386` | Light Round Angled |
+| `1436121888` | Light Round Small |
+| `1944485013` | LED |
+| `576516101` | Diode Slide |
+| `-1758710260` | Grow Light |
 | `StructureFlashingLight` | Flashing Light |
 | `StructureLightFlashing` | Light Flashing |
-| `StructureLightLong` | Wall Light Long |
-| `StructureLightLongAngled` | Wall Light Long Angled |
-| `StructureLightLongWide` | Wall Light Long Wide |
-| `StructureLightRound` | Light Round |
-| `StructureLightRoundAngled` | Light Round Angled |
-| `StructureLightRoundSmall` | Light Round Small |
-| `StructureGrowLight` | Grow Light |
-| `StructureDiode` | LED |
-| `StructureDiodeSlide` | Diode Slide |
 
 ## Options
 
