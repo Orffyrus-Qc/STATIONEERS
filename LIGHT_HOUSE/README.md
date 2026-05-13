@@ -17,11 +17,11 @@ in-game device label exactly.
 
 ## Behavior
 
-When the switch is on, the script reads its `Setting` value, turns off the
-previous beam, advances five positions, and turns on the next beam. With 20
-lights, one full rotation takes about 2 seconds on the normal Stationeers logic
-tick. The beam keeps three adjacent lights on at a time, and the script performs
-a full-ring cleanup once per rotation to prevent stale lights from staying on.
+When the switch is on, the script reads its `Setting` value, clears all
+`StructureLightLongWide` lights on the IC data network, then turns on the current
+four-light beam. It advances four positions per IC tick. On a typical
+Stationeers logic tick this gives the fastest reliable lighthouse effect without
+leaving stale lights on.
 
 When the switch is off, the script turns all named lights off and checks the
 switch again once per second.
@@ -45,8 +45,8 @@ Change these values directly in `LIGHT_HOUSE.ic10`:
 
 | Option | Default | Behavior |
 | --- | --- | --- |
-| `StepAdvance` | `5` positions | Number of 18 degree positions advanced each IC tick. |
-| `BeamWidth` | `3` lights | Number of adjacent lights kept on. |
+| `StepAdvance` | `4` positions | Number of 18 degree positions advanced each IC tick. |
+| `BeamWidth` | `4` lights | Number of adjacent lights kept on. |
 | `LightCount` | `20` | Number of named lights in the ring. |
 
 ## Setup Notes
@@ -54,6 +54,10 @@ Change these values directly in `LIGHT_HOUSE.ic10`:
 Place the 20 lights clockwise or counter-clockwise and label them in order:
 `LIGHT_01`, `LIGHT_02`, `LIGHT_03`, and so on through `LIGHT_20`. Put the IC
 Housing, the switch or lever, and all lights on the same data network.
+
+This version uses `sb lightType On 0` as the cleanup write. Keep unrelated
+`StructureLightLongWide` lights off this data network, or they will be cleared
+with the lighthouse beam.
 
 For the most reliable switch behavior, assign the switch or lever to IC pin
 `d0`. If `d0` is not assigned, the script falls back to searching for a switch
