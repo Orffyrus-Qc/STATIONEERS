@@ -4,8 +4,7 @@ define switchType HASH("StructureLogicSwitch2")
 define leverType HASH("StructureLogicSwitch")
 define LightCount 20
 define BeamWidth 3
-define StepsPerTick 5
-
+define StepAdvance 5
 alias switchPin d0
 alias nameIndex r0
 alias lightState r1
@@ -17,40 +16,38 @@ alias systemOn r6
 alias savedReturn r7
 alias pinPresent r8
 alias jumpOffset r9
-alias stepCount r10
-
-move phase 0
+sub phase LightCount StepAdvance
 jal allOff
-
 main:
 jal readSwitch
 ble systemOn 0 systemOff
-
-move stepCount 0
-stepLoop:
-move nameIndex phase
-move lightState 1
-jal writeLight
-
-sub offIndex phase BeamWidth
-add offIndex offIndex LightCount
-mod offIndex offIndex LightCount
-move nameIndex offIndex
 move lightState 0
+move offIndex 0
+offLoop:
+add nameIndex phase offIndex
+mod nameIndex nameIndex LightCount
 jal writeLight
-
-add phase phase 1
+add offIndex offIndex 1
+blt offIndex BeamWidth offLoop
+add phase phase StepAdvance
 mod phase phase LightCount
-add stepCount stepCount 1
-blt stepCount StepsPerTick stepLoop
+bgt phase 0 drawBeam
+jal allOff
+drawBeam:
+move lightState 1
+move offIndex 0
+onLoop:
+add nameIndex phase offIndex
+mod nameIndex nameIndex LightCount
+jal writeLight
+add offIndex offIndex 1
+blt offIndex BeamWidth onLoop
 yield
 j main
-
 systemOff:
 jal allOff
 sleep 1
 j main
-
 readSwitch:
 move systemOn 0
 sdse pinPresent switchPin
@@ -59,7 +56,6 @@ bdnvl switchPin Setting namedSwitch
 l systemOn switchPin Setting
 sgtz systemOn systemOn
 j ra
-
 namedSwitch:
 lbn switchState switchType switchName Setting Maximum
 sgtz switchState switchState
@@ -67,7 +63,6 @@ lbn leverState leverType switchName Setting Maximum
 sgtz leverState leverState
 max systemOn switchState leverState
 j ra
-
 allOff:
 move savedReturn ra
 move lightState 0
@@ -77,7 +72,6 @@ jal writeLight
 add nameIndex nameIndex 1
 blt nameIndex LightCount allOffLoop
 j savedReturn
-
 writeLight:
 mul jumpOffset nameIndex 2
 add jumpOffset jumpOffset 1
