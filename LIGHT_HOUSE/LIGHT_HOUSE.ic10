@@ -1,61 +1,22 @@
+define lightType HASH("StructureLightLongWide")
 define switchName HASH("LIGHTHOUSE_SWITCH")
 define switchType HASH("StructureLogicSwitch2")
 define leverType HASH("StructureLogicSwitch")
-
-define NameBase 0
-define TypeBase 20
 define LightCount 20
-define TypeCount 13
 define BeamWidth 3
 define StepDelay 0.6
 
-alias typeIndex r0
-alias nameIndex r1
-alias nameHash r2
-alias typeHash r3
-alias lightState r4
-alias phase r5
-alias offIndex r6
-alias switchState r7
-alias leverState r8
-alias systemOn r9
-alias addr r10
-alias savedReturn r11
-
-put db 0 HASH("LIGHT_01")
-put db 1 HASH("LIGHT_02")
-put db 2 HASH("LIGHT_03")
-put db 3 HASH("LIGHT_04")
-put db 4 HASH("LIGHT_05")
-put db 5 HASH("LIGHT_06")
-put db 6 HASH("LIGHT_07")
-put db 7 HASH("LIGHT_08")
-put db 8 HASH("LIGHT_09")
-put db 9 HASH("LIGHT_10")
-put db 10 HASH("LIGHT_11")
-put db 11 HASH("LIGHT_12")
-put db 12 HASH("LIGHT_13")
-put db 13 HASH("LIGHT_14")
-put db 14 HASH("LIGHT_15")
-put db 15 HASH("LIGHT_16")
-put db 16 HASH("LIGHT_17")
-put db 17 HASH("LIGHT_18")
-put db 18 HASH("LIGHT_19")
-put db 19 HASH("LIGHT_20")
-
-put db 20 -1860064656
-put db 21 797794350
-put db 22 555215790
-put db 23 1847265835
-put db 24 -1306415132
-put db 25 1514476632
-put db 26 1592905386
-put db 27 1436121888
-put db 28 1944485013
-put db 29 576516101
-put db 30 -1758710260
-put db 31 HASH("StructureFlashingLight")
-put db 32 HASH("StructureLightFlashing")
+alias switchPin d0
+alias nameIndex r0
+alias lightState r1
+alias phase r2
+alias offIndex r3
+alias switchState r4
+alias leverState r5
+alias systemOn r6
+alias savedReturn r7
+alias pinPresent r8
+alias jumpOffset r9
 
 move phase 0
 jal allOff
@@ -64,18 +25,16 @@ main:
 jal readSwitch
 ble systemOn 0 systemOff
 
+move nameIndex phase
 move lightState 1
-add addr NameBase phase
-get nameHash db addr
-jal writeNameAllTypes
+jal writeLight
 
 sub offIndex phase BeamWidth
 add offIndex offIndex LightCount
 mod offIndex offIndex LightCount
+move nameIndex offIndex
 move lightState 0
-add addr NameBase offIndex
-get nameHash db addr
-jal writeNameAllTypes
+jal writeLight
 
 add phase phase 1
 mod phase phase LightCount
@@ -88,37 +47,73 @@ sleep 1
 j main
 
 readSwitch:
+move systemOn 0
+sdse pinPresent switchPin
+beq pinPresent 0 namedSwitch
+bdnvl switchPin Setting namedSwitch
+l systemOn switchPin Setting
+sgtz systemOn systemOn
+j ra
+
+namedSwitch:
 lbn switchState switchType switchName Setting Maximum
 sgtz switchState switchState
 lbn leverState leverType switchName Setting Maximum
 sgtz leverState leverState
 max systemOn switchState leverState
-lbn switchState switchType switchName Open Maximum
-sgtz switchState switchState
-max systemOn systemOn switchState
-lbn leverState leverType switchName Open Maximum
-sgtz leverState leverState
-max systemOn systemOn leverState
 j ra
 
 allOff:
 move savedReturn ra
-move nameIndex 0
-allOffNameLoop:
-add addr NameBase nameIndex
-get nameHash db addr
 move lightState 0
-jal writeNameAllTypes
+move nameIndex 0
+allOffLoop:
+jal writeLight
 add nameIndex nameIndex 1
-blt nameIndex LightCount allOffNameLoop
+blt nameIndex LightCount allOffLoop
 j savedReturn
 
-writeNameAllTypes:
-move typeIndex 0
-typeLoop:
-add addr TypeBase typeIndex
-get typeHash db addr
-sbn typeHash nameHash On lightState
-add typeIndex typeIndex 1
-blt typeIndex TypeCount typeLoop
+writeLight:
+mul jumpOffset nameIndex 2
+add jumpOffset jumpOffset 1
+jr jumpOffset
+sbn lightType HASH("LIGHT_01") On lightState
+j ra
+sbn lightType HASH("LIGHT_02") On lightState
+j ra
+sbn lightType HASH("LIGHT_03") On lightState
+j ra
+sbn lightType HASH("LIGHT_04") On lightState
+j ra
+sbn lightType HASH("LIGHT_05") On lightState
+j ra
+sbn lightType HASH("LIGHT_06") On lightState
+j ra
+sbn lightType HASH("LIGHT_07") On lightState
+j ra
+sbn lightType HASH("LIGHT_08") On lightState
+j ra
+sbn lightType HASH("LIGHT_09") On lightState
+j ra
+sbn lightType HASH("LIGHT_10") On lightState
+j ra
+sbn lightType HASH("LIGHT_11") On lightState
+j ra
+sbn lightType HASH("LIGHT_12") On lightState
+j ra
+sbn lightType HASH("LIGHT_13") On lightState
+j ra
+sbn lightType HASH("LIGHT_14") On lightState
+j ra
+sbn lightType HASH("LIGHT_15") On lightState
+j ra
+sbn lightType HASH("LIGHT_16") On lightState
+j ra
+sbn lightType HASH("LIGHT_17") On lightState
+j ra
+sbn lightType HASH("LIGHT_18") On lightState
+j ra
+sbn lightType HASH("LIGHT_19") On lightState
+j ra
+sbn lightType HASH("LIGHT_20") On lightState
 j ra

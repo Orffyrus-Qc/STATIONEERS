@@ -62,13 +62,11 @@ See `GROW_LIGHT/README.md` for the required label and timing notes.
 ## Light House Rotating Beam
 
 The `LIGHT_HOUSE/` folder contains an IC10 script that simulates a rotating
-lighthouse beam with 20 named lights arranged around 360 degrees. It supports a
-named switch or lever for on/off control and writes to common light prefabs,
-including wall lights, round lights, flashing lights, LEDs, diode slides, and
-grow lights.
+lighthouse beam with 20 named `StructureLightLongWide` lights arranged around
+360 degrees. It supports an IC pin switch or lever on `d0`, with a named
+`LIGHTHOUSE_SWITCH` fallback.
 
-See `LIGHT_HOUSE/README.md` for labels, supported light prefab hashes, and
-timing options.
+See `LIGHT_HOUSE/README.md` for labels, switch setup, and timing options.
 
 ## Thermostat Controller
 
