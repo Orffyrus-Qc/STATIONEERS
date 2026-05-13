@@ -68,6 +68,16 @@ ICs maintain the hot and cold closed pipe loops.
 See `THERMOSTAT/README.md` for the script list, required labels, clamp values,
 and hot/cold loop hysteresis behavior.
 
+## AtmoMatrix Room Gas Manager
+
+The `ATMO_MATRIX/` folder contains a starter multi-IC room atmosphere system.
+A modular console selects human breathable, Zrilian breathable, or greenhouse
+presets. Per-room ICs read the selected preset, purge unsafe oxygen/volatiles
+transitions, dose the selected gas, and use nitrogen as the pressure pad gas.
+
+See `ATMO_MATRIX/README.md` for setup labels, preset targets, and safety
+behavior.
+
 ## AC Heater Follower
 
 The `AC_HEATER/` folder contains an IC10 script that uses the Air Conditioner
