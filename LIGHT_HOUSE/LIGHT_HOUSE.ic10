@@ -4,7 +4,7 @@ define switchType HASH("StructureLogicSwitch2")
 define leverType HASH("StructureLogicSwitch")
 define LightCount 20
 define BeamWidth 3
-define StepDelay 0.1
+define StepsPerTick 5
 
 alias switchPin d0
 alias nameIndex r0
@@ -17,6 +17,7 @@ alias systemOn r6
 alias savedReturn r7
 alias pinPresent r8
 alias jumpOffset r9
+alias stepCount r10
 
 move phase 0
 jal allOff
@@ -25,6 +26,8 @@ main:
 jal readSwitch
 ble systemOn 0 systemOff
 
+move stepCount 0
+stepLoop:
 move nameIndex phase
 move lightState 1
 jal writeLight
@@ -38,7 +41,9 @@ jal writeLight
 
 add phase phase 1
 mod phase phase LightCount
-sleep StepDelay
+add stepCount stepCount 1
+blt stepCount StepsPerTick stepLoop
+yield
 j main
 
 systemOff:
