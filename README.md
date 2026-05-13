@@ -59,6 +59,17 @@ minutes, turns them off for 6 minutes, then repeats.
 
 See `GROW_LIGHT/README.md` for the required label and timing notes.
 
+## Light House Rotating Beam
+
+The `LIGHT_HOUSE/` folder contains an IC10 script that simulates a rotating
+lighthouse beam with 20 named lights arranged around 360 degrees. It supports a
+named switch or lever for on/off control and writes to common light prefabs,
+including wall lights, round lights, flashing lights, LEDs, diode slides, and
+grow lights.
+
+See `LIGHT_HOUSE/README.md` for labels, supported light prefab hashes, and
+timing options.
+
 ## Thermostat Controller
 
 The `THERMOSTAT/` folder contains a multi-room temperature-control script pack.

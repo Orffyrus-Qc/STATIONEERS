@@ -1,0 +1,123 @@
+# LIGHT_HOUSE.ic10
+# Rotating lighthouse beam for LIGHT_01 through LIGHT_20.
+# Label a Logic Switch or Lever as LIGHTHOUSE_SWITCH.
+
+define switchName HASH("LIGHTHOUSE_SWITCH")
+define switchType HASH("StructureLogicSwitch2")
+define leverType HASH("StructureLogicSwitch")
+
+define NameBase 0
+define TypeBase 20
+define LightCount 20
+define TypeCount 15
+define BeamWidth 3
+define StepDelay 0.6
+
+alias typeIndex r0
+alias nameIndex r1
+alias nameHash r2
+alias typeHash r3
+alias lightState r4
+alias phase r5
+alias offIndex r6
+alias switchState r7
+alias leverState r8
+alias systemOn r9
+alias addr r10
+alias savedReturn r11
+
+put db 0 HASH("LIGHT_01")
+put db 1 HASH("LIGHT_02")
+put db 2 HASH("LIGHT_03")
+put db 3 HASH("LIGHT_04")
+put db 4 HASH("LIGHT_05")
+put db 5 HASH("LIGHT_06")
+put db 6 HASH("LIGHT_07")
+put db 7 HASH("LIGHT_08")
+put db 8 HASH("LIGHT_09")
+put db 9 HASH("LIGHT_10")
+put db 10 HASH("LIGHT_11")
+put db 11 HASH("LIGHT_12")
+put db 12 HASH("LIGHT_13")
+put db 13 HASH("LIGHT_14")
+put db 14 HASH("LIGHT_15")
+put db 15 HASH("LIGHT_16")
+put db 16 HASH("LIGHT_17")
+put db 17 HASH("LIGHT_18")
+put db 18 HASH("LIGHT_19")
+put db 19 HASH("LIGHT_20")
+
+put db 20 HASH("StructureLight")
+put db 21 HASH("StructureWallLight")
+put db 22 HASH("StructureLightBattery")
+put db 23 HASH("StructureWallLightBattery")
+put db 24 HASH("StructureFlashingLight")
+put db 25 HASH("StructureLightFlashing")
+put db 26 HASH("StructureLightLong")
+put db 27 HASH("StructureLightLongAngled")
+put db 28 HASH("StructureLightLongWide")
+put db 29 HASH("StructureLightRound")
+put db 30 HASH("StructureLightRoundAngled")
+put db 31 HASH("StructureLightRoundSmall")
+put db 32 HASH("StructureGrowLight")
+put db 33 HASH("StructureDiode")
+put db 34 HASH("StructureDiodeSlide")
+
+move phase 0
+jal allOff
+
+main:
+jal readSwitch
+ble systemOn 0 systemOff
+
+move lightState 1
+add addr NameBase phase
+get nameHash db addr
+jal writeNameAllTypes
+
+sub offIndex phase BeamWidth
+add offIndex offIndex LightCount
+mod offIndex offIndex LightCount
+move lightState 0
+add addr NameBase offIndex
+get nameHash db addr
+jal writeNameAllTypes
+
+add phase phase 1
+mod phase phase LightCount
+sleep StepDelay
+j main
+
+systemOff:
+jal allOff
+sleep 1
+j main
+
+readSwitch:
+lbn switchState switchType switchName Open Maximum
+lbn leverState leverType switchName Open Maximum
+max systemOn switchState leverState
+sgtz systemOn systemOn
+j ra
+
+allOff:
+move savedReturn ra
+move nameIndex 0
+allOffNameLoop:
+add addr NameBase nameIndex
+get nameHash db addr
+move lightState 0
+jal writeNameAllTypes
+add nameIndex nameIndex 1
+blt nameIndex LightCount allOffNameLoop
+j savedReturn
+
+writeNameAllTypes:
+move typeIndex 0
+typeLoop:
+add addr TypeBase typeIndex
+get typeHash db addr
+sbn typeHash nameHash On lightState
+add typeIndex typeIndex 1
+blt typeIndex TypeCount typeLoop
+j ra
