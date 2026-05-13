@@ -18,7 +18,7 @@ in-game device label exactly.
 ## Behavior
 
 When the switch is on, the script reads its `Setting` value and advances one
-light every `0.3` seconds. With 20 lights, one full rotation takes about 6
+light every `0.1` seconds. With 20 lights, one full rotation takes about 2
 seconds. The beam keeps three adjacent lights on at a time so the sweep feels
 closer to a real rotating lighthouse lens instead of a single hard blinking dot.
 
@@ -44,7 +44,7 @@ Change these values directly in `LIGHT_HOUSE.ic10`:
 
 | Option | Default | Behavior |
 | --- | --- | --- |
-| `StepDelay` | `0.3` seconds | Time between each 18 degree step. |
+| `StepDelay` | `0.1` seconds | Time between each 18 degree step. |
 | `BeamWidth` | `3` lights | Number of adjacent lights kept on. |
 | `LightCount` | `20` | Number of named lights in the ring. |
 
