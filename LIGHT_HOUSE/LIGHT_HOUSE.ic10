@@ -4,7 +4,7 @@ define switchType HASH("StructureLogicSwitch2")
 define leverType HASH("StructureLogicSwitch")
 define LightCount 20
 define BeamWidth 3
-define StepDelay 0.6
+define StepDelay 0.3
 
 alias switchPin d0
 alias nameIndex r0
