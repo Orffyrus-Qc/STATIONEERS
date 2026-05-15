@@ -1,0 +1,91 @@
+# EUROPA_ROOM_PRESSURE.ic10
+# Controls named active, powered, and large powered vents to hold 101 kPa.
+
+define SENSOR_TYPE      HASH("StructureGasSensor")
+define ACTIVE_VENT      HASH("StructureActiveVent")
+define POWERED_VENT     HASH("StructurePoweredVent")
+define LARGE_VENT       HASH("StructurePoweredVentLarge")
+define SENSOR_NAME      HASH("EUROPA_ROOM_PRESSURE_SENSOR")
+define VENT_NAME        HASH("EUROPA_ROOM_PRESSURE")
+define TARGET_PRESSURE  101
+define PRESSURE_BAND    0.5
+define ACTIVE_PIPE_MIN  0
+define ACTIVE_PIPE_MAX  50000
+define MODE_OUTWARD     0
+define MODE_INWARD      1
+define STATE_IDLE       0
+define STATE_FILL       1
+define STATE_DRAIN      -1
+
+alias roomPressure r0
+alias lowLimit     r1
+alias highLimit    r2
+alias state        r3
+alias ventMode     r4
+alias ventOn       r5
+alias pipeLimit    r6
+
+init:
+move state STATE_IDLE
+
+main:
+lbn roomPressure SENSOR_TYPE SENSOR_NAME Pressure Average
+bnan roomPressure sensorMissing
+
+sub lowLimit TARGET_PRESSURE PRESSURE_BAND
+add highLimit TARGET_PRESSURE PRESSURE_BAND
+
+blt roomPressure lowLimit fillRoom
+bgt roomPressure highLimit drainRoom
+
+beq state STATE_FILL checkFill
+beq state STATE_DRAIN checkDrain
+j stopVents
+
+checkFill:
+blt roomPressure TARGET_PRESSURE fillRoom
+j stopVents
+
+checkDrain:
+bgt roomPressure TARGET_PRESSURE drainRoom
+j stopVents
+
+fillRoom:
+move state STATE_FILL
+move ventMode MODE_OUTWARD
+move ventOn 1
+move pipeLimit ACTIVE_PIPE_MIN
+j writeVents
+
+drainRoom:
+move state STATE_DRAIN
+move ventMode MODE_INWARD
+move ventOn 1
+move pipeLimit ACTIVE_PIPE_MAX
+j writeVents
+
+sensorMissing:
+move state STATE_IDLE
+move ventOn 0
+j writePower
+
+stopVents:
+move state STATE_IDLE
+move ventOn 0
+j writePower
+
+writeVents:
+sbn ACTIVE_VENT VENT_NAME Mode ventMode
+sbn ACTIVE_VENT VENT_NAME PressureExternal TARGET_PRESSURE
+sbn ACTIVE_VENT VENT_NAME PressureInternal pipeLimit
+sbn POWERED_VENT VENT_NAME Mode ventMode
+sbn POWERED_VENT VENT_NAME PressureExternal TARGET_PRESSURE
+sbn LARGE_VENT VENT_NAME Mode ventMode
+sbn LARGE_VENT VENT_NAME PressureExternal TARGET_PRESSURE
+
+writePower:
+sbn ACTIVE_VENT VENT_NAME On ventOn
+sbn POWERED_VENT VENT_NAME On ventOn
+sbn LARGE_VENT VENT_NAME On ventOn
+yield
+j main

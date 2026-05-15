@@ -77,6 +77,16 @@ ICs maintain the hot and cold closed pipe loops.
 See `THERMOSTAT/README.md` for the script list, required labels, clamp values,
 and hot/cold loop hysteresis behavior.
 
+## Europa Room Pressure
+
+The `EUROPA_ROOM_PRESSURE/` folder contains an IC10 script that keeps a room at
+101 kPa from a named gas sensor. It controls named `StructureActiveVent`,
+`StructurePoweredVent`, and `StructurePoweredVentLarge` devices, switching them
+between outward and inward mode as needed.
+
+See `EUROPA_ROOM_PRESSURE/README.md` for labels, pressure band behavior, and
+vent safety notes.
+
 ## AC Heater Follower
 
 The `AC_HEATER/` folder contains an IC10 script that uses the Air Conditioner
