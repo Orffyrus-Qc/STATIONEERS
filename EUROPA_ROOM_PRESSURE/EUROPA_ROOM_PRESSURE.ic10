@@ -6,7 +6,7 @@ define ACTIVE_VENT      HASH("StructureActiveVent")
 define POWERED_VENT     HASH("StructurePoweredVent")
 define LARGE_VENT       HASH("StructurePoweredVentLarge")
 define SENSOR_NAME      HASH("EUROPA_ROOM_PRESSURE_SENSOR")
-define VENT_NAME        HASH("EUROPA_ROOM_PRESSURE")
+define VENT_NAME        HASH("EUROPA_ROOM_PRESSURE_VENT")
 define TARGET_PRESSURE  101
 define PRESSURE_BAND    0.5
 define ACTIVE_PIPE_MIN  0
