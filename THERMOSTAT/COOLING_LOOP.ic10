@@ -13,6 +13,7 @@ alias temp   r0
 alias coolOn r1
 init:
     move coolOn 1
+    sbn analyzer analyzerName On 1
     sbn turboPump loopPumpName On 1
     sbn airConditioner coolName On 1
 loop:

@@ -14,6 +14,7 @@ alias temp   r0
 alias heatOn r1
 init:
     move heatOn 1
+    sbn analyzer analyzerName On 1
     sbn turboPump loopPumpName On 1
     sbn airConditioner heatName On 1
 loop:
