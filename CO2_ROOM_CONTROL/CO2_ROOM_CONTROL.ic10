@@ -1,0 +1,124 @@
+# CO2_ROOM_CONTROL.ic10
+# Keeps room CO2 near a target percent with add/remove volume pumps.
+
+define SENSOR_TYPE       HASH("StructureGasSensor")
+define DISPLAY_TYPE      HASH("ModularDeviceLEDdisplay2")
+define BUTTON_TYPE       HASH("ModularDeviceUtilityButton2x2")
+define PUMP_TYPE         HASH("StructureVolumePump")
+define TURBO_PUMP_TYPE   HASH("StructureTurboVolumePump")
+define SENSOR_NAME       HASH("CO2_SENSOR")
+define DISPLAY_NAME      HASH("CO2_DISPLAY")
+define ADD_PUMP_NAME     HASH("CO2_ADD_PUMP")
+define REMOVE_PUMP_NAME  HASH("CO2_REMOVE_PUMP")
+define UP_NAME           HASH("+")
+define DOWN_NAME         HASH("-")
+define TARGET_START      2
+define TARGET_MIN        0.1
+define TARGET_MAX        20
+define TARGET_STEP       0.1
+define HYSTERESIS        0.2
+define PUMP_RATE         10
+define SHOW_TIME         4
+define PRESS_LOCK        2
+
+alias target       r0
+alias co2Ratio     r1
+alias co2Percent   r2
+alias timer        r3
+alias upLock       r4
+alias downLock     r5
+alias tmp          r6
+alias lowLimit     r7
+alias highLimit    r8
+alias addPumpOn    r9
+alias removePumpOn r10
+
+init:
+move target TARGET_START
+sbn DISPLAY_TYPE DISPLAY_NAME On 1
+sbn DISPLAY_TYPE DISPLAY_NAME Mode 0
+sbn PUMP_TYPE ADD_PUMP_NAME Setting PUMP_RATE
+sbn TURBO_PUMP_TYPE ADD_PUMP_NAME Setting PUMP_RATE
+sbn PUMP_TYPE REMOVE_PUMP_NAME Setting PUMP_RATE
+sbn TURBO_PUMP_TYPE REMOVE_PUMP_NAME Setting PUMP_RATE
+
+main:
+lbn co2Ratio SENSOR_TYPE SENSOR_NAME RatioCarbonDioxide Average
+bnan co2Ratio sensorMissing
+mul co2Percent co2Ratio 100
+
+sub upLock upLock 1
+sub downLock downLock 1
+
+lbn tmp BUTTON_TYPE UP_NAME Activate Sum
+blt tmp 0.5 upReleased
+move timer SHOW_TIME
+bgt upLock 0 noUp
+add target target TARGET_STEP
+move upLock PRESS_LOCK
+j noUp
+
+upReleased:
+move upLock 0
+
+noUp:
+lbn tmp BUTTON_TYPE DOWN_NAME Activate Sum
+blt tmp 0.5 downReleased
+move timer SHOW_TIME
+bgt downLock 0 noDown
+sub target target TARGET_STEP
+move downLock PRESS_LOCK
+j noDown
+
+downReleased:
+move downLock 0
+
+noDown:
+max target target TARGET_MIN
+min target target TARGET_MAX
+
+sub lowLimit target HYSTERESIS
+add highLimit target HYSTERESIS
+move addPumpOn 0
+move removePumpOn 0
+
+blt co2Percent lowLimit addCO2
+bgt co2Percent highLimit removeCO2
+j showDisplay
+
+addCO2:
+move addPumpOn 1
+j showDisplay
+
+removeCO2:
+move removePumpOn 1
+j showDisplay
+
+sensorMissing:
+move addPumpOn 0
+move removePumpOn 0
+sbn DISPLAY_TYPE DISPLAY_NAME Setting -1
+j writePumps
+
+showDisplay:
+bgt timer 0 showTarget
+move tmp co2Percent
+j roundDisplay
+
+showTarget:
+move tmp target
+sub timer timer 1
+
+roundDisplay:
+mul tmp tmp 10
+round tmp tmp
+div tmp tmp 10
+sbn DISPLAY_TYPE DISPLAY_NAME Setting tmp
+
+writePumps:
+sbn PUMP_TYPE ADD_PUMP_NAME On addPumpOn
+sbn TURBO_PUMP_TYPE ADD_PUMP_NAME On addPumpOn
+sbn PUMP_TYPE REMOVE_PUMP_NAME On removePumpOn
+sbn TURBO_PUMP_TYPE REMOVE_PUMP_NAME On removePumpOn
+yield
+j main

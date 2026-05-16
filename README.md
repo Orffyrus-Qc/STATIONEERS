@@ -87,6 +87,16 @@ between outward and inward mode as needed.
 See `EUROPA_ROOM_PRESSURE/README.md` for labels, pressure band behavior, and
 vent safety notes.
 
+## CO2 Room Control
+
+The `CO2_ROOM_CONTROL/` folder contains an IC10 script that keeps a room near an
+adjustable CO2 percentage using a named gas sensor, one volume pump to add CO2,
+one volume pump to remove room gas, a console LED2 display, and `+` / `-`
+buttons.
+
+See `CO2_ROOM_CONTROL/README.md` for labels, target range, pump behavior, and
+pressure notes.
+
 ## AC Heater Follower
 
 The `AC_HEATER/` folder contains an IC10 script that uses the Air Conditioner
