@@ -1,28 +1,24 @@
-# LArRE hydroponics patrol
-# Hookup:
-#   No device pins used.
-#   Rename the LArRE Dock (Hydroponics) to match LARRE_NAME below.
-#
-# Configure the station range below. The dock station is usually 0.
-# LArRE will visit every station in the range, inspect the tray below,
-# then activate the claw only when useful:
-#   - empty tray: plant if LArRE is carrying seeds
-#   - mature or seeding plant: harvest
-#   - damaged/dead plant: clear it
+# LArRE fully automatic hydroponics patrol
+# No device pins used.
+# Rename the LArRE Dock (Hydroponics) to match LARRE_NAME below.
 
-alias rStation r0
-alias rIdle r1
-alias rError r2
-alias rOccupied r3
-alias rMature r4
-alias rSeeding r5
-alias rDamage r6
-alias rShouldAct r7
+alias rGrowStation r0
+alias rTarget r1
+alias rIdle r2
+alias rError r3
+alias rOccupied r4
+alias rMature r5
+alias rSeeding r6
+alias rDamage r7
+alias rDidPickup r8
 
 define LARRE_TYPE HASH("StructureLarreDockHydroponics")
 define LARRE_NAME HASH("Station")
-define FIRST_STATION 0
-define LAST_STATION 5
+define FIRST_GROW_STATION 0
+define LAST_GROW_STATION 5
+define SEED_IMPORT_STATION 6
+define SEED_EXPORT_STATION 7
+define CROPS_EXPORT_STATION 8
 define SAMPLE_SLOT 255
 define ACTION_SETTLE_SECONDS 2
 define LOOP_PAUSE_SECONDS 10
@@ -30,23 +26,88 @@ define LOOP_PAUSE_SECONDS 10
 init:
 sbn LARRE_TYPE LARRE_NAME On 1
 sbn LARRE_TYPE LARRE_NAME Activate 0
-move rStation FIRST_STATION
 
 main:
-sbn LARRE_TYPE LARRE_NAME Setting rStation
-jal waitForLarry
-jal inspectTray
-beqz rShouldAct nextStation
-jal pulseClaw
-sleep ACTION_SETTLE_SECONDS
-jal waitForLarry
+move rGrowStation FIRST_GROW_STATION
 
-nextStation:
-add rStation rStation 1
-ble rStation LAST_STATION main
-move rStation FIRST_STATION
+scanGrowStation:
+move rTarget rGrowStation
+jal goToTarget
+jal inspectTray
+beqz rOccupied plantEmptyTray
+bge rDamage 1 clearDeadPlant
+bgt rSeeding 0 harvestSeed
+bnez rMature harvestCrop
+j nextGrowStation
+
+plantEmptyTray:
+jal pickupSeed
+beqz rDidPickup nextGrowStation
+move rTarget rGrowStation
+jal goToTarget
+jal pulseClawAndWait
+j nextGrowStation
+
+harvestSeed:
+jal pulseClawAndWait
+move rTarget SEED_IMPORT_STATION
+jal dropToImportBin
+move rTarget rGrowStation
+jal goToTarget
+jal inspectTray
+bnez rMature harvestCrop
+j nextGrowStation
+
+harvestCrop:
+jal pulseClawAndWait
+move rTarget CROPS_EXPORT_STATION
+jal dropToImportBin
+move rTarget rGrowStation
+jal goToTarget
+jal inspectTray
+beqz rOccupied plantEmptyTray
+j nextGrowStation
+
+clearDeadPlant:
+jal pulseClawAndWait
+move rTarget CROPS_EXPORT_STATION
+jal dropToImportBin
+move rTarget rGrowStation
+jal goToTarget
+jal inspectTray
+beqz rOccupied plantEmptyTray
+j nextGrowStation
+
+nextGrowStation:
+add rGrowStation rGrowStation 1
+ble rGrowStation LAST_GROW_STATION scanGrowStation
 sleep LOOP_PAUSE_SECONDS
 j main
+
+pickupSeed:
+move rDidPickup 0
+move rTarget SEED_EXPORT_STATION
+jal goToTarget
+lbns rOccupied LARRE_TYPE LARRE_NAME SAMPLE_SLOT Occupied Maximum
+beqz rOccupied pickupSeedDone
+jal pulseClawAndWait
+move rDidPickup 1
+pickupSeedDone:
+j ra
+
+dropToImportBin:
+jal goToTarget
+waitDropBinClear:
+yield
+lbns rOccupied LARRE_TYPE LARRE_NAME SAMPLE_SLOT Occupied Maximum
+bnez rOccupied waitDropBinClear
+jal pulseClawAndWait
+j ra
+
+goToTarget:
+sbn LARRE_TYPE LARRE_NAME Setting rTarget
+jal waitForLarry
+j ra
 
 waitForLarry:
 yield
@@ -64,23 +125,16 @@ bnez rError waitForClear
 j waitForLarry
 
 inspectTray:
-move rShouldAct 0
 lbns rOccupied LARRE_TYPE LARRE_NAME SAMPLE_SLOT Occupied Maximum
-beqz rOccupied markAction
 lbns rDamage LARRE_TYPE LARRE_NAME SAMPLE_SLOT Damage Maximum
-bge rDamage 1 markAction
 lbns rMature LARRE_TYPE LARRE_NAME SAMPLE_SLOT Mature Maximum
-bnez rMature markAction
 lbns rSeeding LARRE_TYPE LARRE_NAME SAMPLE_SLOT Seeding Maximum
-bgt rSeeding 0 markAction
 j ra
 
-markAction:
-move rShouldAct 1
-j ra
-
-pulseClaw:
+pulseClawAndWait:
 sbn LARRE_TYPE LARRE_NAME Activate 1
 yield
 sbn LARRE_TYPE LARRE_NAME Activate 0
+sleep ACTION_SETTLE_SECONDS
+jal waitForLarry
 j ra

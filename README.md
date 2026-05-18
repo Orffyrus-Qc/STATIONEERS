@@ -62,12 +62,12 @@ See `GROW_LIGHT/README.md` for the required label and timing notes.
 ## LArRE Hydroponics Patrol
 
 The `LARRE/` folder contains an IC10 script that controls one named LArRE Dock
-(Hydroponics) without IC device pins. It patrols a station range, samples the
-hydroponics proxy slot under each station, and activates the claw only for empty,
-mature, seeding, or dead trays.
+(Hydroponics) without IC device pins. It patrols grow stations, uses a seed
+export bin for planting, drops harvested seeds into a seed import bin, and drops
+crops or cleared dead plants into a crop output bin.
 
-See `LARRE/README.md` for the required label, station range options, and patrol
-behavior.
+See `LARRE/README.md` for the required label, bin station layout, station range
+options, and patrol behavior.
 
 ## Light House Rotating Beam
 
