@@ -1,7 +1,3 @@
-# LArRE fully automatic hydroponics patrol
-# No device pins used.
-# Rename the LArRE Dock (Hydroponics) to match LARRE_NAME below.
-
 alias rGrowStation r0
 alias rTarget r1
 alias rIdle r2
@@ -11,7 +7,6 @@ alias rMature r5
 alias rSeeding r6
 alias rDamage r7
 alias rDidPickup r8
-
 define LARRE_TYPE HASH("StructureLarreDockHydroponics")
 define LARRE_NAME HASH("LArRE")
 define FIRST_GROW_STATION 0
@@ -22,14 +17,11 @@ define CROPS_EXPORT_STATION 18
 define SAMPLE_SLOT 255
 define ACTION_SETTLE_SECONDS 2
 define LOOP_PAUSE_SECONDS 10
-
 init:
 sbn LARRE_TYPE LARRE_NAME On 1
 sbn LARRE_TYPE LARRE_NAME Activate 0
-
 main:
 move rGrowStation FIRST_GROW_STATION
-
 scanGrowStation:
 move rTarget rGrowStation
 jal goToTarget
@@ -39,7 +31,6 @@ bge rDamage 1 clearDeadPlant
 bgt rSeeding 0 harvestSeed
 bnez rMature harvestCrop
 j nextGrowStation
-
 plantEmptyTray:
 jal pickupSeed
 beqz rDidPickup nextGrowStation
@@ -47,7 +38,6 @@ move rTarget rGrowStation
 jal goToTarget
 jal pulseClawAndWait
 j nextGrowStation
-
 harvestSeed:
 jal pulseClawAndWait
 move rTarget SEED_IMPORT_STATION
@@ -57,7 +47,6 @@ jal goToTarget
 jal inspectTray
 bnez rMature harvestCrop
 j nextGrowStation
-
 harvestCrop:
 jal pulseClawAndWait
 move rTarget CROPS_EXPORT_STATION
@@ -67,7 +56,6 @@ jal goToTarget
 jal inspectTray
 beqz rOccupied plantEmptyTray
 j nextGrowStation
-
 clearDeadPlant:
 jal pulseClawAndWait
 move rTarget CROPS_EXPORT_STATION
@@ -77,13 +65,11 @@ jal goToTarget
 jal inspectTray
 beqz rOccupied plantEmptyTray
 j nextGrowStation
-
 nextGrowStation:
 add rGrowStation rGrowStation 1
 ble rGrowStation LAST_GROW_STATION scanGrowStation
 sleep LOOP_PAUSE_SECONDS
 j main
-
 pickupSeed:
 move rDidPickup 0
 move rTarget SEED_EXPORT_STATION
@@ -94,7 +80,6 @@ jal pulseClawAndWait
 move rDidPickup 1
 pickupSeedDone:
 j ra
-
 dropToImportBin:
 jal goToTarget
 waitDropBinClear:
@@ -103,12 +88,10 @@ lbns rOccupied LARRE_TYPE LARRE_NAME SAMPLE_SLOT Occupied Maximum
 bnez rOccupied waitDropBinClear
 jal pulseClawAndWait
 j ra
-
 goToTarget:
 sbn LARRE_TYPE LARRE_NAME Setting rTarget
 jal waitForLarry
 j ra
-
 waitForLarry:
 yield
 lbn rError LARRE_TYPE LARRE_NAME Error Maximum
@@ -116,21 +99,18 @@ bnez rError waitForClear
 lbn rIdle LARRE_TYPE LARRE_NAME Idle Maximum
 beqz rIdle waitForLarry
 j ra
-
 waitForClear:
 sbn LARRE_TYPE LARRE_NAME Activate 0
 yield
 lbn rError LARRE_TYPE LARRE_NAME Error Maximum
 bnez rError waitForClear
 j waitForLarry
-
 inspectTray:
 lbns rOccupied LARRE_TYPE LARRE_NAME SAMPLE_SLOT Occupied Maximum
 lbns rDamage LARRE_TYPE LARRE_NAME SAMPLE_SLOT Damage Maximum
 lbns rMature LARRE_TYPE LARRE_NAME SAMPLE_SLOT Mature Maximum
 lbns rSeeding LARRE_TYPE LARRE_NAME SAMPLE_SLOT Seeding Maximum
 j ra
-
 pulseClawAndWait:
 sbn LARRE_TYPE LARRE_NAME Activate 1
 yield
