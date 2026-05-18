@@ -13,7 +13,7 @@ alias rDamage r7
 alias rDidPickup r8
 
 define LARRE_TYPE HASH("StructureLarreDockHydroponics")
-define LARRE_NAME HASH("Station")
+define LARRE_NAME HASH("LArRE")
 define FIRST_GROW_STATION 0
 define LAST_GROW_STATION 5
 define SEED_IMPORT_STATION 6

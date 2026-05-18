@@ -17,7 +17,7 @@ in-game device label exactly.
 
 | Label | Device type | Purpose |
 | --- | --- | --- |
-| `Station` | `StructureLarreDockHydroponics` | LArRE Dock (Hydroponics) controlled by the script. |
+| `LArRE` | `StructureLarreDockHydroponics` | LArRE Dock (Hydroponics) controlled by the script. |
 
 The IC can be installed anywhere on the same data network as the LArRE dock. It
 uses batch reads and writes by prefab hash and label, so pins are not required.
@@ -80,7 +80,7 @@ Change these values directly in `LARRE_HYDROPONICS.ic10`:
 
 | Option | Default | Behavior |
 | --- | --- | --- |
-| `LARRE_NAME` | `HASH("Station")` | In-game label for the LArRE Dock (Hydroponics). |
+| `LARRE_NAME` | `HASH("LArRE")` | In-game label for the LArRE Dock (Hydroponics). |
 | `FIRST_GROW_STATION` | `0` | First grow tray station index to visit. |
 | `LAST_GROW_STATION` | `5` | Last grow tray station index to visit. |
 | `SEED_IMPORT_STATION` | `6` | Station with the Chute Import Bin where LArRE drops harvested seeds. |
