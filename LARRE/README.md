@@ -50,6 +50,10 @@ For chute handoff stations:
 - Chute Import Bin = LArRE drops items into the chute network.
 - Chute Export Bin = LArRE can pick items up from the chute network.
 
+Pulsing `Activate` tells LArRE to use the claw at the current station. If it is
+holding crops or seeds and there is a Chute Import Bin under the station, it
+should place or drop the item into that bin.
+
 After the final station, the script waits 10 seconds and starts the patrol again.
 
 ## Options
