@@ -8,7 +8,7 @@ puisse garder la ligne automatique.
 
 En bref, LArRE patrouille votre rail hydroponique et s'occupe de la maintenance
 simple des plateaux. Il visite chaque station de culture configurée, vérifie le
-plateau en dessous, prend des graines dans un seed export bin, plante les
+plateau en dessous, prend des graines à la station seed import, plante les
 plateaux vides, récolte les graines et les cultures, puis dépose la sortie dans
 les bacs de chute quand le plateau demande une action.
 
@@ -35,13 +35,14 @@ Disposition par défaut des stations:
 | Rôle | Station par défaut | Cible physique sous la station | Utilité |
 | --- | --- | --- | --- |
 | Plateaux de culture | `0` à `15` | Hydroponics trays/devices | LArRE plante, récolte et nettoie les cultures. |
-| Seed import bin | `16` | Chute Import Bin | LArRE dépose les graines récoltées dans le réseau de chute des graines. |
-| Seed export bin | `17` | Chute Export Bin | LArRE prend des graines depuis le réseau de chute des graines avant de planter. |
+| Seed import station | `16` | Chute Export Bin | LArRE prend des graines depuis le réseau de chute des graines avant de planter. |
+| Seed export station | `17` | Chute Import Bin | LArRE dépose les graines récoltées dans le réseau de chute des graines. |
 | Crops export bin | `18` | Chute Import Bin | LArRE dépose les récoltes ou les plantes mortes nettoyées dans le réseau de sortie. |
 
-La station crops export utilise un Chute Import Bin parce que LArRE place les
-items dans le réseau de chute. Le nom décrit le rôle de la station du point de
-vue de la serre.
+La station seed import utilise un Chute Export Bin parce que LArRE prend les
+graines depuis le réseau de chute. Les stations seed export et crops export
+utilisent des Chute Import Bins parce que LArRE place les items dans le réseau
+de chute. Ces noms décrivent le rôle des stations du point de vue de la serre.
 
 ## Comportement
 
@@ -61,10 +62,10 @@ hydroponique nommé.
 
 Le cycle automatique:
 
-1. Plateau vide: LArRE visite le seed export bin, prend une graine si elle est
+1. Plateau vide: LArRE visite la station seed import, prend une graine si elle est
    disponible, retourne au plateau et la plante.
 2. Plante mature sans graines prêtes: LArRE attend et ne récolte pas encore.
-3. Plante en seed: LArRE récolte la graine, la dépose dans le seed import bin,
+3. Plante en seed: LArRE récolte la graine, la dépose dans la station seed export,
    puis retourne récolter la culture si la plante est mature.
 4. Plante morte: LArRE nettoie le plateau et dépose la plante morte dans le
    crops export bin.
@@ -100,8 +101,8 @@ Modifiez ces valeurs directement dans `LARRE_HYDROPONICS.ic10`:
 | `LARRE_NAME` | `HASH("LArRE")` | Étiquette en jeu du LArRE Dock (Hydroponics). |
 | `FIRST_GROW_STATION` | `0` | Premier index de station de plateau de culture à visiter. |
 | `LAST_GROW_STATION` | `15` | Dernier index de station de plateau de culture à visiter. |
-| `SEED_IMPORT_STATION` | `16` | Station avec le Chute Import Bin où LArRE dépose les graines récoltées. |
-| `SEED_EXPORT_STATION` | `17` | Station avec le Chute Export Bin où LArRE prend les graines à planter. |
+| `SEED_IMPORT_STATION` | `16` | Station avec le Chute Export Bin où LArRE prend les graines à planter. |
+| `SEED_EXPORT_STATION` | `17` | Station avec le Chute Import Bin où LArRE dépose les graines récoltées. |
 | `CROPS_EXPORT_STATION` | `18` | Station avec le Chute Import Bin où LArRE dépose les récoltes et plantes mortes. |
 | `ACTION_SETTLE_SECONDS` | `2` | Délai après une action de pince avant de revérifier l'état idle. |
 | `LOOP_PAUSE_SECONDS` | `10` | Délai entre les boucles de patrouille. |

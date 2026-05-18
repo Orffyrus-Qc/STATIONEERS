@@ -39,7 +39,7 @@ jal pulseClawAndWait
 j nextGrowStation
 harvestSeed:
 jal pulseClawAndWait
-move rTarget SEED_IMPORT_STATION
+move rTarget SEED_EXPORT_STATION
 jal dropToImportBin
 move rTarget rGrowStation
 jal goToTarget
@@ -72,7 +72,7 @@ j main
 pickupSeed:
 push ra
 move rDidPickup 0
-move rTarget SEED_EXPORT_STATION
+move rTarget SEED_IMPORT_STATION
 jal goToTarget
 lbns rOccupied LARRE_TYPE LARRE_NAME SAMPLE_SLOT Occupied Maximum
 beqz rOccupied pickupSeedDone

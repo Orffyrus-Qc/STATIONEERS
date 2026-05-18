@@ -63,8 +63,8 @@ See `GROW_LIGHT/README.md` for the required label and timing notes.
 
 The `LARRE/` folder contains an IC10 script that controls one named LArRE Dock
 (Hydroponics) without IC device pins. It patrols grow stations, uses a seed
-export bin for planting, drops harvested seeds into a seed import bin, and drops
-crops or cleared dead plants into a crop output bin.
+import station for planting, drops harvested seeds into a seed export station,
+and drops crops or cleared dead plants into a crop output bin.
 
 See `LARRE/README.md` for the required label, bin station layout, station range
 options, and patrol behavior.
