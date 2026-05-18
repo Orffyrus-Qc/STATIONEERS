@@ -70,6 +70,7 @@ ble rGrowStation LAST_GROW_STATION scanGrowStation
 sleep LOOP_PAUSE_SECONDS
 j main
 pickupSeed:
+push ra
 move rDidPickup 0
 move rTarget SEED_EXPORT_STATION
 jal goToTarget
@@ -78,18 +79,23 @@ beqz rOccupied pickupSeedDone
 jal pulseClawAndWait
 move rDidPickup 1
 pickupSeedDone:
+pop ra
 j ra
 dropToImportBin:
+push ra
 jal goToTarget
 waitDropBinClear:
 yield
 lbns rOccupied LARRE_TYPE LARRE_NAME SAMPLE_SLOT Occupied Maximum
 bnez rOccupied waitDropBinClear
 jal pulseClawAndWait
+pop ra
 j ra
 goToTarget:
+push ra
 sbn LARRE_TYPE LARRE_NAME Setting rTarget
 jal waitForLarry
+pop ra
 j ra
 waitForLarry:
 yield
@@ -111,9 +117,11 @@ lbns rMature LARRE_TYPE LARRE_NAME SAMPLE_SLOT Mature Maximum
 lbns rSeeding LARRE_TYPE LARRE_NAME SAMPLE_SLOT Seeding Maximum
 j ra
 pulseClawAndWait:
+push ra
 sbn LARRE_TYPE LARRE_NAME Activate 1
 yield
 sbn LARRE_TYPE LARRE_NAME Activate 0
 sleep ACTION_SETTLE_SECONDS
 jal waitForLarry
+pop ra
 j ra
