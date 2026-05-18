@@ -5,6 +5,11 @@ using IC device pins. It moves through a configured station range, samples the
 hydroponics proxy slot under each station, and activates the claw only when a
 tray needs work.
 
+In short, LArRE patrols your hydroponics rail line and handles simple tray
+maintenance. It visits each configured station, checks the tray below it, then
+plants from carried seeds, harvests mature or seeding plants, or clears dead
+plants when the tray needs attention.
+
 ## Required Label
 
 All labels are case-sensitive. The name inside `HASH("name")` must match the
@@ -16,6 +21,10 @@ in-game device label exactly.
 
 The IC can be installed anywhere on the same data network as the LArRE dock. It
 uses batch reads and writes by prefab hash and label, so pins are not required.
+
+Only the LArRE Dock (Hydroponics) needs this label. Do not name every rail
+station `Station`, `Station1`, or similar for this script. Rail stops are
+selected by their numeric station index through the dock's `Setting` value.
 
 ## Behavior
 
