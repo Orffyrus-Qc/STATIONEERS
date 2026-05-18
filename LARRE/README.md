@@ -58,8 +58,9 @@ The automatic cycle:
 
 1. Empty tray: LArRE visits the seed export bin, picks up a seed if available,
    returns to the tray, and plants it.
-2. Seeding plant: LArRE harvests the seed and drops it into the seed import bin.
-3. Mature plant: LArRE harvests the crop and drops it into the crops export bin.
+2. Mature plant without ready seeds: LArRE waits and does not harvest yet.
+3. Seeding plant: LArRE harvests the seed, drops it into the seed import bin,
+   then returns and harvests the crop if the plant is mature.
 4. Dead plant: LArRE clears the tray and drops the dead plant into the crops
    export bin.
 
@@ -71,6 +72,15 @@ For chute handoff stations:
 Pulsing `Activate` tells LArRE to use the claw at the current station. If it is
 holding crops or seeds and there is a Chute Import Bin under the station, it
 should place or drop the item into that bin.
+
+The script uses the `Seeding` slot value to avoid harvesting crops too early.
+`Seeding` must be greater than `0` before LArRE harvests the plant, so it waits
+for seeds to be ready before taking the crop.
+
+This does not require a second IC or direct batch reads from
+`StructureHydroponicsTrayData`. The Hydroponics LArRE dock reads the tray under
+the current station through slot `255`. A separate tray-data IC is only useful if
+you want to pre-scan many trays while LArRE is moving somewhere else.
 
 After the final station, the script waits 10 seconds and starts the patrol again.
 

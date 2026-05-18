@@ -29,7 +29,6 @@ jal inspectTray
 beqz rOccupied plantEmptyTray
 bge rDamage 1 clearDeadPlant
 bgt rSeeding 0 harvestSeed
-bnez rMature harvestCrop
 j nextGrowStation
 plantEmptyTray:
 jal pickupSeed

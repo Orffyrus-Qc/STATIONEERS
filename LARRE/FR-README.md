@@ -63,8 +63,9 @@ Le cycle automatique:
 
 1. Plateau vide: LArRE visite le seed export bin, prend une graine si elle est
    disponible, retourne au plateau et la plante.
-2. Plante en seed: LArRE récolte la graine et la dépose dans le seed import bin.
-3. Plante mature: LArRE récolte la culture et la dépose dans le crops export bin.
+2. Plante mature sans graines prêtes: LArRE attend et ne récolte pas encore.
+3. Plante en seed: LArRE récolte la graine, la dépose dans le seed import bin,
+   puis retourne récolter la culture si la plante est mature.
 4. Plante morte: LArRE nettoie le plateau et dépose la plante morte dans le
    crops export bin.
 
@@ -76,6 +77,16 @@ Pour les stations de transfert par chute:
 Envoyer une impulsion sur `Activate` dit à LArRE d'utiliser la pince à la station
 actuelle. S'il tient des cultures ou des graines et qu'il y a un Chute Import Bin
 sous la station, il devrait placer ou déposer l'item dans ce bin.
+
+Le script utilise la valeur de slot `Seeding` pour éviter de récolter trop tôt.
+`Seeding` doit être supérieur à `0` avant que LArRE récolte la plante, donc il
+attend que les graines soient prêtes avant de prendre la culture.
+
+Cela ne demande pas un deuxième IC ni des lectures batch directes depuis
+`StructureHydroponicsTrayData`. Le dock Hydroponics LArRE lit le plateau sous la
+station actuelle via le slot `255`. Un IC séparé pour les données de plateaux est
+utile seulement si vous voulez pré-scanner plusieurs plateaux pendant que LArRE
+se déplace ailleurs.
 
 Après la dernière station, le script attend 10 secondes et recommence la
 patrouille.
