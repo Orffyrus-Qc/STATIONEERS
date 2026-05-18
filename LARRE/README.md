@@ -45,6 +45,11 @@ The claw activates when:
 3. The plant is seeding.
 4. The plant is dead or fully damaged.
 
+For chute handoff stations:
+
+- Chute Import Bin = LArRE drops items into the chute network.
+- Chute Export Bin = LArRE can pick items up from the chute network.
+
 After the final station, the script waits 10 seconds and starts the patrol again.
 
 ## Options
