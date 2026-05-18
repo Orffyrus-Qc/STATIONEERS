@@ -30,10 +30,10 @@ Default station layout:
 
 | Role | Default station | Physical station target | Purpose |
 | --- | --- | --- | --- |
-| Grow trays | `0` through `5` | Hydroponics trays/devices | LArRE plants, harvests, and clears crops. |
-| Seed import bin | `6` | Chute Import Bin | LArRE drops harvested seeds into the seed chute network. |
-| Seed export bin | `7` | Chute Export Bin | LArRE picks seeds up from the seed chute network before planting. |
-| Crops export bin | `8` | Chute Import Bin | LArRE drops crops or cleared dead plants into the output chute network. |
+| Grow trays | `0` through `15` | Hydroponics trays/devices | LArRE plants, harvests, and clears crops. |
+| Seed import bin | `16` | Chute Import Bin | LArRE drops harvested seeds into the seed chute network. |
+| Seed export bin | `17` | Chute Export Bin | LArRE picks seeds up from the seed chute network before planting. |
+| Crops export bin | `18` | Chute Import Bin | LArRE drops crops or cleared dead plants into the output chute network. |
 
 The crops export station uses a Chute Import Bin because LArRE is placing items
 into the chute network. The name describes the station's job from the
@@ -45,10 +45,10 @@ Default grow-station range and bin stations:
 
 ```ic10
 define FIRST_GROW_STATION 0
-define LAST_GROW_STATION 5
-define SEED_IMPORT_STATION 6
-define SEED_EXPORT_STATION 7
-define CROPS_EXPORT_STATION 8
+define LAST_GROW_STATION 15
+define SEED_IMPORT_STATION 16
+define SEED_EXPORT_STATION 17
+define CROPS_EXPORT_STATION 18
 ```
 
 For each grow station, the script writes the station number to `Setting`, waits
@@ -82,10 +82,10 @@ Change these values directly in `LARRE_HYDROPONICS.ic10`:
 | --- | --- | --- |
 | `LARRE_NAME` | `HASH("LArRE")` | In-game label for the LArRE Dock (Hydroponics). |
 | `FIRST_GROW_STATION` | `0` | First grow tray station index to visit. |
-| `LAST_GROW_STATION` | `5` | Last grow tray station index to visit. |
-| `SEED_IMPORT_STATION` | `6` | Station with the Chute Import Bin where LArRE drops harvested seeds. |
-| `SEED_EXPORT_STATION` | `7` | Station with the Chute Export Bin where LArRE picks seeds up for planting. |
-| `CROPS_EXPORT_STATION` | `8` | Station with the Chute Import Bin where LArRE drops crops and dead plants. |
+| `LAST_GROW_STATION` | `15` | Last grow tray station index to visit. |
+| `SEED_IMPORT_STATION` | `16` | Station with the Chute Import Bin where LArRE drops harvested seeds. |
+| `SEED_EXPORT_STATION` | `17` | Station with the Chute Export Bin where LArRE picks seeds up for planting. |
+| `CROPS_EXPORT_STATION` | `18` | Station with the Chute Import Bin where LArRE drops crops and dead plants. |
 | `ACTION_SETTLE_SECONDS` | `2` | Delay after a claw action before checking idle again. |
 | `LOOP_PAUSE_SECONDS` | `10` | Delay between patrol loops. |
 

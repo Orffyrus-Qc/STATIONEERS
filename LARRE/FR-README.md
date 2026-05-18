@@ -34,10 +34,10 @@ Disposition par défaut des stations:
 
 | Rôle | Station par défaut | Cible physique sous la station | Utilité |
 | --- | --- | --- | --- |
-| Plateaux de culture | `0` à `5` | Hydroponics trays/devices | LArRE plante, récolte et nettoie les cultures. |
-| Seed import bin | `6` | Chute Import Bin | LArRE dépose les graines récoltées dans le réseau de chute des graines. |
-| Seed export bin | `7` | Chute Export Bin | LArRE prend des graines depuis le réseau de chute des graines avant de planter. |
-| Crops export bin | `8` | Chute Import Bin | LArRE dépose les récoltes ou les plantes mortes nettoyées dans le réseau de sortie. |
+| Plateaux de culture | `0` à `15` | Hydroponics trays/devices | LArRE plante, récolte et nettoie les cultures. |
+| Seed import bin | `16` | Chute Import Bin | LArRE dépose les graines récoltées dans le réseau de chute des graines. |
+| Seed export bin | `17` | Chute Export Bin | LArRE prend des graines depuis le réseau de chute des graines avant de planter. |
+| Crops export bin | `18` | Chute Import Bin | LArRE dépose les récoltes ou les plantes mortes nettoyées dans le réseau de sortie. |
 
 La station crops export utilise un Chute Import Bin parce que LArRE place les
 items dans le réseau de chute. Le nom décrit le rôle de la station du point de
@@ -49,10 +49,10 @@ Plage de stations de culture et stations de bacs par défaut:
 
 ```ic10
 define FIRST_GROW_STATION 0
-define LAST_GROW_STATION 5
-define SEED_IMPORT_STATION 6
-define SEED_EXPORT_STATION 7
-define CROPS_EXPORT_STATION 8
+define LAST_GROW_STATION 15
+define SEED_IMPORT_STATION 16
+define SEED_EXPORT_STATION 17
+define CROPS_EXPORT_STATION 18
 ```
 
 Pour chaque station de culture, le script écrit le numéro de station dans
@@ -88,10 +88,10 @@ Modifiez ces valeurs directement dans `LARRE_HYDROPONICS.ic10`:
 | --- | --- | --- |
 | `LARRE_NAME` | `HASH("LArRE")` | Étiquette en jeu du LArRE Dock (Hydroponics). |
 | `FIRST_GROW_STATION` | `0` | Premier index de station de plateau de culture à visiter. |
-| `LAST_GROW_STATION` | `5` | Dernier index de station de plateau de culture à visiter. |
-| `SEED_IMPORT_STATION` | `6` | Station avec le Chute Import Bin où LArRE dépose les graines récoltées. |
-| `SEED_EXPORT_STATION` | `7` | Station avec le Chute Export Bin où LArRE prend les graines à planter. |
-| `CROPS_EXPORT_STATION` | `8` | Station avec le Chute Import Bin où LArRE dépose les récoltes et plantes mortes. |
+| `LAST_GROW_STATION` | `15` | Dernier index de station de plateau de culture à visiter. |
+| `SEED_IMPORT_STATION` | `16` | Station avec le Chute Import Bin où LArRE dépose les graines récoltées. |
+| `SEED_EXPORT_STATION` | `17` | Station avec le Chute Export Bin où LArRE prend les graines à planter. |
+| `CROPS_EXPORT_STATION` | `18` | Station avec le Chute Import Bin où LArRE dépose les récoltes et plantes mortes. |
 | `ACTION_SETTLE_SECONDS` | `2` | Délai après une action de pince avant de revérifier l'état idle. |
 | `LOOP_PAUSE_SECONDS` | `10` | Délai entre les boucles de patrouille. |
 
