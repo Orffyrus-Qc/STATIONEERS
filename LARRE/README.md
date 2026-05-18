@@ -92,3 +92,4 @@ Change these values directly in `LARRE_HYDROPONICS.ic10`:
 ## Files
 
 - `LARRE_HYDROPONICS.ic10` - name/hash version for one LArRE Dock (Hydroponics).
+- `FR-README.md` - French version of this README.
