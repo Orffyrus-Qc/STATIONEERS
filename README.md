@@ -107,6 +107,15 @@ buttons.
 See `CO2_ROOM_CONTROL/README.md` for labels, target range, pump behavior, and
 pressure notes.
 
+## CO2 Batch Reactor
+
+The `CO2_BATCH_REACTOR/` folder contains an IC10 script that fills a small
+isolated chamber with proportional CH4 and O2, pulses a named igniter, waits for
+combustion to finish, and pumps the resulting CO2 mix into a storage tank.
+
+See `CO2_BATCH_REACTOR/README.md` for labels, pump options, batch sizing, and
+tank pressure safety behavior.
+
 ## AC Heater Follower
 
 The `AC_HEATER/` folder contains an IC10 script that uses the Air Conditioner
