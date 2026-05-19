@@ -5,8 +5,9 @@ Cette branche teste un système LArRE hydroponique avec plusieurs IC. Le script
 `LARRE_DRIVER.ic10` déplace ou active le LArRE Dock (Hydroponics), et
 `LARRE_EXPORT_BIN.ic10` garde les chute import bins de graines/cultures en
 mode envoi vers le réseau de chute. L'aide optionnelle
-`LARRE_CHUTE_STACKER_CONTROL.ic10` active/désactive le seed import bin nommé et
-vide les stackers normaux/inversés avec les boutons START/STOP, MANUAL, et AUTO.
+`LARRE_CHUTE_STACKER_CONTROL.ic10` utilise `START/STOP` pour activer/désactiver
+le seed import bin nommé, `MANUAL` pour envoyer un pulse de vidage aux stackers,
+et `AUTO` pour répéter ce pulse sur minuterie.
 
 La séparation laisse plus d'espace pour ajouter des comportements plus tard tout
 en gardant chaque script IC sous la limite IC10 de 128 lignes.
@@ -41,7 +42,7 @@ doit correspondre exactement à l'étiquette du device en jeu.
 | `SEED_EXPORT_BIN` | Chute Import Bin | Bin sous la station `17` où LArRE dépose les graines récoltées. |
 | `CROP_EXPORT_BIN` | Chute Import Bin | Bin sous la station `18` où LArRE dépose les récoltes et plantes mortes. |
 | `START/STOP` | `ModularDeviceUtilityButton2x2` | Active/désactive `SEED_IMPORT_BIN`. |
-| `MANUAL` | `ModularDeviceUtilityButton2x2` | Vide les stackers une fois. |
+| `MANUAL` | `ModularDeviceUtilityButton2x2` | Envoie un pulse de vidage à tous les stackers. |
 | `AUTO` | `ModularDeviceUtilityButton2x2` | Active/désactive le vidage automatique des stackers toutes les `300` secondes. |
 | `Vider` | `ModularDeviceLabelDiode3` | Indicateur du mode auto; jaune quand inactif, bleu quand actif. |
 | `Empileur` | `ModularDeviceLabelDiode3` | Indicateur du mode auto; jaune quand inactif, bleu quand actif. |
@@ -135,11 +136,11 @@ Le cycle automatique:
    pour pousser les items déposés dans le réseau de chute, puis les rouvre quand
    ils sont vides.
 6. Aide chute/stacker: appuyer sur `START/STOP` active/désactive le Chute Import
-   Bin alimenté nommé `SEED_IMPORT_BIN`. Appuyer sur `MANUAL` vide tous les
-   stackers normaux/inversés une fois. Appuyer sur `AUTO` active/désactive le
-   mode auto; quand le mode auto est actif, tous les stackers normaux/inversés
-   sont vidés toutes les 300 secondes. `Vider` et `Empileur` affichent le mode
-   auto, et `Planter` affiche l'état actuel de `SEED_IMPORT_BIN`.
+   Bin alimenté nommé `SEED_IMPORT_BIN`. Appuyer sur `MANUAL` envoie un pulse de
+   vidage à tous les stackers normaux/inversés. Appuyer sur `AUTO`
+   active/désactive le mode auto; quand le mode auto est actif, le même pulse de
+   vidage est envoyé toutes les 300 secondes. `Vider` et `Empileur` affichent le
+   mode auto, et `Planter` affiche l'état actuel de `SEED_IMPORT_BIN`.
 
 Le système utilise la valeur de slot `Seeding` pour éviter de récolter trop tôt.
 `Seeding` doit être supérieur à `0` avant que LArRE récolte la plante, donc il
@@ -163,7 +164,7 @@ Modifiez ces valeurs directement dans les scripts:
 | `CROP_EXPORT_BIN` | `LARRE_EXPORT_BIN.ic10` | `HASH("CROP_EXPORT_BIN")` | Étiquette du Chute Import Bin pour les récoltes et plantes mortes. |
 | `SEED_IMPORT_BIN` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("SEED_IMPORT_BIN")` | Étiquette du Chute Import Bin contrôlé par le bouton START/STOP. |
 | `START_STOP_BUTTON` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("START/STOP")` | Étiquette du bouton pour activer/désactiver le seed import bin. |
-| `MANUAL_BUTTON` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("MANUAL")` | Étiquette du bouton manuel pour vider les stackers. |
+| `MANUAL_BUTTON` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("MANUAL")` | Étiquette du bouton manuel pour le pulse de vidage des stackers. |
 | `AUTO_BUTTON` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("AUTO")` | Étiquette du bouton pour le mode automatique de vidage des stackers. |
 | `VIDER_DIODE` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("Vider")` | Label diode du mode auto. |
 | `EMPILEUR_DIODE` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("Empileur")` | Label diode du mode auto. |
@@ -178,5 +179,5 @@ Modifiez ces valeurs directement dans les scripts:
 - `LARRE_BRAIN.ic10` - IC de décision et de patrouille.
 - `LARRE_DRIVER.ic10` - IC de mouvement/action LArRE.
 - `LARRE_EXPORT_BIN.ic10` - IC de contrôle des chute import bins graines/cultures.
-- `LARRE_CHUTE_STACKER_CONTROL.ic10` - IC aide START/STOP, MANUAL, et AUTO chute/stacker.
+- `LARRE_CHUTE_STACKER_CONTROL.ic10` - IC aide START/STOP pour le seed bin et MANUAL/AUTO pour les stackers.
 - `README.md` - version anglaise originale de ce README.

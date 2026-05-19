@@ -1,7 +1,7 @@
 # Required labels:
 # SEED_IMPORT_BIN = Chute Import Bin toggled by the START/STOP button.
 # START/STOP = Utility button. Toggles SEED_IMPORT_BIN.
-# MANUAL = Utility button. Clears stackers once.
+# MANUAL = Utility button. Sends one clear pulse to stackers.
 # AUTO   = Utility button. Toggles automatic stacker clearing every 300 seconds.
 # Vider and Empileur = Label Diode 3 auto-mode indicators.
 # Planter = Label Diode 3 SEED_IMPORT_BIN on/off indicator.
