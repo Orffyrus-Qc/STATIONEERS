@@ -64,11 +64,12 @@ See `GROW_LIGHT/README.md` for the required label and timing notes.
 The `LARRE/` folder contains an experimental multi-IC script set that controls
 one named LArRE Dock (Hydroponics) without IC device pins. One IC patrols grow
 stations and sends commands, the driver IC moves LArRE and reports tray status,
-and a helper IC sends dropped seeds/crops from chute import bins into the chute
-network.
+one helper IC sends dropped seeds/crops from chute import bins into the chute
+network, and another optional helper toggles chute import bins and clears
+stackers from MANUAL/AUTO buttons.
 
-See `LARRE/README.md` for the required label, bin station layout, station range
-options, and patrol behavior.
+See `LARRE/README.md` for the required labels, bin station layout, station range
+options, helper buttons, and patrol behavior.
 
 ## Light House Rotating Beam
 

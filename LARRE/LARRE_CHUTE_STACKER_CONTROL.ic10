@@ -1,0 +1,71 @@
+# Required labels:
+# MANUAL = Utility button. Toggles all Chute Import Bins and clears stackers.
+# AUTO   = Utility button. Toggles automatic stacker clearing every 300 seconds.
+define BUTTON_TYPE HASH("ModularDeviceUtilityButton2x2")
+define MANUAL_BUTTON HASH("MANUAL")
+define AUTO_BUTTON HASH("AUTO")
+define CHUTE_BIN_TYPE HASH("StructureChuteBin")
+define STACKER_TYPE HASH("StructureStacker")
+define STACKER_REVERSE_TYPE HASH("StructureStackerReverse")
+define AUTO_INTERVAL_SECONDS 300
+define STACKER_CLEAR_SECONDS 1
+define POLL_SECONDS 0.25
+alias chuteOn r0
+alias autoMode r1
+alias autoTimer r2
+alias manualPressed r3
+alias autoPressed r4
+alias manualLock r5
+alias autoLock r6
+init:
+lb chuteOn CHUTE_BIN_TYPE On Maximum
+bnan chuteOn chuteOff
+sgtz chuteOn chuteOn
+j initState
+chuteOff:
+move chuteOn 0
+initState:
+move autoMode 0
+move autoTimer 0
+move manualLock 0
+move autoLock 0
+sb CHUTE_BIN_TYPE On chuteOn
+jal resetStackers
+main:
+lbn manualPressed BUTTON_TYPE MANUAL_BUTTON Activate Sum
+blt manualPressed 0.5 manualReleased
+bgt manualLock 0 checkAutoButton
+seqz chuteOn chuteOn
+sb CHUTE_BIN_TYPE On chuteOn
+jal clearStackers
+move manualLock 1
+j checkAutoButton
+manualReleased:
+move manualLock 0
+checkAutoButton:
+lbn autoPressed BUTTON_TYPE AUTO_BUTTON Activate Sum
+blt autoPressed 0.5 autoReleased
+bgt autoLock 0 checkAutoTimer
+seqz autoMode autoMode
+move autoTimer 0
+move autoLock 1
+j checkAutoTimer
+autoReleased:
+move autoLock 0
+checkAutoTimer:
+beqz autoMode loopPause
+add autoTimer autoTimer POLL_SECONDS
+blt autoTimer AUTO_INTERVAL_SECONDS loopPause
+move autoTimer 0
+jal clearStackers
+loopPause:
+sleep POLL_SECONDS
+j main
+clearStackers:
+sb STACKER_TYPE Activate 1
+sb STACKER_REVERSE_TYPE Activate 1
+sleep STACKER_CLEAR_SECONDS
+resetStackers:
+sb STACKER_TYPE Activate 0
+sb STACKER_REVERSE_TYPE Activate 0
+j ra
