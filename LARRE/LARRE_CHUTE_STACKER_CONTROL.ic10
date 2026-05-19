@@ -1,11 +1,11 @@
 # Required labels:
-# SEED_IMPORT_BIN = Chute Import Bin controlled by START and STOP.
-# START = Utility button. Turns SEED_IMPORT_BIN on.
-# STOP = Utility button. Turns SEED_IMPORT_BIN off.
+# SEED_SUPPLYER = Chute Export Bin controlled by START and STOP.
+# START = Utility button. Turns SEED_SUPPLYER on.
+# STOP = Utility button. Turns SEED_SUPPLYER off.
 # MANUAL = Utility button. Sends one clear pulse to stackers.
 # AUTO   = Utility button. Toggles automatic stacker clearing every 300 seconds.
 # Vider and Empileurs = Label Diode 3 auto-mode indicators.
-# Planter = Label Diode 3 SEED_IMPORT_BIN on/off indicator.
+# Planter = Label Diode 3 SEED_SUPPLYER on/off indicator.
 define BUTTON_TYPE HASH("ModularDeviceUtilityButton2x2")
 define DIODE_TYPE HASH("ModularDeviceLabelDiode3")
 define START_BUTTON HASH("START")
@@ -15,8 +15,8 @@ define AUTO_BUTTON HASH("AUTO")
 define VIDER_DIODE HASH("Vider")
 define EMPILEUR_DIODE HASH("Empileurs")
 define PLANTER_DIODE HASH("Planter")
-define CHUTE_BIN_TYPE HASH("StructureChuteBin")
-define SEED_IMPORT_BIN HASH("SEED_IMPORT_BIN")
+define CHUTE_EXPORT_BIN_TYPE HASH("StructureChuteExportBin")
+define SEED_SUPPLYER HASH("SEED_SUPPLYER")
 define STACKER_TYPE HASH("StructureStacker")
 define STACKER_REVERSE_TYPE HASH("StructureStackerReverse")
 define AUTO_INTERVAL_SECONDS 300
@@ -91,7 +91,7 @@ jal writeIndicators
 sleep POLL_SECONDS
 j main
 readChuteState:
-lbn chuteOn CHUTE_BIN_TYPE SEED_IMPORT_BIN On Maximum
+lbn chuteOn CHUTE_EXPORT_BIN_TYPE SEED_SUPPLYER On Maximum
 bnan chuteOn chuteMissing
 sgtz chuteOn chuteOn
 j ra
@@ -107,7 +107,7 @@ sbn DIODE_TYPE PLANTER_DIODE On 1
 sbn DIODE_TYPE PLANTER_DIODE Color chuteColor
 j ra
 writeChuteState:
-sbn CHUTE_BIN_TYPE SEED_IMPORT_BIN On chuteOn
+sbn CHUTE_EXPORT_BIN_TYPE SEED_SUPPLYER On chuteOn
 j ra
 clearStackers:
 sb STACKER_TYPE Activate 1
