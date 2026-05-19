@@ -42,11 +42,17 @@ doit correspondre exactement à l'étiquette du device en jeu.
 | `CROP_EXPORT_BIN` | Chute Import Bin | Bin sous la station `18` où LArRE dépose les récoltes et plantes mortes. |
 | `MANUAL` | `ModularDeviceUtilityButton2x2` | Active/désactive `SEED_IMPORT_BIN` et vide les stackers une fois. |
 | `AUTO` | `ModularDeviceUtilityButton2x2` | Active/désactive le vidage automatique des stackers toutes les `300` secondes. |
+| `Vider` | `ModularDeviceLabelDiode3` | Indicateur du mode auto; jaune quand inactif, bleu quand actif. |
+| `Empileur` | `ModularDeviceLabelDiode3` | Indicateur du mode auto; jaune quand inactif, bleu quand actif. |
+| `Planter` | `ModularDeviceLabelDiode3` | Indicateur de `SEED_IMPORT_BIN`; rouge quand inactif, vert quand actif. |
 
 `LARRE_CHUTE_STACKER_CONTROL.ic10` contrôle le `StructureChuteBin` nommé
 `SEED_IMPORT_BIN` par hash de prefab/nom. Il vide encore tous les
 `StructureStacker` et `StructureStackerReverse` sur le data network de l'IC par
 hash de prefab, donc ces stackers n'ont pas besoin d'étiquettes individuelles.
+Il colore aussi les `ModularDeviceLabelDiode3`: `Vider` et `Empileur` sont
+jaunes quand le mode auto est inactif et bleus quand il est actif; `Planter` est
+rouge quand `SEED_IMPORT_BIN` est inactif et vert quand il est actif.
 
 Ajoutez ces huit Logic Memory sur le même data network:
 
@@ -131,7 +137,8 @@ Le cycle automatique:
    alimenté nommé `SEED_IMPORT_BIN` et vide tous les stackers normaux/inversés
    une fois. Appuyer sur `AUTO` active/désactive le mode auto; quand le mode
    auto est actif, tous les stackers normaux/inversés sont vidés toutes les
-   300 secondes.
+   300 secondes. `Vider` et `Empileur` affichent le mode auto, et `Planter`
+   affiche l'état actuel de `SEED_IMPORT_BIN`.
 
 Le système utilise la valeur de slot `Seeding` pour éviter de récolter trop tôt.
 `Seeding` doit être supérieur à `0` avant que LArRE récolte la plante, donc il
@@ -156,6 +163,10 @@ Modifiez ces valeurs directement dans les scripts:
 | `SEED_IMPORT_BIN` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("SEED_IMPORT_BIN")` | Étiquette du Chute Import Bin contrôlé par le bouton MANUAL. |
 | `MANUAL_BUTTON` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("MANUAL")` | Étiquette du bouton manuel pour basculer `SEED_IMPORT_BIN` et vider les stackers. |
 | `AUTO_BUTTON` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("AUTO")` | Étiquette du bouton pour le mode automatique de vidage des stackers. |
+| `VIDER_DIODE` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("Vider")` | Label diode du mode auto. |
+| `EMPILEUR_DIODE` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("Empileur")` | Label diode du mode auto. |
+| `PLANTER_DIODE` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("Planter")` | Label diode de l'état du seed import bin. |
+| `BLUE`, `GREEN`, `RED`, `YELLOW` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `0`, `2`, `4`, `5` | Valeurs de couleur data-network utilisées par les label diodes. |
 | `AUTO_INTERVAL_SECONDS` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `300` | Délai entre les vidages automatiques pendant que le mode auto est actif. |
 | `STACKER_CLEAR_SECONDS` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `1` | Durée du pulse actif pour vider les stackers. |
 | `POLL_SECONDS` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `0.25` | Intervalle de lecture des boutons. |
