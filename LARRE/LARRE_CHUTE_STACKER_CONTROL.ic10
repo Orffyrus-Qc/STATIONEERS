@@ -1,11 +1,13 @@
 # Required labels:
-# SEED_IMPORT_BIN = Chute Import Bin toggled by the MANUAL button.
-# MANUAL = Utility button. Toggles SEED_IMPORT_BIN and clears stackers.
+# SEED_IMPORT_BIN = Chute Import Bin toggled by the START/STOP button.
+# START/STOP = Utility button. Toggles SEED_IMPORT_BIN.
+# MANUAL = Utility button. Clears stackers once.
 # AUTO   = Utility button. Toggles automatic stacker clearing every 300 seconds.
 # Vider and Empileur = Label Diode 3 auto-mode indicators.
 # Planter = Label Diode 3 SEED_IMPORT_BIN on/off indicator.
 define BUTTON_TYPE HASH("ModularDeviceUtilityButton2x2")
 define DIODE_TYPE HASH("ModularDeviceLabelDiode3")
+define START_STOP_BUTTON HASH("START/STOP")
 define MANUAL_BUTTON HASH("MANUAL")
 define AUTO_BUTTON HASH("AUTO")
 define VIDER_DIODE HASH("Vider")
@@ -31,21 +33,33 @@ alias manualLock r5
 alias autoLock r6
 alias autoColor r7
 alias chuteColor r8
+alias startStopPressed r9
+alias startStopLock r10
 init:
 jal readChuteState
 move autoMode 0
 move autoTimer 0
 move manualLock 0
 move autoLock 0
+move startStopLock 0
 sbn CHUTE_BIN_TYPE SEED_IMPORT_BIN On chuteOn
 jal resetStackers
 main:
 jal readChuteState
+checkStartStopButton:
+lbn startStopPressed BUTTON_TYPE START_STOP_BUTTON Activate Sum
+blt startStopPressed 0.5 startStopReleased
+bgt startStopLock 0 checkManualButton
+seqz chuteOn chuteOn
+sbn CHUTE_BIN_TYPE SEED_IMPORT_BIN On chuteOn
+move startStopLock 1
+j checkManualButton
+startStopReleased:
+move startStopLock 0
+checkManualButton:
 lbn manualPressed BUTTON_TYPE MANUAL_BUTTON Activate Sum
 blt manualPressed 0.5 manualReleased
 bgt manualLock 0 checkAutoButton
-seqz chuteOn chuteOn
-sbn CHUTE_BIN_TYPE SEED_IMPORT_BIN On chuteOn
 jal clearStackers
 move manualLock 1
 j checkAutoButton

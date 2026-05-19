@@ -66,7 +66,8 @@ one named LArRE Dock (Hydroponics) without IC device pins. One IC patrols grow
 stations and sends commands, the driver IC moves LArRE and reports tray status,
 one helper IC sends dropped seeds/crops from chute import bins into the chute
 network, and another optional helper toggles the named seed import bin and
-clears stackers from MANUAL/AUTO buttons with label-diode status colors.
+clears stackers from START/STOP, MANUAL, and AUTO buttons with label-diode
+status colors.
 
 See `LARRE/README.md` for the required labels, bin station layout, station range
 options, helper buttons, and patrol behavior.
