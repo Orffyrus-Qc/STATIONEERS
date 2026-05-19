@@ -1,13 +1,15 @@
 # Required labels:
-# SEED_IMPORT_BIN = Chute Import Bin toggled by the START/STOP button.
-# START/STOP = Utility button. Toggles SEED_IMPORT_BIN.
+# SEED_IMPORT_BIN = Chute Import Bin controlled by START and STOP.
+# START = Utility button. Turns SEED_IMPORT_BIN on.
+# STOP = Utility button. Turns SEED_IMPORT_BIN off.
 # MANUAL = Utility button. Sends one clear pulse to stackers.
 # AUTO   = Utility button. Toggles automatic stacker clearing every 300 seconds.
-# Vider and Empileur = Label Diode 3 auto-mode indicators.
+# Vider and Empileurs = Label Diode 3 auto-mode indicators.
 # Planter = Label Diode 3 SEED_IMPORT_BIN on/off indicator.
 define BUTTON_TYPE HASH("ModularDeviceUtilityButton2x2")
 define DIODE_TYPE HASH("ModularDeviceLabelDiode3")
-define START_STOP_BUTTON HASH("START/STOP")
+define START_BUTTON HASH("START")
+define STOP_BUTTON HASH("STOP")
 define MANUAL_BUTTON HASH("MANUAL")
 define AUTO_BUTTON HASH("AUTO")
 define VIDER_DIODE HASH("Vider")
@@ -33,29 +35,42 @@ alias manualLock r5
 alias autoLock r6
 alias autoColor r7
 alias chuteColor r8
-alias startStopPressed r9
-alias startStopLock r10
+alias startPressed r9
+alias stopPressed r10
+alias startLock r11
+alias stopLock r12
 init:
 jal readChuteState
 move autoMode 0
 move autoTimer 0
 move manualLock 0
 move autoLock 0
-move startStopLock 0
+move startLock 0
+move stopLock 0
 sbn CHUTE_BIN_TYPE SEED_IMPORT_BIN On chuteOn
 jal resetStackers
 main:
 jal readChuteState
-checkStartStopButton:
-lbn startStopPressed BUTTON_TYPE START_STOP_BUTTON Activate Sum
-blt startStopPressed 0.5 startStopReleased
-bgt startStopLock 0 checkManualButton
-seqz chuteOn chuteOn
+checkStartButton:
+lbn startPressed BUTTON_TYPE START_BUTTON Activate Sum
+blt startPressed 0.5 startReleased
+bgt startLock 0 checkStopButton
+move chuteOn 1
 sbn CHUTE_BIN_TYPE SEED_IMPORT_BIN On chuteOn
-move startStopLock 1
+move startLock 1
+j checkStopButton
+startReleased:
+move startLock 0
+checkStopButton:
+lbn stopPressed BUTTON_TYPE STOP_BUTTON Activate Sum
+blt stopPressed 0.5 stopReleased
+bgt stopLock 0 checkManualButton
+move chuteOn 0
+sbn CHUTE_BIN_TYPE SEED_IMPORT_BIN On chuteOn
+move stopLock 1
 j checkManualButton
-startStopReleased:
-move startStopLock 0
+stopReleased:
+move stopLock 0
 checkManualButton:
 lbn manualPressed BUTTON_TYPE MANUAL_BUTTON Activate Sum
 blt manualPressed 0.5 manualReleased
