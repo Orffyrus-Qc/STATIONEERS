@@ -9,7 +9,7 @@ mode envoi vers le réseau de chute. L'aide optionnelle
 pour activer/désactiver le seed supply export bin nommé, `MANUAL` pour envoyer un pulse
 de vidage aux stackers, et `AUTO` pour répéter ce pulse sur minuterie.
 `LARRE_POWER_LEVER.ic10` permet à un Big Lever ou Flip Cover Switch nommé
-`LArRE` d'activer ou désactiver le LArRE Dock.
+`LArRE_SWITCH` d'activer ou désactiver le LArRE Dock.
 
 La séparation laisse plus d'espace pour ajouter des comportements plus tard tout
 en gardant chaque script IC sous la limite IC10 de 128 lignes.
@@ -24,7 +24,7 @@ Chargez les scripts dans des IC housings standards sur le même data network:
 | `LARRE_DRIVER.ic10` | Déplace LArRE, active la pince et rapporte l'état du slot. |
 | `LARRE_EXPORT_BIN.ic10` | Ferme les chute import bins de graines/cultures occupés afin d'envoyer les items dans le réseau de chute. |
 | `LARRE_CHUTE_STACKER_CONTROL.ic10` | Active/désactive le seed supply export bin nommé et vide tous les stackers avec des boutons. |
-| `LARRE_POWER_LEVER.ic10` | Copie l'état d'un Big Lever ou Flip Cover Switch nommé `LArRE` vers l'état `On` du LArRE Dock. |
+| `LARRE_POWER_LEVER.ic10` | Copie l'état d'un Big Lever ou Flip Cover Switch nommé `LArRE_SWITCH` vers l'état `On` du LArRE Dock. |
 
 Aucune pin d'IC n'est utilisée. Le brain et le driver communiquent avec des
 Logic Memory nommées sur le réseau de câbles, donc cette version fonctionne avec
@@ -40,7 +40,8 @@ doit correspondre exactement à l'étiquette du device en jeu.
 
 | Étiquette | Type de device | Utilité |
 | --- | --- | --- |
-| `LArRE` | `StructureLarreDockHydroponics` et `ModularDeviceBigLever` ou `ModularDeviceFlipCoverSwitch` optionnel | LArRE Dock (Hydroponics), plus le contrôle optionnel qui active/désactive le dock. |
+| `LArRE` | `StructureLarreDockHydroponics` | LArRE Dock (Hydroponics). |
+| `LArRE_SWITCH` | `ModularDeviceBigLever` ou `ModularDeviceFlipCoverSwitch` optionnel | Contrôle de puissance qui active/désactive le LArRE Dock. |
 | `SEED_SUPPLYER` | `StructureChuteExportBin` | Chute Export Bin contrôlé par les boutons START et STOP. |
 | `SEED_EXPORT_BIN` | Chute Import Bin | Bin sous la station `17` où LArRE dépose les graines récoltées. |
 | `CROP_EXPORT_BIN` | Chute Import Bin | Bin sous la station `18` où LArRE dépose les récoltes et plantes mortes. |
@@ -78,9 +79,9 @@ Seul le LArRE Dock (Hydroponics) a besoin de l'étiquette `LArRE` pour les IC de
 patrouille. Ne nommez pas chaque station de rail `Station`, `Station1`, ou
 quelque chose de similaire pour ce système. Les arrêts de rail sont sélectionnés
 par leur index numérique de station via la valeur `Setting` du dock.
-Si vous utilisez `LARRE_POWER_LEVER.ic10`, étiquetez le Big Lever ou Flip Cover
-Switch et le LArRE Dock `LArRE`; l'IC les sépare par hash de prefab, donc aucune
-pin n'est requise.
+Si vous utilisez `LARRE_POWER_LEVER.ic10`, étiquetez le LArRE Dock `LArRE` et le
+Big Lever ou Flip Cover Switch `LArRE_SWITCH`; l'IC les sépare par hash de
+prefab/nom, donc aucune pin n'est requise.
 
 Disposition par défaut des stations:
 
@@ -151,10 +152,10 @@ Le cycle automatique:
    toutes les 300 secondes. `Vider` et `Empileurs` affichent le mode auto,
    tandis que `Planter` affiche l'état `On` actuel de `SEED_SUPPLYER`.
 7. Aide levier de puissance: `LARRE_POWER_LEVER.ic10` lit l'état `Open` du
-   `ModularDeviceBigLever` et du `ModularDeviceFlipCoverSwitch` nommés `LArRE`,
-   puis écrit leur état combiné dans l'état `On` du LArRE Dock. L'un ou l'autre
-   contrôle activé garde LArRE alimenté; tous les contrôles présents désactivés
-   l'éteignent.
+   `ModularDeviceBigLever` et du `ModularDeviceFlipCoverSwitch` nommés
+   `LArRE_SWITCH`, puis écrit leur état combiné dans le LArRE Dock nommé
+   `LArRE`. L'un ou l'autre contrôle activé garde LArRE alimenté; tous les
+   contrôles présents désactivés l'éteignent.
 
 Le système utilise la valeur de slot `Seeding` pour éviter de récolter trop tôt.
 `Seeding` doit être supérieur à `0` avant que LArRE récolte la plante, donc il
@@ -167,7 +168,8 @@ Modifiez ces valeurs directement dans les scripts:
 | Option | Script | Défaut | Comportement |
 | --- | --- | --- | --- |
 | `LARRE_NAME` | `LARRE_DRIVER.ic10` | `HASH("LArRE")` | Étiquette en jeu du LArRE Dock (Hydroponics). |
-| `LARRE_NAME` | `LARRE_POWER_LEVER.ic10` | `HASH("LArRE")` | Étiquette partagée par le Big Lever ou Flip Cover Switch et le LArRE Dock, contrôlés par hash de prefab. |
+| `LARRE_NAME` | `LARRE_POWER_LEVER.ic10` | `HASH("LArRE")` | Étiquette en jeu du LArRE Dock (Hydroponics). |
+| `SWITCH_NAME` | `LARRE_POWER_LEVER.ic10` | `HASH("LArRE_SWITCH")` | Étiquette partagée par le Big Lever ou Flip Cover Switch de puissance. |
 | `FIRST_GROW_STATION` | `LARRE_BRAIN.ic10` | `0` | Premier index de station de plateau de culture à visiter. |
 | `LAST_GROW_STATION` | `LARRE_BRAIN.ic10` | `15` | Dernier index de station de plateau de culture à visiter. |
 | `SEED_IMPORT_STATION` | `LARRE_BRAIN.ic10` | `16` | Station avec le Chute Export Bin où LArRE prend les graines à planter. |
