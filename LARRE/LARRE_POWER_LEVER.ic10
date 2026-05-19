@@ -1,0 +1,15 @@
+# Required labels:
+# LArRE = Big Lever and LArRE Dock (Hydroponics).
+define LEVER_TYPE HASH("ModularDeviceBigLever")
+define LARRE_TYPE HASH("StructureLarreDockHydroponics")
+define LARRE_NAME HASH("LArRE")
+define POLL_SECONDS 0.25
+alias leverOn r0
+main:
+lbn leverOn LEVER_TYPE LARRE_NAME Open Maximum
+bnan leverOn loopPause
+sgtz leverOn leverOn
+sbn LARRE_TYPE LARRE_NAME On leverOn
+loopPause:
+sleep POLL_SECONDS
+j main

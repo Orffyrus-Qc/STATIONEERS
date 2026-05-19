@@ -7,6 +7,8 @@ seed/crop chute import bins sending items into the chute network. The optional
 `LARRE_CHUTE_STACKER_CONTROL.ic10` helper uses separate `START` and `STOP`
 buttons to turn the named seed supply export bin on and off, `MANUAL` to send one
 stacker clear pulse, and `AUTO` to repeat the stacker clear pulse on a timer.
+`LARRE_POWER_LEVER.ic10` lets a Big Lever named `LArRE` turn the LArRE Dock
+on/off.
 
 The split leaves more room for future behavior while keeping each IC script
 under the 128-line IC10 limit.
@@ -21,6 +23,7 @@ Load the scripts into standard IC housings on the same data network:
 | `LARRE_DRIVER.ic10` | Moves LArRE, pulses the claw, and reports slot status. |
 | `LARRE_EXPORT_BIN.ic10` | Closes occupied seed/crop chute import bins so items enter the chute network. |
 | `LARRE_CHUTE_STACKER_CONTROL.ic10` | Toggles the named seed supply export bin and clears all stackers from utility buttons. |
+| `LARRE_POWER_LEVER.ic10` | Mirrors a Big Lever named `LArRE` to the LArRE Dock `On` state. |
 
 No IC device pins are used. The brain and driver communicate through named Logic
 Memory devices on the cable network, so this version works with normal IC
@@ -36,7 +39,7 @@ in-game device label exactly.
 
 | Label | Device type | Purpose |
 | --- | --- | --- |
-| `LArRE` | `StructureLarreDockHydroponics` | LArRE Dock (Hydroponics) controlled by the driver IC. |
+| `LArRE` | `StructureLarreDockHydroponics` and optional `ModularDeviceBigLever` | LArRE Dock (Hydroponics), plus the optional power lever that turns the dock on/off. |
 | `SEED_SUPPLYER` | `StructureChuteExportBin` | Chute Export Bin controlled by the START and STOP buttons. |
 | `SEED_EXPORT_BIN` | Chute Import Bin | Bin under station `17` where LArRE drops harvested seeds. |
 | `CROP_EXPORT_BIN` | Chute Import Bin | Bin under station `18` where LArRE drops crops and dead plants. |
@@ -69,9 +72,12 @@ Add these eight Logic Memory devices on the same data network:
 | `LARRE_BUS_SEEDING` | Last `Seeding` status from slot `255`. |
 | `LARRE_BUS_DAMAGE` | Last `Damage` status from slot `255`. |
 
-Only the LArRE Dock (Hydroponics) needs this label. Do not name every rail
-station `Station`, `Station1`, or similar for this system. Rail stops are
-selected by their numeric station index through the dock's `Setting` value.
+Only the LArRE Dock (Hydroponics) needs the `LArRE` label for the patrol ICs.
+Do not name every rail station `Station`, `Station1`, or similar for this
+system. Rail stops are selected by their numeric station index through the
+dock's `Setting` value.
+If using `LARRE_POWER_LEVER.ic10`, label both the Big Lever and the LArRE Dock
+`LArRE`; the IC separates them by prefab hash, so no pins are needed.
 
 Default station layout:
 
@@ -138,6 +144,9 @@ The automatic cycle:
    stackers. Pressing `AUTO` toggles auto mode; while auto mode is on, the same
    stacker clear pulse is sent every 300 seconds. `Vider` and `Empileurs` show
    auto mode, while `Planter` shows the current `SEED_SUPPLYER` `On` state.
+7. Power lever helper: `LARRE_POWER_LEVER.ic10` reads the `Open` state from the
+   `ModularDeviceBigLever` named `LArRE` and writes it to the LArRE Dock `On`
+   state. Lever on keeps LArRE powered; lever off turns it off.
 
 The system uses the `Seeding` slot value to avoid harvesting crops too early.
 `Seeding` must be greater than `0` before LArRE harvests the plant, so it waits
@@ -150,6 +159,7 @@ Change these values directly in the scripts:
 | Option | Script | Default | Behavior |
 | --- | --- | --- | --- |
 | `LARRE_NAME` | `LARRE_DRIVER.ic10` | `HASH("LArRE")` | In-game label for the LArRE Dock (Hydroponics). |
+| `LARRE_NAME` | `LARRE_POWER_LEVER.ic10` | `HASH("LArRE")` | Shared label for the Big Lever and LArRE Dock controlled by prefab hash. |
 | `FIRST_GROW_STATION` | `LARRE_BRAIN.ic10` | `0` | First grow tray station index to visit. |
 | `LAST_GROW_STATION` | `LARRE_BRAIN.ic10` | `15` | Last grow tray station index to visit. |
 | `SEED_IMPORT_STATION` | `LARRE_BRAIN.ic10` | `16` | Station with the Chute Export Bin where LArRE picks seeds up for planting. |
@@ -178,4 +188,5 @@ Change these values directly in the scripts:
 - `LARRE_DRIVER.ic10` - LArRE movement/action IC.
 - `LARRE_EXPORT_BIN.ic10` - seed/crop chute import bin control IC.
 - `LARRE_CHUTE_STACKER_CONTROL.ic10` - START and STOP seed supply export bin control plus MANUAL/AUTO stacker clear helper IC.
+- `LARRE_POWER_LEVER.ic10` - Big Lever to LArRE Dock power helper IC.
 - `FR-README.md` - French version of this README.

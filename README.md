@@ -65,12 +65,13 @@ The `LARRE/` folder contains an experimental multi-IC script set that controls
 one named LArRE Dock (Hydroponics) without IC device pins. One IC patrols grow
 stations and sends commands, the driver IC moves LArRE and reports tray status,
 one helper IC sends dropped seeds/crops from chute import bins into the chute
-network, and another optional helper controls the named seed import bin from
-separate START and STOP buttons and stacker clear pulses from MANUAL/AUTO buttons
-with label-diode status colors.
+network, another optional helper controls the named `SEED_SUPPLYER` chute export
+bin from separate START and STOP buttons and stacker clear pulses from
+MANUAL/AUTO buttons with label-diode status colors, and a small power helper
+mirrors a Big Lever named `LArRE` to the LArRE Dock `On` state.
 
 See `LARRE/README.md` for the required labels, bin station layout, station range
-options, helper buttons, and patrol behavior.
+options, helper buttons, power lever, and patrol behavior.
 
 ## Light House Rotating Beam
 
