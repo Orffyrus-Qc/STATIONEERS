@@ -4,8 +4,8 @@ This branch tests a multi-IC LArRE hydroponics system. `LARRE_BRAIN.ic10`
 decides what should happen at each station, `LARRE_DRIVER.ic10` moves or
 activates the LArRE Dock (Hydroponics), and `LARRE_EXPORT_BIN.ic10` keeps the
 seed/crop chute import bins sending items into the chute network. The optional
-`LARRE_CHUTE_STACKER_CONTROL.ic10` helper toggles chute import bins and clears
-normal/reversed stackers from named MANUAL and AUTO utility buttons.
+`LARRE_CHUTE_STACKER_CONTROL.ic10` helper toggles the named seed import bin and
+clears normal/reversed stackers from named MANUAL and AUTO utility buttons.
 
 The split leaves more room for future behavior while keeping each IC script
 under the 128-line IC10 limit.
@@ -19,7 +19,7 @@ Load the scripts into standard IC housings on the same data network:
 | `LARRE_BRAIN.ic10` | Patrols the grow stations and sends inspect/action commands. |
 | `LARRE_DRIVER.ic10` | Moves LArRE, pulses the claw, and reports slot status. |
 | `LARRE_EXPORT_BIN.ic10` | Closes occupied seed/crop chute import bins so items enter the chute network. |
-| `LARRE_CHUTE_STACKER_CONTROL.ic10` | Toggles all chute import bins and clears all stackers from utility buttons. |
+| `LARRE_CHUTE_STACKER_CONTROL.ic10` | Toggles the named seed import bin and clears all stackers from utility buttons. |
 
 No IC device pins are used. The brain and driver communicate through named Logic
 Memory devices on the cable network, so this version works with normal IC
@@ -36,14 +36,16 @@ in-game device label exactly.
 | Label | Device type | Purpose |
 | --- | --- | --- |
 | `LArRE` | `StructureLarreDockHydroponics` | LArRE Dock (Hydroponics) controlled by the driver IC. |
+| `SEED_IMPORT_BIN` | `StructureChuteBin` | Chute Import Bin turned on/off by the MANUAL button. |
 | `SEED_EXPORT_BIN` | Chute Import Bin | Bin under station `17` where LArRE drops harvested seeds. |
 | `CROP_EXPORT_BIN` | Chute Import Bin | Bin under station `18` where LArRE drops crops and dead plants. |
-| `MANUAL` | `ModularDeviceUtilityButton2x2` | Toggles all `StructureChuteBin` devices and clears stackers once. |
+| `MANUAL` | `ModularDeviceUtilityButton2x2` | Toggles `SEED_IMPORT_BIN` and clears stackers once. |
 | `AUTO` | `ModularDeviceUtilityButton2x2` | Toggles automatic stacker clearing every `300` seconds. |
 
-`LARRE_CHUTE_STACKER_CONTROL.ic10` controls every `StructureChuteBin`,
-`StructureStacker`, and `StructureStackerReverse` on the IC's data network by
-prefab hash. Those devices do not need individual labels.
+`LARRE_CHUTE_STACKER_CONTROL.ic10` controls the `StructureChuteBin` named
+`SEED_IMPORT_BIN` by prefab/name hash. It still clears every `StructureStacker`
+and `StructureStackerReverse` on the IC's data network by prefab hash, so those
+stackers do not need individual labels.
 
 Add these eight Logic Memory devices on the same data network:
 
@@ -121,8 +123,9 @@ The automatic cycle:
    crops export bin.
 5. Export bins: the export-bin IC closes occupied seed/crop import bins to push
    dropped items into the chute network, then reopens them when empty.
-6. Chute/stacker helper: pressing `MANUAL` toggles all powered Chute Import Bins
-   on or off and clears all normal/reversed stackers once. Pressing `AUTO`
+6. Chute/stacker helper: pressing `MANUAL` toggles the powered Chute Import Bin
+   named `SEED_IMPORT_BIN` on or off and clears all normal/reversed stackers
+   once. Pressing `AUTO`
    toggles auto mode; while auto mode is on, all normal/reversed stackers are
    cleared every 300 seconds.
 
@@ -146,6 +149,7 @@ Change these values directly in the scripts:
 | `LOOP_PAUSE_SECONDS` | `LARRE_BRAIN.ic10` | `10` | Delay between patrol loops. |
 | `SEED_EXPORT_BIN` | `LARRE_EXPORT_BIN.ic10` | `HASH("SEED_EXPORT_BIN")` | Chute Import Bin label for harvested seeds. |
 | `CROP_EXPORT_BIN` | `LARRE_EXPORT_BIN.ic10` | `HASH("CROP_EXPORT_BIN")` | Chute Import Bin label for crops and dead plants. |
+| `SEED_IMPORT_BIN` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("SEED_IMPORT_BIN")` | Chute Import Bin label controlled by the MANUAL button. |
 | `MANUAL_BUTTON` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("MANUAL")` | Utility button label for manual chute-bin toggle and stacker clear. |
 | `AUTO_BUTTON` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("AUTO")` | Utility button label for automatic stacker-clearing mode. |
 | `AUTO_INTERVAL_SECONDS` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `300` | Delay between automatic stacker clear pulses while auto mode is on. |
