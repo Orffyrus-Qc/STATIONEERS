@@ -1,0 +1,127 @@
+define sensor      HASH("StructureGasSensor")
+define valve       HASH("StructureDigitalValve")
+define vent        HASH("StructureActiveVent")
+define memory      HASH("StructureLogicMemory")
+define sensorName  HASH("ATM_SENSOR")
+define modeName    HASH("ATM_MODE")
+define purgeName   HASH("ATM_PURGE")
+define o2Name      HASH("ATM_O2_IN")
+define ch4Name     HASH("ATM_CH4_IN")
+define co2Name     HASH("ATM_CO2_IN")
+define n2Name      HASH("ATM_N2_IN")
+define modeHuman   1
+define modeZrilian 2
+define modeGreen   3
+define targetHuman 100
+define targetZril  100
+define targetGreen 80
+define maxHuman    110
+define maxZril     110
+define maxGreen    95
+define minPressGap 2
+define o2Min       22
+define ch4Min      22
+define co2Min      5
+define purgeBad    2
+define purgeDone   0.5
+alias mode   r0
+alias press  r1
+alias o2pp   r2
+alias fuelpp r3
+alias co2pp  r4
+alias tmp    r5
+alias target r6
+alias maxp   r7
+alias purge  r8
+alias o2in   r9
+alias ch4in  r10
+alias co2in  r11
+alias n2in   r12
+init:
+    sbn valve o2Name On 0
+    sbn valve ch4Name On 0
+    sbn valve co2Name On 0
+    sbn valve n2Name On 0
+    sbn vent purgeName On 0
+    sbn vent purgeName Mode 1
+main:
+    lbn mode memory modeName Setting Average
+    blt mode modeHuman setHuman
+    beq mode modeZrilian setZrilian
+    beq mode modeGreen setGreen
+setHuman:
+    move target targetHuman
+    move maxp maxHuman
+    j readRoom
+setZrilian:
+    move target targetZril
+    move maxp maxZril
+    j readRoom
+setGreen:
+    move target targetGreen
+    move maxp maxGreen
+readRoom:
+    lbn press sensor sensorName Pressure Average
+    lbn tmp sensor sensorName RatioOxygen Average
+    mul o2pp press tmp
+    lbn tmp sensor sensorName RatioMethane Average
+    mul fuelpp press tmp
+    lbn tmp sensor sensorName RatioHydrogen Average
+    mul tmp press tmp
+    add fuelpp fuelpp tmp
+    lbn tmp sensor sensorName RatioCarbonDioxide Average
+    mul co2pp press tmp
+    move purge 0
+    move o2in 0
+    move ch4in 0
+    move co2in 0
+    move n2in 0
+    bgt press maxp doPurge
+    bgt o2pp purgeBad checkFuelH2
+    j checkModePurge
+checkFuelH2:
+    bgt fuelpp purgeBad doPurge
+checkModePurge:
+    beq mode modeZrilian zrilianSafety
+    bgt fuelpp purgeBad doPurge
+    j doseMode
+zrilianSafety:
+    bgt o2pp purgeBad doPurge
+doseMode:
+    beq mode modeZrilian doseZrilian
+    beq mode modeGreen doseGreen
+    blt o2pp o2Min openO2
+    j padPressure
+openO2:
+    move o2in 1
+    j padPressure
+doseZrilian:
+    blt fuelpp ch4Min openCH4
+    j padPressure
+openCH4:
+    move ch4in 1
+    j padPressure
+doseGreen:
+    blt co2pp co2Min openCO2
+    j padPressure
+openCO2:
+    move co2in 1
+padPressure:
+    sub tmp target minPressGap
+    bge press tmp write
+    move n2in 1
+    j write
+doPurge:
+    move purge 1
+    bgt o2pp purgeDone write
+    bgt fuelpp purgeDone write
+    bgt press target write
+    move purge 0
+write:
+    sbn vent purgeName On purge
+    sbn valve o2Name On o2in
+    sbn valve ch4Name On ch4in
+    sbn valve co2Name On co2in
+    sbn valve n2Name On n2in
+    yield
+    j main

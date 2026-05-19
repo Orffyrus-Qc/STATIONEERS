@@ -1,0 +1,64 @@
+define button       HASH("ModularDeviceUtilityButton2x2")
+define display      HASH("ModularDeviceLEDdisplay2")
+define memory       HASH("StructureLogicMemory")
+define humanName    HASH("HUMAN")
+define zrilianName  HASH("ZRILIAN")
+define greenName    HASH("GREENHOUSE")
+define displayName  HASH("ATM_DISPLAY")
+define modeName     HASH("ATM_MODE")
+define pressLock    2
+define modeHuman    1
+define modeZrilian  2
+define modeGreen    3
+alias mode      r0
+alias humanBtn  r1
+alias zrilBtn   r2
+alias greenBtn  r3
+alias lock      r4
+alias out       r5
+
+init:
+    move mode modeHuman
+    sbn display displayName On 1
+    sbn display displayName Mode 0
+    sbn memory modeName Setting mode
+
+main:
+    sub lock lock 1
+    lbn mode memory modeName Setting Average
+    bnan mode fixMode
+    blt mode modeHuman fixMode
+    bgt mode modeGreen fixMode
+    j readButtons
+
+fixMode:
+    move mode modeHuman
+
+readButtons:
+    lbn humanBtn button humanName Activate Sum
+    lbn zrilBtn button zrilianName Activate Sum
+    lbn greenBtn button greenName Activate Sum
+    bgt lock 0 write
+    bgt humanBtn 0.5 setHuman
+    bgt zrilBtn 0.5 setZrilian
+    bgt greenBtn 0.5 setGreen
+    j write
+
+setHuman:
+    move mode modeHuman
+    move lock pressLock
+    j write
+setZrilian:
+    move mode modeZrilian
+    move lock pressLock
+    j write
+setGreen:
+    move mode modeGreen
+    move lock pressLock
+
+write:
+    sbn memory modeName Setting mode
+    mul out mode 100
+    sbn display displayName Setting out
+    yield
+    j main
