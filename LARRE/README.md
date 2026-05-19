@@ -40,7 +40,7 @@ in-game device label exactly.
 | `SEED_IMPORT_BIN` | `StructureChuteBin` | Chute Import Bin controlled by the START and STOP buttons. |
 | `SEED_EXPORT_BIN` | Chute Import Bin | Bin under station `17` where LArRE drops harvested seeds. |
 | `CROP_EXPORT_BIN` | Chute Import Bin | Bin under station `18` where LArRE drops crops and dead plants. |
-| `START` | `ModularDeviceUtilityButton2x2` | Turns `SEED_IMPORT_BIN` on/open and stays lit while it is open. |
+| `START` | `ModularDeviceUtilityButton2x2` | Turns `SEED_IMPORT_BIN` on/open. |
 | `STOP` | `ModularDeviceUtilityButton2x2` | Turns `SEED_IMPORT_BIN` off/closed. |
 | `MANUAL` | `ModularDeviceUtilityButton2x2` | Sends one clear pulse to all stackers. |
 | `AUTO` | `ModularDeviceUtilityButton2x2` | Toggles automatic stacker clearing every `300` seconds. |
@@ -54,8 +54,7 @@ and `StructureStackerReverse` on the IC's data network by prefab hash, so those
 stackers do not need individual labels. It also colors `ModularDeviceLabelDiode3`
 status labels: `Vider` and `Empileurs` are yellow when auto mode is off and blue
 when it is on; `Planter` is red when `SEED_IMPORT_BIN` is closed/off and green
-when it is open/on. The `START` button `On` state follows the same open/on state
-as `Planter`.
+when it is open/on.
 
 Add these eight Logic Memory devices on the same data network:
 
@@ -138,8 +137,7 @@ The automatic cycle:
    closed. Pressing `MANUAL` sends one clear pulse to all normal/reversed
    stackers. Pressing `AUTO` toggles auto mode; while auto mode is on, the same
    stacker clear pulse is sent every 300 seconds. `Vider` and `Empileurs` show
-   auto mode, while `START` and `Planter` show the current `SEED_IMPORT_BIN`
-   open/on state.
+   auto mode, while `Planter` shows the current `SEED_IMPORT_BIN` open/on state.
 
 The system uses the `Seeding` slot value to avoid harvesting crops too early.
 `Seeding` must be greater than `0` before LArRE harvests the plant, so it waits

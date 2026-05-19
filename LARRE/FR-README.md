@@ -41,7 +41,7 @@ doit correspondre exactement à l'étiquette du device en jeu.
 | `SEED_IMPORT_BIN` | `StructureChuteBin` | Chute Import Bin contrôlé par les boutons START et STOP. |
 | `SEED_EXPORT_BIN` | Chute Import Bin | Bin sous la station `17` où LArRE dépose les graines récoltées. |
 | `CROP_EXPORT_BIN` | Chute Import Bin | Bin sous la station `18` où LArRE dépose les récoltes et plantes mortes. |
-| `START` | `ModularDeviceUtilityButton2x2` | Active/ouvre `SEED_IMPORT_BIN` et reste allumé tant qu'il est ouvert. |
+| `START` | `ModularDeviceUtilityButton2x2` | Active/ouvre `SEED_IMPORT_BIN`. |
 | `STOP` | `ModularDeviceUtilityButton2x2` | Désactive/ferme `SEED_IMPORT_BIN`. |
 | `MANUAL` | `ModularDeviceUtilityButton2x2` | Envoie un pulse de vidage à tous les stackers. |
 | `AUTO` | `ModularDeviceUtilityButton2x2` | Active/désactive le vidage automatique des stackers toutes les `300` secondes. |
@@ -56,8 +56,7 @@ hash de prefab, donc ces stackers n'ont pas besoin d'étiquettes individuelles.
 Il colore aussi les `ModularDeviceLabelDiode3`: `Vider` et `Empileurs` sont
 jaunes quand le mode auto est inactif et bleus quand il est actif; `Planter` est
 rouge quand `SEED_IMPORT_BIN` est fermé/inactif et vert quand il est
-ouvert/actif. L'état `On` du bouton `START` suit le même état ouvert/actif que
-`Planter`.
+ouvert/actif.
 
 Ajoutez ces huit Logic Memory sur le même data network:
 
@@ -143,8 +142,8 @@ Le cycle automatique:
    ferme. Appuyer sur `MANUAL` envoie un pulse de vidage à tous les stackers
    normaux/inversés. Appuyer sur `AUTO` active/désactive le mode auto; quand le
    mode auto est actif, le même pulse de vidage est envoyé toutes les 300
-   secondes. `Vider` et `Empileurs` affichent le mode auto, tandis que `START`
-   et `Planter` affichent l'état ouvert/actif actuel de `SEED_IMPORT_BIN`.
+   secondes. `Vider` et `Empileurs` affichent le mode auto, tandis que
+   `Planter` affiche l'état ouvert/actif actuel de `SEED_IMPORT_BIN`.
 
 Le système utilise la valeur de slot `Seeding` pour éviter de récolter trop tôt.
 `Seeding` doit être supérieur à `0` avant que LArRE récolte la plante, donc il
