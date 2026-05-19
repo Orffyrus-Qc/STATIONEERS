@@ -49,16 +49,19 @@ main:
 jal readChuteState
 checkStartButton:
 lbn startPressed BUTTON_TYPE START_BUTTON Activate Sum
+bnan startPressed checkStopButton
 blt startPressed 0.5 checkStopButton
 move chuteOn 1
 jal writeChuteState
 checkStopButton:
 lbn stopPressed BUTTON_TYPE STOP_BUTTON Activate Sum
+bnan stopPressed checkManualButton
 blt stopPressed 0.5 checkManualButton
 move chuteOn 0
 jal writeChuteState
 checkManualButton:
 lbn manualPressed BUTTON_TYPE MANUAL_BUTTON Activate Sum
+bnan manualPressed manualReleased
 blt manualPressed 0.5 manualReleased
 bgt manualLock 0 checkAutoButton
 jal clearStackers
@@ -68,6 +71,7 @@ manualReleased:
 move manualLock 0
 checkAutoButton:
 lbn autoPressed BUTTON_TYPE AUTO_BUTTON Activate Sum
+bnan autoPressed autoReleased
 blt autoPressed 0.5 autoReleased
 bgt autoLock 0 checkAutoTimer
 seqz autoMode autoMode
