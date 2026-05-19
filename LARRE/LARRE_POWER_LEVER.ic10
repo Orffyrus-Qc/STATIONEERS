@@ -8,9 +8,10 @@ define LARRE_NAME HASH("LArRE")
 define SWITCH_NAME HASH("LArRE_SWITCH")
 define POLL_SECONDS 0.25
 alias leverOn r0
-alias coverSwitchOn r1
-alias powerOn r2
-alias hasInput r3
+alias coverSwitchOpen r1
+alias coverSwitchOn r2
+alias powerOn r3
+alias hasInput r4
 main:
 move hasInput 0
 lbn leverOn LEVER_TYPE SWITCH_NAME Open Maximum
@@ -21,9 +22,13 @@ j readCoverSwitch
 leverMissing:
 move leverOn 0
 readCoverSwitch:
-lbn coverSwitchOn FLIP_COVER_SWITCH_TYPE SWITCH_NAME Open Maximum
+lbn coverSwitchOpen FLIP_COVER_SWITCH_TYPE SWITCH_NAME Open Maximum
+bnan coverSwitchOpen coverSwitchMissing
+lbn coverSwitchOn FLIP_COVER_SWITCH_TYPE SWITCH_NAME On Maximum
 bnan coverSwitchOn coverSwitchMissing
+sgtz coverSwitchOpen coverSwitchOpen
 sgtz coverSwitchOn coverSwitchOn
+mul coverSwitchOn coverSwitchOpen coverSwitchOn
 move hasInput 1
 j writePower
 coverSwitchMissing:

@@ -146,10 +146,11 @@ The automatic cycle:
    stackers. Pressing `AUTO` toggles auto mode; while auto mode is on, the same
    stacker clear pulse is sent every 300 seconds. `Vider` and `Empileurs` show
    auto mode, while `Planter` shows the current `SEED_SUPPLYER` `On` state.
-7. Power lever helper: `LARRE_POWER_LEVER.ic10` reads the `Open` state from the
-   `ModularDeviceBigLever` and `ModularDeviceFlipCoverSwitch` named
-   `LArRE_SWITCH`, then writes their combined state to the LArRE Dock named
-   `LArRE`. Either control on keeps LArRE powered; all present controls off
+7. Power lever helper: `LARRE_POWER_LEVER.ic10` reads `Open` from the
+   `ModularDeviceBigLever` named `LArRE_SWITCH`. For the
+   `ModularDeviceFlipCoverSwitch` named `LArRE_SWITCH`, it requires both `Open`
+   and `On` to be true. It writes the combined state to the LArRE Dock named
+   `LArRE`. Either control active keeps LArRE powered; all present controls off
    turns it off.
 
 The system uses the `Seeding` slot value to avoid harvesting crops too early.

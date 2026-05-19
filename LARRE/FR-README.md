@@ -151,11 +151,12 @@ Le cycle automatique:
    mode auto; quand le mode auto est actif, le même pulse de vidage est envoyé
    toutes les 300 secondes. `Vider` et `Empileurs` affichent le mode auto,
    tandis que `Planter` affiche l'état `On` actuel de `SEED_SUPPLYER`.
-7. Aide levier de puissance: `LARRE_POWER_LEVER.ic10` lit l'état `Open` du
-   `ModularDeviceBigLever` et du `ModularDeviceFlipCoverSwitch` nommés
-   `LArRE_SWITCH`, puis écrit leur état combiné dans le LArRE Dock nommé
-   `LArRE`. L'un ou l'autre contrôle activé garde LArRE alimenté; tous les
-   contrôles présents désactivés l'éteignent.
+7. Aide levier de puissance: `LARRE_POWER_LEVER.ic10` lit `Open` du
+   `ModularDeviceBigLever` nommé `LArRE_SWITCH`. Pour le
+   `ModularDeviceFlipCoverSwitch` nommé `LArRE_SWITCH`, il exige que `Open` et
+   `On` soient vrais. Il écrit l'état combiné dans le LArRE Dock nommé `LArRE`.
+   L'un ou l'autre contrôle actif garde LArRE alimenté; tous les contrôles
+   présents désactivés l'éteignent.
 
 Le système utilise la valeur de slot `Seeding` pour éviter de récolter trop tôt.
 `Seeding` doit être supérieur à `0` avant que LArRE récolte la plante, donc il
