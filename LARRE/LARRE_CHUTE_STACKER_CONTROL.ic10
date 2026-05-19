@@ -37,40 +37,26 @@ alias autoColor r7
 alias chuteColor r8
 alias startPressed r9
 alias stopPressed r10
-alias startLock r11
-alias stopLock r12
 init:
 jal readChuteState
 move autoMode 0
 move autoTimer 0
 move manualLock 0
 move autoLock 0
-move startLock 0
-move stopLock 0
-sbn CHUTE_BIN_TYPE SEED_IMPORT_BIN On chuteOn
+jal writeChuteState
 jal resetStackers
 main:
 jal readChuteState
 checkStartButton:
 lbn startPressed BUTTON_TYPE START_BUTTON Activate Sum
-blt startPressed 0.5 startReleased
-bgt startLock 0 checkStopButton
+blt startPressed 0.5 checkStopButton
 move chuteOn 1
-sbn CHUTE_BIN_TYPE SEED_IMPORT_BIN On chuteOn
-move startLock 1
-j checkStopButton
-startReleased:
-move startLock 0
+jal writeChuteState
 checkStopButton:
 lbn stopPressed BUTTON_TYPE STOP_BUTTON Activate Sum
-blt stopPressed 0.5 stopReleased
-bgt stopLock 0 checkManualButton
+blt stopPressed 0.5 checkManualButton
 move chuteOn 0
-sbn CHUTE_BIN_TYPE SEED_IMPORT_BIN On chuteOn
-move stopLock 1
-j checkManualButton
-stopReleased:
-move stopLock 0
+jal writeChuteState
 checkManualButton:
 lbn manualPressed BUTTON_TYPE MANUAL_BUTTON Activate Sum
 blt manualPressed 0.5 manualReleased
@@ -101,7 +87,7 @@ jal writeIndicators
 sleep POLL_SECONDS
 j main
 readChuteState:
-lbn chuteOn CHUTE_BIN_TYPE SEED_IMPORT_BIN On Maximum
+lbn chuteOn CHUTE_BIN_TYPE SEED_IMPORT_BIN Open Maximum
 bnan chuteOn chuteMissing
 sgtz chuteOn chuteOn
 j ra
@@ -111,9 +97,15 @@ j ra
 writeIndicators:
 select autoColor autoMode BLUE YELLOW
 select chuteColor chuteOn GREEN RED
+sbn BUTTON_TYPE START_BUTTON On chuteOn
 sbn DIODE_TYPE VIDER_DIODE Color autoColor
 sbn DIODE_TYPE EMPILEUR_DIODE Color autoColor
+sbn DIODE_TYPE PLANTER_DIODE On 1
 sbn DIODE_TYPE PLANTER_DIODE Color chuteColor
+j ra
+writeChuteState:
+sbn CHUTE_BIN_TYPE SEED_IMPORT_BIN On chuteOn
+sbn CHUTE_BIN_TYPE SEED_IMPORT_BIN Open chuteOn
 j ra
 clearStackers:
 sb STACKER_TYPE Activate 1

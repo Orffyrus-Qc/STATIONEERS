@@ -40,8 +40,8 @@ in-game device label exactly.
 | `SEED_IMPORT_BIN` | `StructureChuteBin` | Chute Import Bin controlled by the START and STOP buttons. |
 | `SEED_EXPORT_BIN` | Chute Import Bin | Bin under station `17` where LArRE drops harvested seeds. |
 | `CROP_EXPORT_BIN` | Chute Import Bin | Bin under station `18` where LArRE drops crops and dead plants. |
-| `START` | `ModularDeviceUtilityButton2x2` | Turns `SEED_IMPORT_BIN` on. |
-| `STOP` | `ModularDeviceUtilityButton2x2` | Turns `SEED_IMPORT_BIN` off. |
+| `START` | `ModularDeviceUtilityButton2x2` | Turns `SEED_IMPORT_BIN` on/open and stays lit while it is open. |
+| `STOP` | `ModularDeviceUtilityButton2x2` | Turns `SEED_IMPORT_BIN` off/closed. |
 | `MANUAL` | `ModularDeviceUtilityButton2x2` | Sends one clear pulse to all stackers. |
 | `AUTO` | `ModularDeviceUtilityButton2x2` | Toggles automatic stacker clearing every `300` seconds. |
 | `Vider` | `ModularDeviceLabelDiode3` | Auto-mode indicator; yellow off, blue on. |
@@ -53,8 +53,9 @@ in-game device label exactly.
 and `StructureStackerReverse` on the IC's data network by prefab hash, so those
 stackers do not need individual labels. It also colors `ModularDeviceLabelDiode3`
 status labels: `Vider` and `Empileurs` are yellow when auto mode is off and blue
-when it is on; `Planter` is red when `SEED_IMPORT_BIN` is off and green when it
-is on.
+when it is on; `Planter` is red when `SEED_IMPORT_BIN` is closed/off and green
+when it is open/on. The `START` button `On` state follows the same open/on state
+as `Planter`.
 
 Add these eight Logic Memory devices on the same data network:
 
@@ -133,11 +134,12 @@ The automatic cycle:
 5. Export bins: the export-bin IC closes occupied seed/crop import bins to push
    dropped items into the chute network, then reopens them when empty.
 6. Chute/stacker helper: pressing `START` turns the powered Chute Import Bin
-   named `SEED_IMPORT_BIN` on, and pressing `STOP` turns it off. Pressing
-   `MANUAL` sends one clear pulse to all normal/reversed stackers. Pressing
-   `AUTO` toggles auto mode; while auto mode is on, the same stacker clear pulse
-   is sent every 300 seconds. `Vider` and `Empileurs` show auto mode, and
-   `Planter` shows the current `SEED_IMPORT_BIN` on/off state.
+   named `SEED_IMPORT_BIN` on and open, and pressing `STOP` turns it off and
+   closed. Pressing `MANUAL` sends one clear pulse to all normal/reversed
+   stackers. Pressing `AUTO` toggles auto mode; while auto mode is on, the same
+   stacker clear pulse is sent every 300 seconds. `Vider` and `Empileurs` show
+   auto mode, while `START` and `Planter` show the current `SEED_IMPORT_BIN`
+   open/on state.
 
 The system uses the `Seeding` slot value to avoid harvesting crops too early.
 `Seeding` must be greater than `0` before LArRE harvests the plant, so it waits
@@ -160,8 +162,8 @@ Change these values directly in the scripts:
 | `SEED_EXPORT_BIN` | `LARRE_EXPORT_BIN.ic10` | `HASH("SEED_EXPORT_BIN")` | Chute Import Bin label for harvested seeds. |
 | `CROP_EXPORT_BIN` | `LARRE_EXPORT_BIN.ic10` | `HASH("CROP_EXPORT_BIN")` | Chute Import Bin label for crops and dead plants. |
 | `SEED_IMPORT_BIN` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("SEED_IMPORT_BIN")` | Chute Import Bin label controlled by the START and STOP buttons. |
-| `START_BUTTON` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("START")` | Utility button label for turning the seed import bin on. |
-| `STOP_BUTTON` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("STOP")` | Utility button label for turning the seed import bin off. |
+| `START_BUTTON` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("START")` | Utility button label for turning the seed import bin on/open. |
+| `STOP_BUTTON` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("STOP")` | Utility button label for turning the seed import bin off/closed. |
 | `MANUAL_BUTTON` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("MANUAL")` | Utility button label for the manual stacker clear pulse. |
 | `AUTO_BUTTON` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("AUTO")` | Utility button label for automatic stacker-clearing mode. |
 | `VIDER_DIODE` | `LARRE_CHUTE_STACKER_CONTROL.ic10` | `HASH("Vider")` | Auto-mode label diode. |
