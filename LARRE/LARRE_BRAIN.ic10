@@ -1,0 +1,116 @@
+alias rGrowStation r0
+alias rReq r1
+alias rDone r2
+alias rTarget r3
+alias rCmd r4
+alias rOccupied r5
+alias rMature r6
+alias rSeeding r7
+alias rDamage r8
+define FIRST_GROW_STATION 0
+define LAST_GROW_STATION 15
+define SEED_IMPORT_STATION 16
+define SEED_EXPORT_STATION 17
+define CROPS_EXPORT_STATION 18
+define LOOP_PAUSE_SECONDS 10
+define CMD_INSPECT 1
+define CMD_ACTION 2
+define BUS_TYPE HASH("StructureLogicMemory")
+define BUS_REQ HASH("LARRE_BUS_REQ")
+define BUS_TARGET HASH("LARRE_BUS_TARGET")
+define BUS_CMD HASH("LARRE_BUS_CMD")
+define BUS_DONE HASH("LARRE_BUS_DONE")
+define BUS_OCCUPIED HASH("LARRE_BUS_OCCUPIED")
+define BUS_MATURE HASH("LARRE_BUS_MATURE")
+define BUS_SEEDING HASH("LARRE_BUS_SEEDING")
+define BUS_DAMAGE HASH("LARRE_BUS_DAMAGE")
+init:
+move rReq 0
+sbn BUS_TYPE BUS_TARGET Setting 0
+sbn BUS_TYPE BUS_CMD Setting 0
+sbn BUS_TYPE BUS_REQ Setting 0
+sbn BUS_TYPE BUS_DONE Setting 0
+main:
+move rGrowStation FIRST_GROW_STATION
+scanGrowStation:
+move rTarget rGrowStation
+move rCmd CMD_INSPECT
+jal sendCommand
+jal loadStatus
+beqz rOccupied plantEmptyTray
+bge rDamage 1 clearDeadPlant
+bgt rSeeding 0 harvestSeed
+j nextGrowStation
+plantEmptyTray:
+move rTarget SEED_IMPORT_STATION
+move rCmd CMD_INSPECT
+jal sendCommand
+jal loadStatus
+beqz rOccupied nextGrowStation
+move rCmd CMD_ACTION
+jal sendCommand
+move rTarget rGrowStation
+move rCmd CMD_ACTION
+jal sendCommand
+j nextGrowStation
+harvestSeed:
+move rTarget rGrowStation
+move rCmd CMD_ACTION
+jal sendCommand
+move rTarget SEED_EXPORT_STATION
+move rCmd CMD_ACTION
+jal sendCommand
+move rTarget rGrowStation
+move rCmd CMD_INSPECT
+jal sendCommand
+jal loadStatus
+bnez rMature harvestCrop
+j nextGrowStation
+harvestCrop:
+move rTarget rGrowStation
+move rCmd CMD_ACTION
+jal sendCommand
+move rTarget CROPS_EXPORT_STATION
+move rCmd CMD_ACTION
+jal sendCommand
+move rTarget rGrowStation
+move rCmd CMD_INSPECT
+jal sendCommand
+jal loadStatus
+beqz rOccupied plantEmptyTray
+bnez rMature harvestCrop
+j nextGrowStation
+clearDeadPlant:
+move rTarget rGrowStation
+move rCmd CMD_ACTION
+jal sendCommand
+move rTarget CROPS_EXPORT_STATION
+move rCmd CMD_ACTION
+jal sendCommand
+move rTarget rGrowStation
+move rCmd CMD_INSPECT
+jal sendCommand
+jal loadStatus
+beqz rOccupied plantEmptyTray
+j nextGrowStation
+nextGrowStation:
+add rGrowStation rGrowStation 1
+ble rGrowStation LAST_GROW_STATION scanGrowStation
+sleep LOOP_PAUSE_SECONDS
+j main
+sendCommand:
+add rReq rReq 1
+sbn BUS_TYPE BUS_TARGET Setting rTarget
+sbn BUS_TYPE BUS_CMD Setting rCmd
+sbn BUS_TYPE BUS_REQ Setting rReq
+waitDone:
+yield
+lbn rDone BUS_TYPE BUS_DONE Setting Average
+bne rDone rReq waitDone
+j ra
+loadStatus:
+lbn rOccupied BUS_TYPE BUS_OCCUPIED Setting Average
+lbn rMature BUS_TYPE BUS_MATURE Setting Average
+lbn rSeeding BUS_TYPE BUS_SEEDING Setting Average
+lbn rDamage BUS_TYPE BUS_DAMAGE Setting Average
+j ra

@@ -1,0 +1,17 @@
+# Required labels:
+# SEED_EXPORT_BIN = Chute Import Bin where LArRE drops harvested seeds.
+# CROP_EXPORT_BIN = Chute Import Bin where LArRE drops crops and dead plants.
+define IMPORT_BIN_TYPE -850484480
+define SEED_EXPORT_BIN HASH("SEED_EXPORT_BIN")
+define CROP_EXPORT_BIN HASH("CROP_EXPORT_BIN")
+main:
+lbns r0 IMPORT_BIN_TYPE SEED_EXPORT_BIN 0 Occupied Sum
+sgt r0 r0 0
+seqz r0 r0
+sbn IMPORT_BIN_TYPE SEED_EXPORT_BIN Open r0
+lbns r1 IMPORT_BIN_TYPE CROP_EXPORT_BIN 0 Occupied Sum
+sgt r1 r1 0
+seqz r1 r1
+sbn IMPORT_BIN_TYPE CROP_EXPORT_BIN Open r1
+yield
+j main

@@ -1,0 +1,84 @@
+alias rLastReq r0
+alias rReq r1
+alias rCmd r2
+alias rTarget r3
+alias rIdle r4
+alias rError r5
+alias rOccupied r6
+alias rMature r7
+alias rSeeding r8
+alias rDamage r9
+alias rNan r10
+define LARRE_TYPE HASH("StructureLarreDockHydroponics")
+define LARRE_NAME HASH("LArRE")
+define SAMPLE_SLOT 255
+define ACTION_SETTLE_SECONDS 2
+define CMD_ACTION 2
+define BUS_TYPE HASH("StructureLogicMemory")
+define BUS_REQ HASH("LARRE_BUS_REQ")
+define BUS_TARGET HASH("LARRE_BUS_TARGET")
+define BUS_CMD HASH("LARRE_BUS_CMD")
+define BUS_DONE HASH("LARRE_BUS_DONE")
+define BUS_OCCUPIED HASH("LARRE_BUS_OCCUPIED")
+define BUS_MATURE HASH("LARRE_BUS_MATURE")
+define BUS_SEEDING HASH("LARRE_BUS_SEEDING")
+define BUS_DAMAGE HASH("LARRE_BUS_DAMAGE")
+init:
+move rLastReq 0
+sbn LARRE_TYPE LARRE_NAME On 1
+sbn LARRE_TYPE LARRE_NAME Activate 0
+sbn BUS_TYPE BUS_DONE Setting 0
+listen:
+yield
+lbn rReq BUS_TYPE BUS_REQ Setting Average
+snan rNan rReq
+bnez rNan listen
+beq rReq rLastReq listen
+lbn rCmd BUS_TYPE BUS_CMD Setting Average
+beqz rCmd listen
+move rLastReq rReq
+lbn rTarget BUS_TYPE BUS_TARGET Setting Average
+sbn LARRE_TYPE LARRE_NAME Setting rTarget
+waitArrive:
+yield
+lbn rError LARRE_TYPE LARRE_NAME Error Maximum
+bnez rError clearArrive
+lbn rIdle LARRE_TYPE LARRE_NAME Idle Maximum
+beqz rIdle waitArrive
+beq rCmd CMD_ACTION pulseClaw
+j reportStatus
+clearArrive:
+sbn LARRE_TYPE LARRE_NAME Activate 0
+yield
+lbn rError LARRE_TYPE LARRE_NAME Error Maximum
+bnez rError clearArrive
+j waitArrive
+pulseClaw:
+sbn LARRE_TYPE LARRE_NAME Activate 1
+yield
+sbn LARRE_TYPE LARRE_NAME Activate 0
+sleep ACTION_SETTLE_SECONDS
+waitAction:
+yield
+lbn rError LARRE_TYPE LARRE_NAME Error Maximum
+bnez rError clearAction
+lbn rIdle LARRE_TYPE LARRE_NAME Idle Maximum
+beqz rIdle waitAction
+j reportStatus
+clearAction:
+sbn LARRE_TYPE LARRE_NAME Activate 0
+yield
+lbn rError LARRE_TYPE LARRE_NAME Error Maximum
+bnez rError clearAction
+j waitAction
+reportStatus:
+lbns rOccupied LARRE_TYPE LARRE_NAME SAMPLE_SLOT Occupied Maximum
+lbns rMature LARRE_TYPE LARRE_NAME SAMPLE_SLOT Mature Maximum
+lbns rSeeding LARRE_TYPE LARRE_NAME SAMPLE_SLOT Seeding Maximum
+lbns rDamage LARRE_TYPE LARRE_NAME SAMPLE_SLOT Damage Maximum
+sbn BUS_TYPE BUS_OCCUPIED Setting rOccupied
+sbn BUS_TYPE BUS_MATURE Setting rMature
+sbn BUS_TYPE BUS_SEEDING Setting rSeeding
+sbn BUS_TYPE BUS_DAMAGE Setting rDamage
+sbn BUS_TYPE BUS_DONE Setting rReq
+j listen

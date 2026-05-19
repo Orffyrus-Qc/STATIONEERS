@@ -1,14 +1,28 @@
 # LArRE Hydroponics Patrol
 
-`LARRE_HYDROPONICS.ic10` controls one named LArRE Dock (Hydroponics) without
-using IC device pins. It moves through a configured grow-station range, samples
-the hydroponics proxy slot under each station, and uses dedicated seed/crop chute
-stations so LArRE can keep the line running automatically.
+This branch tests a multi-IC LArRE hydroponics system. `LARRE_BRAIN.ic10`
+decides what should happen at each station, `LARRE_DRIVER.ic10` moves or
+activates the LArRE Dock (Hydroponics), and `LARRE_EXPORT_BIN.ic10` keeps the
+seed/crop chute import bins sending items into the chute network.
 
-In short, LArRE patrols your hydroponics rail line and handles simple tray
-maintenance. It visits each configured grow station, checks the tray below it,
-then picks seeds from the seed import station, plants empty trays, harvests seeds
-and crops, and drops output into chute bins when the tray needs attention.
+The split leaves more room for future behavior while keeping each IC script
+under the 128-line IC10 limit.
+
+## Setup
+
+Load the scripts into standard IC housings on the same data network:
+
+| Script | Role |
+| --- | --- |
+| `LARRE_BRAIN.ic10` | Patrols the grow stations and sends inspect/action commands. |
+| `LARRE_DRIVER.ic10` | Moves LArRE, pulses the claw, and reports slot status. |
+| `LARRE_EXPORT_BIN.ic10` | Closes occupied seed/crop chute import bins so items enter the chute network. |
+
+No IC device pins are used. The brain and driver communicate through named Logic
+Memory devices on the cable network, so this version works with normal IC
+housings and does not depend on stacked-IC shared stack behavior or `db:1
+Channel` network writes. The export-bin IC is independent and only needs access
+to the labeled chute import bins.
 
 ## Required Label and Stations
 
@@ -17,13 +31,25 @@ in-game device label exactly.
 
 | Label | Device type | Purpose |
 | --- | --- | --- |
-| `LArRE` | `StructureLarreDockHydroponics` | LArRE Dock (Hydroponics) controlled by the script. |
+| `LArRE` | `StructureLarreDockHydroponics` | LArRE Dock (Hydroponics) controlled by the driver IC. |
+| `SEED_EXPORT_BIN` | Chute Import Bin | Bin under station `17` where LArRE drops harvested seeds. |
+| `CROP_EXPORT_BIN` | Chute Import Bin | Bin under station `18` where LArRE drops crops and dead plants. |
 
-The IC can be installed anywhere on the same data network as the LArRE dock. It
-uses batch reads and writes by prefab hash and label, so pins are not required.
+Add these eight Logic Memory devices on the same data network:
+
+| Label | Purpose |
+| --- | --- |
+| `LARRE_BUS_REQ` | Request id from brain to driver. |
+| `LARRE_BUS_TARGET` | Target station index. |
+| `LARRE_BUS_CMD` | Command: `1` = inspect, `2` = action. |
+| `LARRE_BUS_DONE` | Completed request id from driver to brain. |
+| `LARRE_BUS_OCCUPIED` | Last `Occupied` status from slot `255`. |
+| `LARRE_BUS_MATURE` | Last `Mature` status from slot `255`. |
+| `LARRE_BUS_SEEDING` | Last `Seeding` status from slot `255`. |
+| `LARRE_BUS_DAMAGE` | Last `Damage` status from slot `255`. |
 
 Only the LArRE Dock (Hydroponics) needs this label. Do not name every rail
-station `Station`, `Station1`, or similar for this script. Rail stops are
+station `Station`, `Station1`, or similar for this system. Rail stops are
 selected by their numeric station index through the dock's `Setting` value.
 
 Default station layout:
@@ -32,13 +58,34 @@ Default station layout:
 | --- | --- | --- | --- |
 | Grow trays | `0` through `15` | Hydroponics trays/devices | LArRE plants, harvests, and clears crops. |
 | Seed import station | `16` | Chute Export Bin | LArRE picks seeds up from the seed chute network before planting. |
-| Seed export station | `17` | Chute Import Bin | LArRE drops harvested seeds into the seed chute network. |
-| Crops export bin | `18` | Chute Import Bin | LArRE drops crops or cleared dead plants into the output chute network. |
+| Seed export station | `17` | Chute Import Bin labeled `SEED_EXPORT_BIN` | LArRE drops harvested seeds into the seed chute network. |
+| Crops export bin | `18` | Chute Import Bin labeled `CROP_EXPORT_BIN` | LArRE drops crops or cleared dead plants into the output chute network. |
 
 The seed import station uses a Chute Export Bin because LArRE is taking seeds
 out of the chute network. The seed export and crops export stations use Chute
-Import Bins because LArRE is placing items into the chute network. These names
-describe each station's job from the greenhouse point of view.
+Import Bins because LArRE is placing items into the chute network.
+`LARRE_EXPORT_BIN.ic10` watches those two import bins. Empty bins stay open; once
+an item appears in slot `0`, the script closes the bin so it sends the item into
+the chute network.
+
+## Logic Memory Protocol
+
+The brain writes commands to named Logic Memory devices, and the driver writes
+completion/status values back to the same bus:
+
+| Memory label | Owner | Meaning |
+| --- | --- | --- |
+| `LARRE_BUS_REQ` | Brain | Request id. Incremented for every command. |
+| `LARRE_BUS_TARGET` | Brain | Target station index. |
+| `LARRE_BUS_CMD` | Brain | Command: `1` = inspect, `2` = action. |
+| `LARRE_BUS_DONE` | Driver | Completed request id. |
+| `LARRE_BUS_OCCUPIED` | Driver | `Occupied` value from slot `255`. |
+| `LARRE_BUS_MATURE` | Driver | `Mature` value from slot `255`. |
+| `LARRE_BUS_SEEDING` | Driver | `Seeding` value from slot `255`. |
+| `LARRE_BUS_DAMAGE` | Driver | `Damage` value from slot `255`. |
+
+Restart both ICs after loading so the bus memories reset before the driver starts
+processing requests.
 
 ## Behavior
 
@@ -52,55 +99,43 @@ define SEED_EXPORT_STATION 17
 define CROPS_EXPORT_STATION 18
 ```
 
-For each grow station, the script writes the station number to `Setting`, waits
-until LArRE is idle, then reads slot `255` on the named hydroponics dock.
-
 The automatic cycle:
 
-1. Empty tray: LArRE visits the seed import station, picks up a seed if available,
-   returns to the tray, and plants it.
+1. Empty tray: LArRE visits the seed import station, picks up a seed if
+   available, returns to the tray, and plants it.
 2. Mature plant without ready seeds: LArRE waits and does not harvest yet.
-3. Seeding plant: LArRE harvests the seed, drops it into the seed export station,
-   then returns and harvests the crop if the plant is mature.
-4. Dead plant: LArRE clears the tray and drops the dead plant into the crops
-   export bin.
+3. Seeding plant: LArRE harvests the seed, drops it into the seed export
+   station, then returns and keeps harvesting crops until the plant has no ready
+   fruit left.
+4. Dead plant: LArRE clears the tray and always drops the dead plant into the
+   crops export bin.
+5. Export bins: the export-bin IC closes occupied seed/crop import bins to push
+   dropped items into the chute network, then reopens them when empty.
 
-For chute handoff stations:
-
-- Chute Import Bin = LArRE drops items into the chute network.
-- Chute Export Bin = LArRE can pick items up from the chute network.
-
-Pulsing `Activate` tells LArRE to use the claw at the current station. If it is
-holding crops or seeds and there is a Chute Import Bin under the station, it
-should place or drop the item into that bin.
-
-The script uses the `Seeding` slot value to avoid harvesting crops too early.
+The system uses the `Seeding` slot value to avoid harvesting crops too early.
 `Seeding` must be greater than `0` before LArRE harvests the plant, so it waits
 for seeds to be ready before taking the crop.
 
-This does not require a second IC or direct batch reads from
-`StructureHydroponicsTrayData`. The Hydroponics LArRE dock reads the tray under
-the current station through slot `255`. A separate tray-data IC is only useful if
-you want to pre-scan many trays while LArRE is moving somewhere else.
-
-After the final station, the script waits 10 seconds and starts the patrol again.
-
 ## Options
 
-Change these values directly in `LARRE_HYDROPONICS.ic10`:
+Change these values directly in the scripts:
 
-| Option | Default | Behavior |
-| --- | --- | --- |
-| `LARRE_NAME` | `HASH("LArRE")` | In-game label for the LArRE Dock (Hydroponics). |
-| `FIRST_GROW_STATION` | `0` | First grow tray station index to visit. |
-| `LAST_GROW_STATION` | `15` | Last grow tray station index to visit. |
-| `SEED_IMPORT_STATION` | `16` | Station with the Chute Export Bin where LArRE picks seeds up for planting. |
-| `SEED_EXPORT_STATION` | `17` | Station with the Chute Import Bin where LArRE drops harvested seeds. |
-| `CROPS_EXPORT_STATION` | `18` | Station with the Chute Import Bin where LArRE drops crops and dead plants. |
-| `ACTION_SETTLE_SECONDS` | `2` | Delay after a claw action before checking idle again. |
-| `LOOP_PAUSE_SECONDS` | `10` | Delay between patrol loops. |
+| Option | Script | Default | Behavior |
+| --- | --- | --- | --- |
+| `LARRE_NAME` | `LARRE_DRIVER.ic10` | `HASH("LArRE")` | In-game label for the LArRE Dock (Hydroponics). |
+| `FIRST_GROW_STATION` | `LARRE_BRAIN.ic10` | `0` | First grow tray station index to visit. |
+| `LAST_GROW_STATION` | `LARRE_BRAIN.ic10` | `15` | Last grow tray station index to visit. |
+| `SEED_IMPORT_STATION` | `LARRE_BRAIN.ic10` | `16` | Station with the Chute Export Bin where LArRE picks seeds up for planting. |
+| `SEED_EXPORT_STATION` | `LARRE_BRAIN.ic10` | `17` | Station with the Chute Import Bin where LArRE drops harvested seeds. |
+| `CROPS_EXPORT_STATION` | `LARRE_BRAIN.ic10` | `18` | Station with the Chute Import Bin where LArRE drops crops and dead plants. |
+| `ACTION_SETTLE_SECONDS` | `LARRE_DRIVER.ic10` | `2` | Delay after a claw action before checking idle again. |
+| `LOOP_PAUSE_SECONDS` | `LARRE_BRAIN.ic10` | `10` | Delay between patrol loops. |
+| `SEED_EXPORT_BIN` | `LARRE_EXPORT_BIN.ic10` | `HASH("SEED_EXPORT_BIN")` | Chute Import Bin label for harvested seeds. |
+| `CROP_EXPORT_BIN` | `LARRE_EXPORT_BIN.ic10` | `HASH("CROP_EXPORT_BIN")` | Chute Import Bin label for crops and dead plants. |
 
 ## Files
 
-- `LARRE_HYDROPONICS.ic10` - name/hash version for one LArRE Dock (Hydroponics).
+- `LARRE_BRAIN.ic10` - decision and patrol IC.
+- `LARRE_DRIVER.ic10` - LArRE movement/action IC.
+- `LARRE_EXPORT_BIN.ic10` - seed/crop chute import bin control IC.
 - `FR-README.md` - French version of this README.
