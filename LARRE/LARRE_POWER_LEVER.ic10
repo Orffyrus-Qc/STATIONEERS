@@ -1,15 +1,35 @@
 # Required labels:
-# LArRE = Big Lever and LArRE Dock (Hydroponics).
+# LArRE = Big Lever or Flip Cover Switch and LArRE Dock (Hydroponics).
 define LEVER_TYPE HASH("ModularDeviceBigLever")
+define FLIP_COVER_SWITCH_TYPE HASH("ModularDeviceFlipCoverSwitch")
 define LARRE_TYPE HASH("StructureLarreDockHydroponics")
 define LARRE_NAME HASH("LArRE")
 define POLL_SECONDS 0.25
 alias leverOn r0
+alias coverSwitchOn r1
+alias powerOn r2
+alias hasInput r3
 main:
+move hasInput 0
 lbn leverOn LEVER_TYPE LARRE_NAME Open Maximum
-bnan leverOn loopPause
+bnan leverOn leverMissing
 sgtz leverOn leverOn
-sbn LARRE_TYPE LARRE_NAME On leverOn
+move hasInput 1
+j readCoverSwitch
+leverMissing:
+move leverOn 0
+readCoverSwitch:
+lbn coverSwitchOn FLIP_COVER_SWITCH_TYPE LARRE_NAME Open Maximum
+bnan coverSwitchOn coverSwitchMissing
+sgtz coverSwitchOn coverSwitchOn
+move hasInput 1
+j writePower
+coverSwitchMissing:
+move coverSwitchOn 0
+writePower:
+beqz hasInput loopPause
+max powerOn leverOn coverSwitchOn
+sbn LARRE_TYPE LARRE_NAME On powerOn
 loopPause:
 sleep POLL_SECONDS
 j main
