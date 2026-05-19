@@ -46,7 +46,6 @@ move autoLock 0
 jal writeChuteState
 jal resetStackers
 main:
-jal readChuteState
 checkStartButton:
 lbn startPressed BUTTON_TYPE START_BUTTON Activate Sum
 bnan startPressed checkStopButton
@@ -87,11 +86,12 @@ blt autoTimer AUTO_INTERVAL_SECONDS loopPause
 move autoTimer 0
 jal clearStackers
 loopPause:
+jal writeChuteState
 jal writeIndicators
 sleep POLL_SECONDS
 j main
 readChuteState:
-lbn chuteOn CHUTE_BIN_TYPE SEED_IMPORT_BIN Open Maximum
+lbn chuteOn CHUTE_BIN_TYPE SEED_IMPORT_BIN On Maximum
 bnan chuteOn chuteMissing
 sgtz chuteOn chuteOn
 j ra
@@ -108,7 +108,6 @@ sbn DIODE_TYPE PLANTER_DIODE Color chuteColor
 j ra
 writeChuteState:
 sbn CHUTE_BIN_TYPE SEED_IMPORT_BIN On chuteOn
-sbn CHUTE_BIN_TYPE SEED_IMPORT_BIN Open chuteOn
 j ra
 clearStackers:
 sb STACKER_TYPE Activate 1
