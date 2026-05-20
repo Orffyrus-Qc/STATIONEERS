@@ -2,19 +2,17 @@
 # Fill/spark IC. Run with CO2_BATCH_REACTOR_EXHAUST.ic10.
 define GAS_SENSOR_TYPE HASH("StructureGasSensor")
 define ANALYZER_TYPE HASH("StructurePipeAnalysizer")
-define PUMP_TYPE HASH("StructureVolumePump")
-define TURBO_PUMP_TYPE HASH("StructureTurboVolumePump")
+define VALVE_TYPE HASH("StructureDigitalValve")
 define IGNITER_TYPE HASH("StructureIgniter")
 define MEMORY_TYPE HASH("StructureLogicMemory")
 define CHAMBER_SENSOR HASH("CO2_REACTOR_SENSOR")
-define CH4_PUMP HASH("CH4_PUMP")
-define O2_PUMP HASH("O2_PUMP")
+define CH4_VALVE HASH("CH4_VALVE")
+define O2_VALVE HASH("O2_VALVE")
 define IGNITER_NAME HASH("CO2_IGNITER")
 define PHASE_MEM HASH("CO2_REACTOR_PHASE")
 define TARGET_CH4_KPA 2
 define TARGET_O2_KPA 1
 define EMPTY_KPA 0.25
-define INPUT_PUMP_RATE 1
 define MAX_CH4_RATIO 0.005
 define MIN_CO2_RATIO 0.20
 define PHASE_READY 0
@@ -36,10 +34,6 @@ alias chamberRef r8
 alias state r15
 init:
 move state 0
-sbn PUMP_TYPE CH4_PUMP Setting INPUT_PUMP_RATE
-sbn TURBO_PUMP_TYPE CH4_PUMP Setting INPUT_PUMP_RATE
-sbn PUMP_TYPE O2_PUMP Setting INPUT_PUMP_RATE
-sbn TURBO_PUMP_TYPE O2_PUMP Setting INPUT_PUMP_RATE
 sbn MEMORY_TYPE PHASE_MEM Setting PHASE_EXHAUST
 j off_loop
 main:
@@ -78,29 +72,23 @@ off_loop:
 jal off
 j main
 off:
-sbn PUMP_TYPE CH4_PUMP On 0
-sbn TURBO_PUMP_TYPE CH4_PUMP On 0
-sbn PUMP_TYPE O2_PUMP On 0
-sbn TURBO_PUMP_TYPE O2_PUMP On 0
+sbn VALVE_TYPE CH4_VALVE On 0
+sbn VALVE_TYPE O2_VALVE On 0
 sbn IGNITER_TYPE IGNITER_NAME On 0
 sbn IGNITER_TYPE IGNITER_NAME Activate 0
 j ra
 fill_ch4:
 jal off
-sbn PUMP_TYPE CH4_PUMP On 1
-sbn TURBO_PUMP_TYPE CH4_PUMP On 1
+sbn VALVE_TYPE CH4_VALVE On 1
 blt ch4Partial TARGET_CH4_KPA main
-sbn PUMP_TYPE CH4_PUMP On 0
-sbn TURBO_PUMP_TYPE CH4_PUMP On 0
+sbn VALVE_TYPE CH4_VALVE On 0
 move state ST_FILL_O2
 j main
 fill_o2:
 jal off
-sbn PUMP_TYPE O2_PUMP On 1
-sbn TURBO_PUMP_TYPE O2_PUMP On 1
+sbn VALVE_TYPE O2_VALVE On 1
 blt o2Partial TARGET_O2_KPA main
-sbn PUMP_TYPE O2_PUMP On 0
-sbn TURBO_PUMP_TYPE O2_PUMP On 0
+sbn VALVE_TYPE O2_VALVE On 0
 move state ST_SPARK
 j main
 spark:

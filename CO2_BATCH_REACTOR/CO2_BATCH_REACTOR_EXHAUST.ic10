@@ -2,50 +2,58 @@
 # Exhaust/tank IC. Run with CO2_BATCH_REACTOR.ic10.
 define GAS_SENSOR_TYPE HASH("StructureGasSensor")
 define ANALYZER_TYPE HASH("StructurePipeAnalysizer")
-define PUMP_TYPE HASH("StructureVolumePump")
-define TURBO_PUMP_TYPE HASH("StructureTurboVolumePump")
+define POWERED_VENT HASH("StructurePoweredVent")
+define LARGE_VENT HASH("StructurePoweredVentLarge")
 define MEMORY_TYPE HASH("StructureLogicMemory")
 define CHAMBER_SENSOR HASH("CO2_REACTOR_SENSOR")
 define TANK_SENSOR HASH("CO2_TANK_SENSOR")
-define OUTPUT_PUMP HASH("CO2_OUTPUT_PUMP")
+define OUTPUT_VENT HASH("CO2_OUTPUT_VENT")
 define PHASE_MEM HASH("CO2_REACTOR_PHASE")
 define EMPTY_KPA 0.25
 define TANK_MAX_KPA 9000
-define OUTPUT_PUMP_RATE 10
 define PHASE_READY 0
 define PHASE_EXHAUST 2
+define VENT_INWARD 1
 alias pressure r0
 alias tankPressure r1
 alias phase r2
 alias chamberRef r3
 alias tankRef r4
 init:
-sbn PUMP_TYPE OUTPUT_PUMP Setting OUTPUT_PUMP_RATE
-sbn TURBO_PUMP_TYPE OUTPUT_PUMP Setting OUTPUT_PUMP_RATE
-j pump_off
+jal vent_config
+j vent_off
 main:
 yield
 lbn phase MEMORY_TYPE PHASE_MEM Setting Average
-ble phase ninf pump_off
-bne phase PHASE_EXHAUST pump_off
+ble phase ninf vent_off
+bne phase PHASE_EXHAUST vent_off
 jal read_chamber
-ble chamberRef ninf pump_off
+ble chamberRef ninf vent_off
 jal read_tank
-ble tankRef ninf pump_off
+ble tankRef ninf vent_off
 ble pressure EMPTY_KPA done
-bgt tankPressure TANK_MAX_KPA pump_off
-sbn PUMP_TYPE OUTPUT_PUMP On 1
-sbn TURBO_PUMP_TYPE OUTPUT_PUMP On 1
+bgt tankPressure TANK_MAX_KPA vent_off
+jal vent_config
+sbn POWERED_VENT OUTPUT_VENT On 1
+sbn LARGE_VENT OUTPUT_VENT On 1
 j main
 done:
-sbn PUMP_TYPE OUTPUT_PUMP On 0
-sbn TURBO_PUMP_TYPE OUTPUT_PUMP On 0
+jal vent_off_return
 sbn MEMORY_TYPE PHASE_MEM Setting PHASE_READY
 j main
-pump_off:
-sbn PUMP_TYPE OUTPUT_PUMP On 0
-sbn TURBO_PUMP_TYPE OUTPUT_PUMP On 0
+vent_off:
+jal vent_off_return
 j main
+vent_off_return:
+sbn POWERED_VENT OUTPUT_VENT On 0
+sbn LARGE_VENT OUTPUT_VENT On 0
+j ra
+vent_config:
+sbn POWERED_VENT OUTPUT_VENT Mode VENT_INWARD
+sbn LARGE_VENT OUTPUT_VENT Mode VENT_INWARD
+sbn POWERED_VENT OUTPUT_VENT PressureExternal EMPTY_KPA
+sbn LARGE_VENT OUTPUT_VENT PressureExternal EMPTY_KPA
+j ra
 read_chamber:
 lbn chamberRef GAS_SENSOR_TYPE CHAMBER_SENSOR ReferenceId Maximum
 bgt chamberRef ninf load_chamber

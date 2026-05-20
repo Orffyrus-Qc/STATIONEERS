@@ -125,11 +125,11 @@ pressure notes.
 ## CO2 Batch Reactor
 
 The `CO2_BATCH_REACTOR/` folder contains a two-IC script pair that fills a small
-isolated chamber with proportional CH4 and O2, pulses a named igniter, waits for
-combustion to finish, and pumps the resulting CO2 mix into a storage tank.
+isolated chamber through CH4/O2 digital valves, pulses a named igniter, waits for
+combustion to finish, and vents the resulting gas mix into a storage tank.
 
-See `CO2_BATCH_REACTOR/README.md` for labels, the shared phase memory, pump
-options, batch sizing, and tank pressure safety behavior.
+See `CO2_BATCH_REACTOR/README.md` for labels, the shared phase memory, digital
+valves, powered vent emptying, batch sizing, and tank pressure safety behavior.
 
 ## AC Heater Follower
 
