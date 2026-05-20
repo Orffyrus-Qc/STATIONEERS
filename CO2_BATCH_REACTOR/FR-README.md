@@ -60,9 +60,7 @@ remplissage/allumage/combustion et `2` evacuation.
 
 ## Notes
 
-La base de donnees logique IC10 actuelle expose CH4/methane sous le nom
-`RatioVolatiles`. Si votre version du jeu accepte seulement `RatioMethane`,
-remplacez `RatioVolatiles` dans le script.
+Le script lit CH4/methane avec `RatioMethane`.
 
 Gardez la chambre de combustion petite et isolee. Les scripts controlent `On` et
 `Setting` des pompes; configurez la direction et le mode de la pompe turbo sur la

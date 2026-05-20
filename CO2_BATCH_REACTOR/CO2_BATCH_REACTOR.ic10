@@ -68,7 +68,7 @@ lbn chamberRef ANALYZER_TYPE CHAMBER_SENSOR ReferenceId Maximum
 ble chamberRef ninf return_chamber
 load_chamber:
 ld pressure chamberRef Pressure
-ld ch4Ratio chamberRef RatioVolatiles
+ld ch4Ratio chamberRef RatioMethane
 ld o2Ratio chamberRef RatioOxygen
 ld co2Ratio chamberRef RatioCarbonDioxide
 ld burning chamberRef Combustion

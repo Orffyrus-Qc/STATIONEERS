@@ -56,8 +56,7 @@ exhaust.
 
 ## Notes
 
-The current IC10 logic database exposes CH4/Methane as `RatioVolatiles`. If your
-game build only accepts `RatioMethane`, replace `RatioVolatiles` in the script.
+The script reads CH4/Methane as `RatioMethane`.
 
 Keep the burn chamber small and isolated. The scripts control pump `On` and
 `Setting`; set turbo pump direction and mode on the pump itself if needed.
