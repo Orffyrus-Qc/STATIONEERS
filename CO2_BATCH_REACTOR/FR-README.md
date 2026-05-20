@@ -33,24 +33,24 @@ seul l'appareil nomme correspondant repondra.
 Valeurs par defaut:
 
 ```ic10
-define TARGET_CH4_KPA 10
-define TARGET_O2_KPA 5
-define EMPTY_KPA 1
+define TARGET_CH4_KPA 2
+define TARGET_O2_KPA 1
+define EMPTY_KPA 0.25
 define TANK_MAX_KPA 9000
-define INPUT_PUMP_RATE 5
+define INPUT_PUMP_RATE 1
 define OUTPUT_PUMP_RATE 10
 ```
 
 L'IC de remplissage/allumage commence par demander le mode evacuation afin que
 l'IC d'evacuation puisse vider la chambre vers la ligne de stockage. Il remplit
-ensuite la chambre jusqu'a environ `10 kPa` de CH4 et `5 kPa` d'O2, en utilisant
+ensuite la chambre jusqu'a environ `2 kPa` de CH4 et `1 kPa` d'O2, en utilisant
 la pression partielle lue par le capteur de la chambre afin que le lot reste
 proportionnel meme lorsque la pression totale change.
 
 Apres le remplissage, l'IC de remplissage/allumage envoie une impulsion a
 `CO2_IGNITER`, attend la fin de `Combustion`, puis ecrit le mode evacuation dans
 `CO2_REACTOR_PHASE`. L'IC d'evacuation pompe le gaz final vers le reservoir de
-CO2 jusqu'a ce que la chambre descende sous `1 kPa`, puis ecrit le mode pret
+CO2 jusqu'a ce que la chambre descende sous `0.25 kPa`, puis ecrit le mode pret
 afin que le prochain lot puisse commencer. Si le capteur du reservoir indique
 plus de `9000 kPa`, la pompe de sortie reste eteinte jusqu'a ce que la pression
 du reservoir baisse.
@@ -66,4 +66,6 @@ remplacez `RatioVolatiles` dans le script.
 
 Gardez la chambre de combustion petite et isolee. Les scripts controlent `On` et
 `Setting` des pompes; configurez la direction et le mode de la pompe turbo sur la
-pompe elle-meme au besoin.
+pompe elle-meme au besoin. Si une tres petite chambre casse encore les fenetres
+proches, baissez `TARGET_CH4_KPA` et `TARGET_O2_KPA` ensemble pour garder le
+meme ratio de gaz 2:1.

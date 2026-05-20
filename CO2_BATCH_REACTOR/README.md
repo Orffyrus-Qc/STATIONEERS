@@ -32,22 +32,22 @@ respond.
 Default values:
 
 ```ic10
-define TARGET_CH4_KPA 10
-define TARGET_O2_KPA 5
-define EMPTY_KPA 1
+define TARGET_CH4_KPA 2
+define TARGET_O2_KPA 1
+define EMPTY_KPA 0.25
 define TANK_MAX_KPA 9000
-define INPUT_PUMP_RATE 5
+define INPUT_PUMP_RATE 1
 define OUTPUT_PUMP_RATE 10
 ```
 
 The fill/spark IC starts by requesting exhaust mode so the exhaust IC can empty
-the chamber into the storage line. It then fills the chamber to about `10 kPa`
-CH4 and `5 kPa` O2, using partial pressure from the chamber sensor so the batch
+the chamber into the storage line. It then fills the chamber to about `2 kPa`
+CH4 and `1 kPa` O2, using partial pressure from the chamber sensor so the batch
 stays proportional even as total pressure changes.
 
 After filling, the fill/spark IC pulses `CO2_IGNITER`, waits for `Combustion`
 to end, then writes exhaust mode to `CO2_REACTOR_PHASE`. The exhaust IC pumps
-the finished gas to the CO2 tank until the chamber falls below `1 kPa`, then
+the finished gas to the CO2 tank until the chamber falls below `0.25 kPa`, then
 writes ready mode so the next batch can start. If the tank sensor reads above
 `9000 kPa`, the output pump stays off until tank pressure drops.
 
@@ -61,3 +61,5 @@ game build only accepts `RatioMethane`, replace `RatioVolatiles` in the script.
 
 Keep the burn chamber small and isolated. The scripts control pump `On` and
 `Setting`; set turbo pump direction and mode on the pump itself if needed.
+If a very small chamber still breaks nearby windows, lower `TARGET_CH4_KPA` and
+`TARGET_O2_KPA` together to keep the same 2:1 gas ratio.
