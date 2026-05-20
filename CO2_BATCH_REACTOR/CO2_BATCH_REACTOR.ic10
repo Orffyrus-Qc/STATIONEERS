@@ -1,119 +1,92 @@
 # CO2_BATCH_REACTOR.ic10
-# Makes small CO2 batches by burning CH4/O2, then pumps the result to storage.
-
-define GAS_SENSOR_TYPE    HASH("StructureGasSensor")
-define ANALYZER_TYPE      HASH("StructurePipeAnalysizer")
-define PUMP_TYPE          HASH("StructureVolumePump")
-define TURBO_PUMP_TYPE    HASH("StructureTurboVolumePump")
-define IGNITER_TYPE       HASH("StructureIgniter")
-
-define CHAMBER_SENSOR     HASH("CO2_REACTOR_SENSOR")
-define TANK_SENSOR        HASH("CO2_TANK_SENSOR")
-define CH4_PUMP           HASH("CH4_PUMP")
-define O2_PUMP            HASH("O2_PUMP")
-define OUTPUT_PUMP        HASH("CO2_OUTPUT_PUMP")
-define IGNITER_NAME       HASH("CO2_IGNITER")
-
-define TARGET_CH4_KPA     10
-define TARGET_O2_KPA      5
-define EMPTY_KPA          1
-define TANK_MAX_KPA       9000
-define INPUT_PUMP_RATE    5
-define OUTPUT_PUMP_RATE   10
-define MAX_CH4_RATIO      0.005
-define MIN_CO2_RATIO      0.20
-
-define ST_FILL_CH4        0
-define ST_FILL_O2         1
-define ST_SPARK           2
-define ST_BURN            3
-define ST_EXHAUST         4
-
-alias pressure     r0
-alias ch4Ratio     r1
-alias o2Ratio      r2
-alias co2Ratio     r3
-alias ch4Partial   r4
-alias o2Partial    r5
-alias burning      r6
-alias tankPressure r7
-alias chamberRef   r8
-alias tankRef      r9
-alias state        r15
-
+# Fill/spark IC. Run with CO2_BATCH_REACTOR_EXHAUST.ic10.
+define GAS_SENSOR_TYPE HASH("StructureGasSensor")
+define ANALYZER_TYPE HASH("StructurePipeAnalysizer")
+define PUMP_TYPE HASH("StructureVolumePump")
+define TURBO_PUMP_TYPE HASH("StructureTurboVolumePump")
+define IGNITER_TYPE HASH("StructureIgniter")
+define MEMORY_TYPE HASH("StructureLogicMemory")
+define CHAMBER_SENSOR HASH("CO2_REACTOR_SENSOR")
+define CH4_PUMP HASH("CH4_PUMP")
+define O2_PUMP HASH("O2_PUMP")
+define IGNITER_NAME HASH("CO2_IGNITER")
+define PHASE_MEM HASH("CO2_REACTOR_PHASE")
+define TARGET_CH4_KPA 10
+define TARGET_O2_KPA 5
+define EMPTY_KPA 1
+define INPUT_PUMP_RATE 5
+define MAX_CH4_RATIO 0.005
+define MIN_CO2_RATIO 0.20
+define PHASE_READY 0
+define PHASE_FILL 1
+define PHASE_EXHAUST 2
+define ST_FILL_CH4 1
+define ST_FILL_O2 2
+define ST_SPARK 3
+define ST_BURN 4
+alias pressure r0
+alias ch4Ratio r1
+alias o2Ratio r2
+alias co2Ratio r3
+alias ch4Partial r4
+alias o2Partial r5
+alias burning r6
+alias phase r7
+alias chamberRef r8
+alias state r15
 init:
-move state ST_EXHAUST
+move state 0
 sbn PUMP_TYPE CH4_PUMP Setting INPUT_PUMP_RATE
 sbn TURBO_PUMP_TYPE CH4_PUMP Setting INPUT_PUMP_RATE
 sbn PUMP_TYPE O2_PUMP Setting INPUT_PUMP_RATE
 sbn TURBO_PUMP_TYPE O2_PUMP Setting INPUT_PUMP_RATE
-sbn PUMP_TYPE OUTPUT_PUMP Setting OUTPUT_PUMP_RATE
-sbn TURBO_PUMP_TYPE OUTPUT_PUMP Setting OUTPUT_PUMP_RATE
-j all_off
-
+sbn MEMORY_TYPE PHASE_MEM Setting PHASE_EXHAUST
+j off_loop
 main:
 yield
 jal read_chamber
-ble chamberRef ninf all_off
-jal read_tank
-ble tankRef ninf all_off
+ble chamberRef ninf off_loop
 mul ch4Partial pressure ch4Ratio
 mul o2Partial pressure o2Ratio
-
 beq state ST_FILL_CH4 fill_ch4
 beq state ST_FILL_O2 fill_o2
 beq state ST_SPARK spark
 beq state ST_BURN wait_burn
-beq state ST_EXHAUST exhaust
-move state ST_EXHAUST
+move state 0
+jal off
+lbn phase MEMORY_TYPE PHASE_MEM Setting Average
+ble phase ninf main
+bne phase PHASE_READY main
+bgt pressure EMPTY_KPA main
+sbn MEMORY_TYPE PHASE_MEM Setting PHASE_FILL
+move state ST_FILL_CH4
 j main
-
 read_chamber:
 lbn chamberRef GAS_SENSOR_TYPE CHAMBER_SENSOR ReferenceId Maximum
 bgt chamberRef ninf load_chamber
 lbn chamberRef ANALYZER_TYPE CHAMBER_SENSOR ReferenceId Maximum
 ble chamberRef ninf return_chamber
-
 load_chamber:
 ld pressure chamberRef Pressure
 ld ch4Ratio chamberRef RatioVolatiles
 ld o2Ratio chamberRef RatioOxygen
 ld co2Ratio chamberRef RatioCarbonDioxide
 ld burning chamberRef Combustion
-
 return_chamber:
 j ra
-
-read_tank:
-lbn tankRef GAS_SENSOR_TYPE TANK_SENSOR ReferenceId Maximum
-bgt tankRef ninf load_tank
-lbn tankRef ANALYZER_TYPE TANK_SENSOR ReferenceId Maximum
-ble tankRef ninf return_tank
-
-load_tank:
-ld tankPressure tankRef Pressure
-
-return_tank:
-j ra
-
-all_off:
+off_loop:
+jal off
+j main
+off:
 sbn PUMP_TYPE CH4_PUMP On 0
 sbn TURBO_PUMP_TYPE CH4_PUMP On 0
 sbn PUMP_TYPE O2_PUMP On 0
 sbn TURBO_PUMP_TYPE O2_PUMP On 0
-sbn PUMP_TYPE OUTPUT_PUMP On 0
-sbn TURBO_PUMP_TYPE OUTPUT_PUMP On 0
 sbn IGNITER_TYPE IGNITER_NAME On 0
 sbn IGNITER_TYPE IGNITER_NAME Activate 0
-j main
-
+j ra
 fill_ch4:
-sbn PUMP_TYPE O2_PUMP On 0
-sbn TURBO_PUMP_TYPE O2_PUMP On 0
-sbn PUMP_TYPE OUTPUT_PUMP On 0
-sbn TURBO_PUMP_TYPE OUTPUT_PUMP On 0
-sbn IGNITER_TYPE IGNITER_NAME On 0
-sbn IGNITER_TYPE IGNITER_NAME Activate 0
+jal off
 sbn PUMP_TYPE CH4_PUMP On 1
 sbn TURBO_PUMP_TYPE CH4_PUMP On 1
 blt ch4Partial TARGET_CH4_KPA main
@@ -121,14 +94,8 @@ sbn PUMP_TYPE CH4_PUMP On 0
 sbn TURBO_PUMP_TYPE CH4_PUMP On 0
 move state ST_FILL_O2
 j main
-
 fill_o2:
-sbn PUMP_TYPE CH4_PUMP On 0
-sbn TURBO_PUMP_TYPE CH4_PUMP On 0
-sbn PUMP_TYPE OUTPUT_PUMP On 0
-sbn TURBO_PUMP_TYPE OUTPUT_PUMP On 0
-sbn IGNITER_TYPE IGNITER_NAME On 0
-sbn IGNITER_TYPE IGNITER_NAME Activate 0
+jal off
 sbn PUMP_TYPE O2_PUMP On 1
 sbn TURBO_PUMP_TYPE O2_PUMP On 1
 blt o2Partial TARGET_O2_KPA main
@@ -136,14 +103,8 @@ sbn PUMP_TYPE O2_PUMP On 0
 sbn TURBO_PUMP_TYPE O2_PUMP On 0
 move state ST_SPARK
 j main
-
 spark:
-sbn PUMP_TYPE CH4_PUMP On 0
-sbn TURBO_PUMP_TYPE CH4_PUMP On 0
-sbn PUMP_TYPE O2_PUMP On 0
-sbn TURBO_PUMP_TYPE O2_PUMP On 0
-sbn PUMP_TYPE OUTPUT_PUMP On 0
-sbn TURBO_PUMP_TYPE OUTPUT_PUMP On 0
+jal off
 sbn IGNITER_TYPE IGNITER_NAME On 1
 sbn IGNITER_TYPE IGNITER_NAME Activate 1
 yield
@@ -151,47 +112,16 @@ sbn IGNITER_TYPE IGNITER_NAME On 0
 sbn IGNITER_TYPE IGNITER_NAME Activate 0
 move state ST_BURN
 j main
-
 wait_burn:
-sbn PUMP_TYPE CH4_PUMP On 0
-sbn TURBO_PUMP_TYPE CH4_PUMP On 0
-sbn PUMP_TYPE O2_PUMP On 0
-sbn TURBO_PUMP_TYPE O2_PUMP On 0
-sbn PUMP_TYPE OUTPUT_PUMP On 0
-sbn TURBO_PUMP_TYPE OUTPUT_PUMP On 0
-sbn IGNITER_TYPE IGNITER_NAME On 0
-sbn IGNITER_TYPE IGNITER_NAME Activate 0
+jal off
 bgt burning 0 main
 bgt ch4Ratio MAX_CH4_RATIO spark
 bgt co2Ratio MIN_CO2_RATIO exhaust_start
 bgt pressure EMPTY_KPA exhaust_start
-move state ST_FILL_CH4
+sbn MEMORY_TYPE PHASE_MEM Setting PHASE_READY
+move state 0
 j main
-
 exhaust_start:
-move state ST_EXHAUST
-j main
-
-exhaust:
-sbn PUMP_TYPE CH4_PUMP On 0
-sbn TURBO_PUMP_TYPE CH4_PUMP On 0
-sbn PUMP_TYPE O2_PUMP On 0
-sbn TURBO_PUMP_TYPE O2_PUMP On 0
-sbn IGNITER_TYPE IGNITER_NAME On 0
-sbn IGNITER_TYPE IGNITER_NAME Activate 0
-bgt pressure EMPTY_KPA exhaust_pump
-sbn PUMP_TYPE OUTPUT_PUMP On 0
-sbn TURBO_PUMP_TYPE OUTPUT_PUMP On 0
-move state ST_FILL_CH4
-j main
-
-exhaust_pump:
-bgt tankPressure TANK_MAX_KPA tank_full
-sbn PUMP_TYPE OUTPUT_PUMP On 1
-sbn TURBO_PUMP_TYPE OUTPUT_PUMP On 1
-j main
-
-tank_full:
-sbn PUMP_TYPE OUTPUT_PUMP On 0
-sbn TURBO_PUMP_TYPE OUTPUT_PUMP On 0
+sbn MEMORY_TYPE PHASE_MEM Setting PHASE_EXHAUST
+move state 0
 j main
