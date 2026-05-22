@@ -1,13 +1,21 @@
 # Required labels:
 # ADVANCED_FURNACE = StructureAdvancedFurnace
-# START_STOP_SWITCH = StructureLogicSwitch2
+# START_STOP_SWITCH = StructureLogicSwitch2 or ModularDeviceBigLever
+# ING = ModularDeviceBigLever
+# IGNITION_DISPLAY = ModularDeviceLabelDiode3
 # Activates the furnace when temperature drops below the fuel flashpoint.
 # Hysteresis keeps it active until temperature rises above 570 K.
-# START_STOP_SWITCH off stops furnace ignition.
+# START_STOP_SWITCH and ING off stops furnace ignition.
 define FURNACE_TYPE HASH("StructureAdvancedFurnace")
 define FURNACE_NAME HASH("ADVANCED_FURNACE")
 define SWITCH_TYPE HASH("StructureLogicSwitch2")
+define LEVER_TYPE HASH("ModularDeviceBigLever")
 define SWITCH_NAME HASH("START_STOP_SWITCH")
+define BUTTON_NAME HASH("ING")
+define DISPLAY_TYPE HASH("ModularDeviceLabelDiode3")
+define DISPLAY_NAME HASH("IGNITION_DISPLAY")
+define GREEN 2
+define RED 4
 
 define ACTIVATE_BELOW_K 570
 define HYSTERESIS_K 5
@@ -19,6 +27,28 @@ lbn r1 FURNACE_TYPE FURNACE_NAME Activate Maximum
 
 loop:
 lbn r4 SWITCH_TYPE SWITCH_NAME Setting Average
+bnan r4 switch_missing
+sgtz r4 r4
+j read_lever
+switch_missing:
+move r4 0
+read_lever:
+lbn r5 LEVER_TYPE SWITCH_NAME Open Maximum
+bnan r5 lever_missing
+sgtz r5 r5
+j read_button
+lever_missing:
+move r5 0
+read_button:
+lbn r6 LEVER_TYPE BUTTON_NAME Open Maximum
+bnan r6 button_missing
+sgtz r6 r6
+j check_enabled
+button_missing:
+move r6 0
+check_enabled:
+max r4 r4 r5
+max r4 r4 r6
 beqz r4 stop_ignition
 lbn r0 FURNACE_TYPE FURNACE_NAME Temperature Average
 
@@ -41,5 +71,8 @@ move r1 0
 
 write_state:
 sbn FURNACE_TYPE FURNACE_NAME Activate r1
+sbn DISPLAY_TYPE DISPLAY_NAME On 1
+select r5 r1 GREEN RED
+sbn DISPLAY_TYPE DISPLAY_NAME Color r5
 yield
 j loop

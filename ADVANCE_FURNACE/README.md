@@ -28,7 +28,7 @@ the light script displays the active gas mode.
 | `RECIPES_SuperAlloy.ic10` | Writes recipe targets for astroloy, hastelloy, inconel, waspaloy, and stellite. |
 | `SETTING_IO.ic10` | Main furnace controller. Reads recipe targets, controls furnace input/output, selects hot or cold gas mode, and vents over safe pressure. |
 | `START_STOP.ic10` | Mirrors `START_STOP_SWITCH` into `memStartStop`, controls the auto-mode light, and forces a safe stopped furnace state. |
-| `IGNITION.ic10` | Activates the Advanced Furnace below 570 K with hysteresis, and disables ignition when the start/stop switch is off. |
+| `IGNITION.ic10` | Activates the Advanced Furnace below 570 K with hysteresis, disables ignition when both start controls are off, and colors the ignition display red/green. |
 | `SwitchGas_HotCold.ic10` | Controls hot, cold, and purge pumps. Allows manual toggling with `HotCold_BUTTON` and automatic mode changes from the IO controller. |
 | `SwitchGas_LIGHT.ic10` | Displays active gas mode with red and green indicator lights. |
 | `FUEL_MIXER.ic10` | Sets the fuel mixer to 66 percent input 1, toggles the mixer based on fuel pressure, and shuts off hot/cold ice crushers above the configured pressure limit. |
@@ -42,7 +42,9 @@ in-game device labels exactly.
 ### Furnace And Automation
 
 - `ADVANCED_FURNACE`
-- `START_STOP_SWITCH`
+- `START_STOP_SWITCH` (`StructureLogicSwitch2` or `ModularDeviceBigLever`)
+- `ING` (`ModularDeviceBigLever`)
+- `IGNITION_DISPLAY`
 - `memStartStop`
 - `AUTO_MODE_ON_FLASHING_LIGHT`
 
