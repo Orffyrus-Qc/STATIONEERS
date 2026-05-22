@@ -2,10 +2,11 @@
 # ADVANCED_FURNACE = StructureAdvancedFurnace
 # START_STOP_SWITCH = StructureLogicSwitch2 or ModularDeviceBigLever
 # ING = ModularDeviceBigLever
-# IGNITION_DISPLAY = ModularDeviceLabelDiode3
+# IGNITION = ModularDeviceLabelDiode3
 # Activates the furnace when temperature drops below the fuel flashpoint.
 # Hysteresis keeps it active until temperature rises above 570 K.
 # START_STOP_SWITCH and ING off stops furnace ignition.
+# IGNITION is green when either start control is on, red when both are off.
 define FURNACE_TYPE HASH("StructureAdvancedFurnace")
 define FURNACE_NAME HASH("ADVANCED_FURNACE")
 define SWITCH_TYPE HASH("StructureLogicSwitch2")
@@ -72,7 +73,7 @@ move r1 0
 write_state:
 sbn FURNACE_TYPE FURNACE_NAME Activate r1
 sbn DISPLAY_TYPE DISPLAY_NAME On 1
-select r5 r1 GREEN RED
+select r5 r4 GREEN RED
 sbn DISPLAY_TYPE DISPLAY_NAME Color r5
 yield
 j loop

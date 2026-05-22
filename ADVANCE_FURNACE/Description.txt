@@ -45,7 +45,8 @@ Included scripts:
 - IGNITION.ic10
   Activates the Advanced Furnace below 570 K with hysteresis, and disables
   ignition when both START_STOP_SWITCH and ING are off. It also colors
-  IGNITION_DISPLAY red when ignition is off and green when ignition is on.
+  IGNITION red when both start controls are off and green when either
+  start control is on.
 
 - SwitchGas_HotCold.ic10
   Controls hot, cold, and purge pumps. The HotCold_BUTTON toggles the shared
@@ -72,7 +73,7 @@ Required labels:
   ADVANCED_FURNACE
   START_STOP_SWITCH (StructureLogicSwitch2 or ModularDeviceBigLever)
   ING (ModularDeviceBigLever)
-  IGNITION_DISPLAY
+  IGNITION
   memStartStop
   AUTO_MODE_ON_FLASHING_LIGHT
 
@@ -166,8 +167,9 @@ Scripts inclus :
 
 - IGNITION.ic10
   Active l'Advanced Furnace sous 570 K avec hysteresis, et coupe l'allumage
-  quand START_STOP_SWITCH et ING sont eteints. Il colore aussi IGNITION_DISPLAY
-  en rouge quand l'allumage est arrete et en vert quand il est actif.
+  quand START_STOP_SWITCH et ING sont eteints. Il colore aussi IGNITION
+  en rouge quand les deux controles de demarrage sont eteints et en vert quand
+  l'un des deux controles est actif.
 
 - SwitchGas_HotCold.ic10
   Controle les pompes chaud, froid et purge. HotCold_BUTTON peut changer le
@@ -195,7 +197,7 @@ Etiquettes requises :
   ADVANCED_FURNACE
   START_STOP_SWITCH (StructureLogicSwitch2 ou ModularDeviceBigLever)
   ING (ModularDeviceBigLever)
-  IGNITION_DISPLAY
+  IGNITION
   memStartStop
   AUTO_MODE_ON_FLASHING_LIGHT
 
