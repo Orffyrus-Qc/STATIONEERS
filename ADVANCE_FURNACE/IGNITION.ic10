@@ -3,7 +3,7 @@
 # START_STOP_SWITCH = StructureLogicSwitch2 or ModularDeviceBigLever
 # ING = ModularDeviceBigLever
 # IGNITION = ModularDeviceLabelDiode3
-# Turns furnace ignition on when either start control is on.
+# Pulses furnace ignition while either start control is on.
 # START_STOP_SWITCH and ING off stops furnace ignition.
 # IGNITION is green when either start control is on, red when both are off.
 define FURNACE_TYPE HASH("StructureAdvancedFurnace")
@@ -41,12 +41,18 @@ move r6 0
 check_enabled:
 max r4 r4 r5
 max r4 r4 r6
-move r1 r4
 
-write_state:
-sbn FURNACE_TYPE FURNACE_NAME Activate r1
 sbn DISPLAY_TYPE DISPLAY_NAME On 1
 select r5 r4 GREEN RED
 sbn DISPLAY_TYPE DISPLAY_NAME Color r5
+beqz r4 ignition_off
+sbn FURNACE_TYPE FURNACE_NAME Activate 1
+yield
+sbn FURNACE_TYPE FURNACE_NAME Activate 0
+yield
+j loop
+
+ignition_off:
+sbn FURNACE_TYPE FURNACE_NAME Activate 0
 yield
 j loop
