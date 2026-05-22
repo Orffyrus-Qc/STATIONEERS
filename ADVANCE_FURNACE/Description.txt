@@ -43,10 +43,9 @@ Included scripts:
   light, and forces the furnace input off/output to 10 when stopped.
 
 - IGNITION.ic10
-  Activates the Advanced Furnace below 570 K with hysteresis, and disables
-  ignition when both START_STOP_SWITCH and ING are off. It also colors
-  IGNITION red when both start controls are off and green when either
-  start control is on.
+  Turns Advanced Furnace ignition on when either START_STOP_SWITCH or ING is
+  on, and off when both are off. It also colors IGNITION red when both start
+  controls are off and green when either start control is on.
 
 - SwitchGas_HotCold.ic10
   Controls hot, cold, and purge pumps. The HotCold_BUTTON toggles the shared
@@ -166,9 +165,9 @@ Scripts inclus :
   quand le systeme est arrete.
 
 - IGNITION.ic10
-  Active l'Advanced Furnace sous 570 K avec hysteresis, et coupe l'allumage
-  quand START_STOP_SWITCH et ING sont eteints. Il colore aussi IGNITION
-  en rouge quand les deux controles de demarrage sont eteints et en vert quand
+  Active l'allumage de l'Advanced Furnace quand START_STOP_SWITCH ou ING est
+  actif, et le coupe quand les deux sont eteints. Il colore aussi IGNITION en
+  rouge quand les deux controles de demarrage sont eteints et en vert quand
   l'un des deux controles est actif.
 
 - SwitchGas_HotCold.ic10
