@@ -1,7 +1,15 @@
 # Required label:
 # ADVANCED_FURNACE = Advanced Furnace
+# EJECT = ModularDeviceBigLever
+# AUTO-EJECT = ModularDeviceLabelDiode3
 define FURNACE_TYPE HASH("StructureAdvancedFurnace")
 define FURNACE_NAME HASH("ADVANCED_FURNACE")
+define EJECT_SWITCH_TYPE HASH("ModularDeviceBigLever")
+define EJECT_SWITCH_NAME HASH("EJECT")
+define AUTO_EJECT_TYPE HASH("ModularDeviceLabelDiode3")
+define AUTO_EJECT_NAME HASH("AUTO-EJECT")
+define C_BLUE 0
+define C_YELLOW 5
 
 # ===== BASIC =====
 define R_COPPER     HASH("ItemCopperIngot")
@@ -30,6 +38,11 @@ start:
     sbn FURNACE_TYPE FURNACE_NAME Open 0
 
 loop:
+    # Read eject enable lever and update indicator color.
+    lbn r1 EJECT_SWITCH_TYPE EJECT_SWITCH_NAME Open Maximum
+    beq r1 0 autoEjectOff
+    sbn AUTO_EJECT_TYPE AUTO_EJECT_NAME Color C_BLUE
+
     # Get current recipe running in furnace.
     lbn r0 FURNACE_TYPE FURNACE_NAME RecipeHash Maximum
 
@@ -60,6 +73,10 @@ close:
     sbn FURNACE_TYPE FURNACE_NAME Open 0
     yield
     j loop
+
+autoEjectOff:
+    sbn AUTO_EJECT_TYPE AUTO_EJECT_NAME Color C_YELLOW
+    j close
 
 eject:
     sbn FURNACE_TYPE FURNACE_NAME Open 1
