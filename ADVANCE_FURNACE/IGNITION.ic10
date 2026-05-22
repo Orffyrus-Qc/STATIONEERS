@@ -13,7 +13,7 @@ define LEVER_TYPE HASH("ModularDeviceBigLever")
 define SWITCH_NAME HASH("START_STOP_SWITCH")
 define BUTTON_NAME HASH("ING")
 define DISPLAY_TYPE HASH("ModularDeviceLabelDiode3")
-define DISPLAY_NAME HASH("IGNITION_DISPLAY")
+define DISPLAY_NAME HASH("IGNITION")
 define GREEN 2
 define RED 4
 
