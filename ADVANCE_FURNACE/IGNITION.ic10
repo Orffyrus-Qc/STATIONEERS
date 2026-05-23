@@ -12,7 +12,7 @@ define FURNACE_NAME HASH("ICAF_ADVANCED_FURNACE")
 define SWITCH_TYPE HASH("StructureLogicSwitch2")
 define LEVER_TYPE HASH("ModularDeviceBigLever")
 define SWITCH_NAME HASH("START_STOP_SWITCH")
-define BUTTON_NAME HASH("ING")
+define BUTTON_NAME HASH("IGN")
 define DISPLAY_TYPE HASH("ModularDeviceLabelDiode3")
 define DISPLAY_NAME HASH("IGNITION")
 define GREEN 2
