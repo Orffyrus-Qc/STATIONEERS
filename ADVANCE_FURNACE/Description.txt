@@ -43,8 +43,9 @@ Included scripts:
   light, and forces the furnace input off/output to 10 when stopped.
 
 - IGNITION.ic10
-  Activates Advanced Furnace ignition below 270 K while either START_STOP_SWITCH or
-  ING is on. Hysteresis keeps it active until temperature rises above 275 K, or
+  Activates Advanced Furnace ignition at or above 270 K while either
+  START_STOP_SWITCH or ING is on. Hysteresis keeps it active until temperature
+  drops below 265 K, or
   both controls are off. It also colors IGNITION red when both start controls
   are off and green when either start control is on.
 
@@ -166,9 +167,9 @@ Scripts inclus :
   quand le systeme est arrete.
 
 - IGNITION.ic10
-  Active l'allumage de l'Advanced Furnace sous 270 K tant que
-  START_STOP_SWITCH ou ING est actif. L'hysteresis les maintient jusqu'a ce que
-  la temperature depasse 275 K, ou jusqu'a ce que les deux controles soient
+  Active l'allumage de l'Advanced Furnace a partir de 270 K tant que
+  START_STOP_SWITCH ou ING est actif. L'hysteresis le maintient jusqu'a ce que
+  la temperature descende sous 265 K, ou jusqu'a ce que les deux controles soient
   eteints. Il colore aussi IGNITION en rouge quand les deux controles de
   demarrage sont eteints et en vert quand l'un des deux controles est actif.
 
