@@ -1,4 +1,4 @@
-﻿# Required labels:
+# Required labels:
 define HOT HASH("HOT_PUMP")
 define COLD HASH("COLD_PUMP")
 define PURGE HASH("PURGE_PUMP")
@@ -16,19 +16,24 @@ define P_EMPTY 1
 define FILL_SET 10
 define PURGE_SET 100
 start:
+lbn r8 MEMORY MEM Setting Average
+bnan r8 default_hot
+round r8 r8
+j init_mode
+default_hot:
 move r8 1
-move r9 -1
-move r10 1
-move r4 1
-sbn MEMORY MEM Setting 1
+sbn MEMORY MEM Setting r8
+init_mode:
+move r9 r8
+move r10 r8
+move r4 0
 lbn r13 BUTTON BTN Activate Average
 bnan r13 button_missing_start
-j init_purge
+j start_ready
 button_missing_start:
 move r13 0
-init_purge:
-jal purge_on
-jal fill_off
+start_ready:
+jal purge_off
 loop:
 yield
 lbn r8 MEMORY MEM Setting Average
@@ -63,21 +68,13 @@ jal fill_off
 jal purge_on
 j loop
 purging:
-move r10 r8
 jal fill_off
 jal purge_on
 lbn r1 ANALYZER ANA Pressure Average
 bgt r1 P_EMPTY loop
-sbn PUMP PURGE On 0
-sbn TURBO PURGE On 0
+jal purge_off
 move r9 r10
-beq r9 1 hot_start
-j cold_start
-hot_start:
-move r4 2
-j loop
-cold_start:
-move r4 3
+move r4 0
 j loop
 hot_mode:
 lbn r1 ANALYZER ANA Pressure Average
@@ -86,6 +83,7 @@ blt r1 P_ON hot_on
 jal fill_off
 j loop
 hot_on:
+jal purge_off
 jal fill_off
 sbn PUMP HOT Setting FILL_SET
 sbn TURBO HOT Setting FILL_SET
@@ -102,6 +100,7 @@ blt r1 P_ON cold_on
 jal fill_off
 j loop
 cold_on:
+jal purge_off
 jal fill_off
 sbn PUMP COLD Setting FILL_SET
 sbn TURBO COLD Setting FILL_SET
@@ -122,4 +121,8 @@ sbn PUMP PURGE Setting PURGE_SET
 sbn TURBO PURGE Setting PURGE_SET
 sbn PUMP PURGE On 1
 sbn TURBO PURGE On 1
+j ra
+purge_off:
+sbn PUMP PURGE On 0
+sbn TURBO PURGE On 0
 j ra
