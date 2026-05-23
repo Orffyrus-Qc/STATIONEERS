@@ -27,11 +27,11 @@ the light script displays the active gas mode.
 | `RECIPES_Alloy.ic10` | Writes recipe targets for steel, electrum, solder, constantan, and invar. |
 | `RECIPES_SuperAlloy.ic10` | Writes recipe targets for astroloy, hastelloy, inconel, waspaloy, and stellite. |
 | `SETTING_IO.ic10` | Main furnace controller. Reads recipe targets, controls furnace input/output, selects hot or cold gas mode, vents over safe pressure, and forces input off when stopped. |
-| `START_STOP.ic10` | Mirrors `START_STOP_SWITCH` into `memStartStop`, controls the auto-mode light, and forces a safe stopped furnace state. |
-| `IGNITION.ic10` | Activates Advanced Furnace ignition below 270 K while either start control is on, stops above 275 K or when both controls are off, and colors the ignition display red/green from the start-control state. |
+| `START_STOP.ic10` | Mirrors `START_STOP_SWITCH` into `memStartStop`, controls the auto-mode light, and keeps the stopped furnace locked with input off/output at 10. |
+| `IGNITION.ic10` | Activates Advanced Furnace ignition every loop below 270 K while `START_STOP_SWITCH` or `IGN` is on. The indicator display is optional. |
 | `SwitchGas_HotCold.ic10` | Controls hot, cold, and purge pumps. Allows manual toggling with `HotCold_BUTTON` and automatic mode changes from the IO controller. |
 | `SwitchGas_LIGHT.ic10` | Displays active gas mode with red and green indicator lights. |
-| `FUEL_MIXER.ic10` | Sets the fuel mixer to 66 percent input 1, toggles the mixer based on fuel pressure, and shuts off hot/cold ice crushers above the configured pressure limit. |
+| `FUEL_MIXER.ic10` | Sets the fuel mixer to 66 percent input 1, toggles the mixer based on fuel pressure, and cycles hot/cold ice crushers with the configured pressure hysteresis. |
 | `EJECTER.ic10` | Opens the Advanced Furnace when selected alloy or superalloy recipes complete. Some basic metal recipes are included but commented out. |
 
 ## Required Labels
@@ -43,10 +43,13 @@ in-game device labels exactly.
 
 - `ADVANCED_FURNACE`
 - `START_STOP_SWITCH` (`StructureLogicSwitch2` or `ModularDeviceBigLever`)
-- `ING` (`ModularDeviceBigLever`)
-- `IGNITION`
+- `IGN` (`ModularDeviceBigLever`)
 - `memStartStop`
 - `AUTO_MODE_ON_FLASHING_LIGHT`
+
+Optional ignition display:
+
+- `IGNITION` (`ModularDeviceLabelDiode3`)
 
 ### Recipe Selection
 

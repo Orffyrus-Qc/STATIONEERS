@@ -1,79 +1,66 @@
 # Required labels:
 # ADVANCED_FURNACE = StructureAdvancedFurnace
 # START_STOP_SWITCH = StructureLogicSwitch2 or ModularDeviceBigLever
-# ING = ModularDeviceBigLever
+# IGN = ModularDeviceBigLever
+# Optional label:
 # IGNITION = ModularDeviceLabelDiode3
-# Activates furnace ignition below 270 K while either start control is on.
-# Hysteresis keeps ignition active until temperature rises above 275 K.
-# START_STOP_SWITCH and ING off stops furnace ignition.
-# IGNITION is green when either start control is on, red when both are off.
+# Activates furnace ignition each loop below 270 K while START_STOP_SWITCH or IGN is on.
+# IGNITION display is green when either control is on, red when both are off.
 define FURNACE_TYPE HASH("StructureAdvancedFurnace")
 define FURNACE_NAME HASH("ADVANCED_FURNACE")
 define SWITCH_TYPE HASH("StructureLogicSwitch2")
 define LEVER_TYPE HASH("ModularDeviceBigLever")
 define SWITCH_NAME HASH("START_STOP_SWITCH")
-define BUTTON_NAME HASH("IGN")
+define IGN_LEVER_NAME HASH("IGN")
 define DISPLAY_TYPE HASH("ModularDeviceLabelDiode3")
 define DISPLAY_NAME HASH("IGNITION")
 define GREEN 2
 define RED 4
-
 define ACTIVATE_BELOW_K 270
-define HYSTERESIS_K 5
-
-start:
-move r3 ACTIVATE_BELOW_K
-add r3 r3 HYSTERESIS_K
-lbn r1 FURNACE_TYPE FURNACE_NAME Activate Maximum
 
 loop:
 lbn r4 SWITCH_TYPE SWITCH_NAME Setting Average
+lbn r3 SWITCH_TYPE SWITCH_NAME Open Maximum
 bnan r4 switch_missing
 sgtz r4 r4
-j read_lever
+j read_switch_open
 switch_missing:
 move r4 0
-read_lever:
+read_switch_open:
+bnan r3 switch_open_missing
+sgtz r3 r3
+j read_start_lever
+switch_open_missing:
+move r3 0
+read_start_lever:
 lbn r5 LEVER_TYPE SWITCH_NAME Open Maximum
-bnan r5 lever_missing
+bnan r5 start_lever_missing
 sgtz r5 r5
-j read_button
-lever_missing:
+j read_ign_lever
+start_lever_missing:
 move r5 0
-read_button:
-lbn r6 LEVER_TYPE BUTTON_NAME Open Maximum
-bnan r6 button_missing
+read_ign_lever:
+lbn r6 LEVER_TYPE IGN_LEVER_NAME Open Maximum
+bnan r6 ign_missing
 sgtz r6 r6
-j check_enabled
-button_missing:
+j combine_controls
+ign_missing:
 move r6 0
-check_enabled:
+combine_controls:
+max r4 r4 r3
 max r4 r4 r5
 max r4 r4 r6
-
-beqz r4 stop_ignition
+move r1 0
+beqz r4 write_state
 lbn r0 FURNACE_TYPE FURNACE_NAME Temperature Average
-beqz r1 maybe_activate
-
-maybe_deactivate:
-sgt r2 r0 r3
-beqz r2 write_state
-move r1 0
-j write_state
-
-maybe_activate:
-slt r2 r0 ACTIVATE_BELOW_K
-beqz r2 write_state
-move r1 1
-j write_state
-
-stop_ignition:
-move r1 0
-
+slt r1 r0 ACTIVATE_BELOW_K
 write_state:
 sbn FURNACE_TYPE FURNACE_NAME Activate r1
+lbn r7 DISPLAY_TYPE DISPLAY_NAME ReferenceId Maximum
+bnan r7 done
 sbn DISPLAY_TYPE DISPLAY_NAME On 1
 select r5 r4 GREEN RED
 sbn DISPLAY_TYPE DISPLAY_NAME Color r5
+done:
 yield
 j loop

@@ -25,10 +25,12 @@ loop:
 check_cold:
     lbn r1 ANALYZER_TYPE COLD_ANALYZER Pressure Average
     bgt r1 PRESSURE_OFF cold_off
+    blt r1 PRESSURE_ON cold_on
 
 check_hot:
     lbn r2 ANALYZER_TYPE HOT_ANALYZER Pressure Average
     bgt r2 PRESSURE_OFF hot_off
+    blt r2 PRESSURE_ON hot_on
 
     yield
     j loop
@@ -45,7 +47,16 @@ cold_off:
     sbn CRUSHER_TYPE COLD_CRUSHER On 0
     j check_hot
 
+cold_on:
+    sbn CRUSHER_TYPE COLD_CRUSHER On 1
+    j check_hot
+
 hot_off:
     sbn CRUSHER_TYPE HOT_CRUSHER On 0
+    yield
+    j loop
+
+hot_on:
+    sbn CRUSHER_TYPE HOT_CRUSHER On 1
     yield
     j loop

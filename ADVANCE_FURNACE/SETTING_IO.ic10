@@ -15,16 +15,13 @@ define OUT_EMERGENCY 100
 start:
 move r8 SAFE_PRESSURE
 move r9 0
-sbn FURNACE_TYPE FURNACE_NAME SettingInput 0
-sbn FURNACE_TYPE FURNACE_NAME SettingOutput 0
-sbn MEMORY_TYPE M_GAS Setting GAS_HOT
 loop:
 yield
 move r5 0
 move r6 0
 lbn r14 MEMORY_TYPE M_START_STOP Setting Average
-bnan r14 apply
-beq r14 0 apply
+bnan r14 stopped
+beq r14 0 stopped
 lbn r10 MEMORY_TYPE TEMP_MIN_MEM Setting Average
 lbn r11 MEMORY_TYPE TEMP_MAX_MEM Setting Average
 lbn r12 MEMORY_TYPE PRESS_MIN_MEM Setting Average
@@ -99,12 +96,16 @@ j apply
 trim_low:
 move r5 8
 j apply
+stopped:
+sbn FURNACE_TYPE FURNACE_NAME SettingInput 0
+sbn FURNACE_TYPE FURNACE_NAME SettingOutput OUT_VENT
+sleep 0.25
+j loop
 vent_now:
 add r8 r12 r13
 div r8 r8 2
 move r5 0
 move r6 OUT_VENT
-sbn FURNACE_TYPE FURNACE_NAME SettingInput r5
 ble r1 SAFE_PRESSURE vent_wait
 move r6 OUT_EMERGENCY
 vent_wait:

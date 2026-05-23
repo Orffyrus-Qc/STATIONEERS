@@ -1,5 +1,5 @@
 # Required labels:
-# START_STOP_SWITCH = Logic Switch. On starts furnace IO, off stops it.
+# START_STOP_SWITCH = Logic Switch or Big Lever. On starts furnace IO, off stops it.
 # memStartStop      = Logic Memory shared with SETTING_IO.
 # AUTO_MODE_ON_FLASHING_LIGHT = Flashing light enabled when auto mode is on.
 # ADVANCED_FURNACE = Advanced Furnace.
@@ -8,6 +8,7 @@ define MEMORY_NAME HASH("memStartStop")
 define LIGHT_NAME HASH("AUTO_MODE_ON_FLASHING_LIGHT")
 define FURNACE_NAME HASH("ADVANCED_FURNACE")
 define SWITCH_TYPE HASH("StructureLogicSwitch2")
+define LEVER_TYPE HASH("ModularDeviceBigLever")
 define MEMORY_TYPE HASH("StructureLogicMemory")
 define LIGHT_TYPE HASH("StructureFlashingLight")
 define FURNACE_TYPE HASH("StructureAdvancedFurnace")
@@ -23,6 +24,28 @@ j loop
 
 sync_switch:
 lbn r0 SWITCH_TYPE SWITCH_NAME Setting Average
+lbn r3 SWITCH_TYPE SWITCH_NAME Open Maximum
+lbn r2 LEVER_TYPE SWITCH_NAME Open Maximum
+bnan r0 switch_missing
+sgtz r0 r0
+j check_switch_open
+switch_missing:
+move r0 0
+check_switch_open:
+bnan r3 switch_open_missing
+sgtz r3 r3
+j check_lever
+switch_open_missing:
+move r3 0
+check_lever:
+bnan r2 lever_missing
+sgtz r2 r2
+j combine_inputs
+lever_missing:
+move r2 0
+combine_inputs:
+max r0 r0 r3
+max r0 r0 r2
 move r1 0
 bgt r0 0 switch_on
 j write_state
@@ -33,6 +56,8 @@ move r1 1
 write_state:
 sbn MEMORY_TYPE MEMORY_NAME Setting r1
 sbn LIGHT_TYPE LIGHT_NAME On r1
+seqz r2 r1
+sbn FURNACE_TYPE FURNACE_NAME Lock r2
 beq r1 0 stop_output
 j ra
 

@@ -41,14 +41,12 @@ Included scripts:
 
 - START_STOP.ic10
   Mirrors START_STOP_SWITCH into memStartStop, turns on the auto-mode flashing
-  light, and forces the furnace input off/output to 10 when stopped.
+  light, and keeps the stopped furnace locked with input off/output at 10.
 
 - IGNITION.ic10
-  Activates Advanced Furnace ignition below 270 K while either
-  START_STOP_SWITCH or ING is on. Hysteresis keeps it active until temperature
-  rises above 275 K, or
-  both controls are off. It also colors IGNITION red when both start controls
-  are off and green when either start control is on.
+  Activates Advanced Furnace ignition every loop below 270 K while either
+  START_STOP_SWITCH or IGN is on. The IGNITION display is optional; when present
+  it is red when both controls are off and green when either control is on.
 
 - SwitchGas_HotCold.ic10
   Controls hot, cold, and purge pumps. The HotCold_BUTTON toggles the shared
@@ -60,8 +58,7 @@ Included scripts:
 
 - FUEL_MIXER.ic10
   Sets the fuel mixer to 66% input 1, toggles the mixer based on fuel pressure,
-  and shuts off hot/cold ice crushers when their analyzer pressure is above the
-  configured limit.
+  and cycles hot/cold ice crushers with the configured pressure hysteresis.
 
 - EJECTER.ic10
   Opens the Advanced Furnace when selected alloy or superalloy recipes complete.
@@ -74,10 +71,13 @@ Required labels:
 - Furnace and automation:
   ADVANCED_FURNACE
   START_STOP_SWITCH (StructureLogicSwitch2 or ModularDeviceBigLever)
-  ING (ModularDeviceBigLever)
-  IGNITION
+  IGN (ModularDeviceBigLever)
   memStartStop
   AUTO_MODE_ON_FLASHING_LIGHT
+
+Optional ignition display:
+
+  IGNITION (ModularDeviceLabelDiode3)
 
 - Recipe selection:
   SELECTOR_DIAL
@@ -165,15 +165,14 @@ Scripts inclus :
 
 - START_STOP.ic10
   Copie START_STOP_SWITCH dans memStartStop, active le voyant clignotant du
-  mode automatique et force l'entree du four a zero avec la sortie reglee a 10
-  quand le systeme est arrete.
+  mode automatique et garde le four arrete verrouille avec l'entree a zero et
+  la sortie reglee a 10.
 
 - IGNITION.ic10
-  Active l'allumage de l'Advanced Furnace sous 270 K tant que
-  START_STOP_SWITCH ou ING est actif. L'hysteresis le maintient jusqu'a ce que
-  la temperature depasse 275 K, ou jusqu'a ce que les deux controles soient
-  eteints. Il colore aussi IGNITION en rouge quand les deux controles de
-  demarrage sont eteints et en vert quand l'un des deux controles est actif.
+  Active l'allumage de l'Advanced Furnace a chaque boucle sous 270 K tant que
+  START_STOP_SWITCH ou IGN est actif. L'affichage IGNITION est optionnel; quand
+  il est present, il est rouge quand les deux controles sont eteints et vert
+  quand l'un des deux controles est actif.
 
 - SwitchGas_HotCold.ic10
   Controle les pompes chaud, froid et purge. HotCold_BUTTON peut changer le
@@ -186,8 +185,8 @@ Scripts inclus :
 
 - FUEL_MIXER.ic10
   Regle le melangeur de carburant a 66% sur l'entree 1, active/desactive le
-  melangeur selon la pression du carburant et coupe les ice crushers chaud/froid
-  quand leur pression d'analyseur depasse la limite configuree.
+  melangeur selon la pression du carburant et controle les ice crushers
+  chaud/froid avec l'hysteresis de pression configuree.
 
 - EJECTER.ic10
   Ouvre l'Advanced Furnace quand certaines recettes d'alliage ou de
@@ -200,10 +199,13 @@ Etiquettes requises :
 - Four et automatisation :
   ADVANCED_FURNACE
   START_STOP_SWITCH (StructureLogicSwitch2 ou ModularDeviceBigLever)
-  ING (ModularDeviceBigLever)
-  IGNITION
+  IGN (ModularDeviceBigLever)
   memStartStop
   AUTO_MODE_ON_FLASHING_LIGHT
+
+Affichage d'allumage optionnel :
+
+  IGNITION (ModularDeviceLabelDiode3)
 
 - Selection des recettes :
   SELECTOR_DIAL
