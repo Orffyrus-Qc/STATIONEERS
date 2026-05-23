@@ -1,5 +1,5 @@
 # Required labels:
-# ICAF_ADVANCED_FURNACE = StructureAdvancedFurnace
+# ADVANCED_FURNACE = StructureAdvancedFurnace
 # START_STOP_SWITCH = StructureLogicSwitch2 or ModularDeviceBigLever
 # ING = ModularDeviceBigLever
 # IGNITION = ModularDeviceLabelDiode3
@@ -8,7 +8,7 @@
 # START_STOP_SWITCH and ING off stops furnace ignition.
 # IGNITION is green when either start control is on, red when both are off.
 define FURNACE_TYPE HASH("StructureAdvancedFurnace")
-define FURNACE_NAME HASH("ICAF_ADVANCED_FURNACE")
+define FURNACE_NAME HASH("ADVANCED_FURNACE")
 define SWITCH_TYPE HASH("StructureLogicSwitch2")
 define LEVER_TYPE HASH("ModularDeviceBigLever")
 define SWITCH_NAME HASH("START_STOP_SWITCH")

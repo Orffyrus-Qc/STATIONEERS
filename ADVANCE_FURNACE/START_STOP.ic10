@@ -2,11 +2,11 @@
 # START_STOP_SWITCH = Logic Switch. On starts furnace IO, off stops it.
 # memStartStop      = Logic Memory shared with SETTING_IO.
 # AUTO_MODE_ON_FLASHING_LIGHT = Flashing light enabled when auto mode is on.
-# ICAF_ADVANCED_FURNACE = Advanced Furnace.
+# ADVANCED_FURNACE = Advanced Furnace.
 define SWITCH_NAME HASH("START_STOP_SWITCH")
 define MEMORY_NAME HASH("memStartStop")
 define LIGHT_NAME HASH("AUTO_MODE_ON_FLASHING_LIGHT")
-define FURNACE_NAME HASH("ICAF_ADVANCED_FURNACE")
+define FURNACE_NAME HASH("ADVANCED_FURNACE")
 define SWITCH_TYPE HASH("StructureLogicSwitch2")
 define MEMORY_TYPE HASH("StructureLogicMemory")
 define LIGHT_TYPE HASH("StructureFlashingLight")

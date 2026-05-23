@@ -41,7 +41,7 @@ in-game device labels exactly.
 
 ### Furnace And Automation
 
-- `ICAF_ADVANCED_FURNACE`
+- `ADVANCED_FURNACE`
 - `START_STOP_SWITCH` (`StructureLogicSwitch2` or `ModularDeviceBigLever`)
 - `ING` (`ModularDeviceBigLever`)
 - `IGNITION`
