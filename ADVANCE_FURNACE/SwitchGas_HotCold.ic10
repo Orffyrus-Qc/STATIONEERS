@@ -1,10 +1,4 @@
 ﻿# Required labels:
-# HOT_PUMP             = Hot gas fill pump
-# COLD_PUMP            = Cold gas fill pump
-# PURGE_PUMP           = Purge pump
-# memSwitchGas_HotCold = Logic Memory. 1 hot, 0 cold
-# HotCold_BUTTON       = Logic Button
-# FUEL_INPUT_ANALYZER  = Fuel input pipe analyzer
 define HOT HASH("HOT_PUMP")
 define COLD HASH("COLD_PUMP")
 define PURGE HASH("PURGE_PUMP")
@@ -16,26 +10,40 @@ define TURBO HASH("StructureTurboVolumePump")
 define ANALYZER HASH("StructurePipeAnalysizer")
 define MEMORY HASH("StructureLogicMemory")
 define BUTTON HASH("StructureLogicButton")
-define P_OFF 5000
-define P_ON 4500
+define P_OFF 50000
+define P_ON 45000
 define P_EMPTY 1
+define FILL_SET 100
 define PURGE_SET 100
 start:
 move r8 1
 move r9 -1
 move r10 1
 move r4 1
-move r6 0
-move r7 0
 sbn MEMORY MEM Setting 1
 lbn r13 BUTTON BTN Activate Average
+bnan r13 button_missing_start
+j init_purge
+button_missing_start:
+move r13 0
+init_purge:
 jal purge_on
 jal fill_off
 loop:
 yield
 lbn r8 MEMORY MEM Setting Average
+bnan r8 mem_missing
 round r8 r8
+j read_button
+mem_missing:
+move r8 r9
+read_button:
 lbn r0 BUTTON BTN Activate Average
+bnan r0 button_missing
+j check_button
+button_missing:
+move r0 r13
+check_button:
 beq r0 r13 mode_check
 move r13 r0
 beq r0 1 toggle_mode
@@ -67,48 +75,40 @@ beq r9 1 hot_start
 j cold_start
 hot_start:
 move r4 2
-move r7 0
 j loop
 cold_start:
 move r4 3
-move r6 0
 j loop
 hot_mode:
 lbn r1 ANALYZER ANA Pressure Average
 bgt r1 P_OFF hot_off
 blt r1 P_ON hot_on
-move r7 0
 jal fill_off
 j loop
 hot_on:
-move r7 1
 jal fill_off
-sbn PUMP HOT Setting 10
-sbn TURBO HOT Setting 10
+sbn PUMP HOT Setting FILL_SET
+sbn TURBO HOT Setting FILL_SET
 sbn PUMP HOT On 1
 sbn TURBO HOT On 1
 j loop
 hot_off:
-move r7 0
 jal fill_off
 j loop
 cold_mode:
 lbn r1 ANALYZER ANA Pressure Average
 bgt r1 P_OFF cold_off
 blt r1 P_ON cold_on
-move r6 0
 jal fill_off
 j loop
 cold_on:
-move r6 1
 jal fill_off
-sbn PUMP COLD Setting 10
-sbn TURBO COLD Setting 10
+sbn PUMP COLD Setting FILL_SET
+sbn TURBO COLD Setting FILL_SET
 sbn PUMP COLD On 1
 sbn TURBO COLD On 1
 j loop
 cold_off:
-move r6 0
 jal fill_off
 j loop
 fill_off:
