@@ -51,7 +51,7 @@ Included scripts:
 - SwitchGas_HotCold.ic10
   Controls hot, cold, and purge pumps. The HotCold_BUTTON toggles the shared
   gas mode manually, while the IO controller can also set the same memory. It
-  keeps the selected furnace input line near 45-50 MPa after purging.
+  keeps the selected furnace input line near 4.5-5 MPa after purging.
 
 - SwitchGas_LIGHT.ic10
   Shows the active gas mode with indicator diodes: red for hot gas and green for
@@ -179,7 +179,7 @@ Scripts inclus :
   Controle les pompes chaud, froid et purge. HotCold_BUTTON peut changer le
   mode gaz manuellement, tandis que le controleur IO peut aussi ecrire dans la
   meme memoire. Il garde la ligne d'entree selectionnee du four pres de
-  45-50 MPa apres la purge.
+  4.5-5 MPa apres la purge.
 
 - SwitchGas_LIGHT.ic10
   Affiche le mode gaz actif avec des diodes : rouge pour le gaz chaud et vert

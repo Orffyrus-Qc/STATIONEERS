@@ -10,10 +10,10 @@ define TURBO HASH("StructureTurboVolumePump")
 define ANALYZER HASH("StructurePipeAnalysizer")
 define MEMORY HASH("StructureLogicMemory")
 define BUTTON HASH("StructureLogicButton")
-define P_OFF 50000
-define P_ON 45000
+define P_OFF 5000
+define P_ON 4500
 define P_EMPTY 1
-define FILL_SET 100
+define FILL_SET 10
 define PURGE_SET 100
 start:
 move r8 1

@@ -29,7 +29,7 @@ the light script displays the active gas mode.
 | `SETTING_IO.ic10` | Main furnace controller. Reads recipe targets, controls furnace input/output, selects hot or cold gas mode, vents over safe pressure, and forces input off when stopped. |
 | `START_STOP.ic10` | Mirrors `START_STOP_SWITCH` into `memStartStop`, controls the auto-mode light, and keeps the stopped furnace locked with input off/output at 10. |
 | `IGNITION.ic10` | Activates Advanced Furnace ignition every loop below 270 K while `START_STOP_SWITCH` or `IGN` is on. The indicator display is optional. |
-| `SwitchGas_HotCold.ic10` | Controls hot, cold, and purge pumps. It purges the furnace input line on gas-mode changes, then keeps the selected gas line near 45-50 MPa so the Advanced Furnace can fill to recipe pressures. |
+| `SwitchGas_HotCold.ic10` | Controls hot, cold, and purge pumps. It purges the furnace input line on gas-mode changes, then keeps the selected gas line near 4.5-5 MPa. |
 | `SwitchGas_LIGHT.ic10` | Displays active gas mode with red and green indicator lights. |
 | `FUEL_MIXER.ic10` | Sets the fuel mixer to 66 percent input 1, toggles the mixer based on fuel pressure, and cycles hot/cold ice crushers with the configured pressure hysteresis. |
 | `EJECTER.ic10` | Opens the Advanced Furnace when selected alloy or superalloy recipes complete. Some basic metal recipes are included but commented out. |
