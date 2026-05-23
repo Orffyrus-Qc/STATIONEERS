@@ -1,5 +1,5 @@
 define FURNACE_TYPE HASH("StructureAdvancedFurnace")
-define FURNACE_NAME HASH("ADVANCED_FURNACE")
+define FURNACE_NAME HASH("ICAF_ADVANCED_FURNACE")
 define MEMORY_TYPE HASH("StructureLogicMemory")
 define TEMP_MAX_MEM HASH("MEM_TEMP+")
 define TEMP_MIN_MEM HASH("MEM_TEMP-")

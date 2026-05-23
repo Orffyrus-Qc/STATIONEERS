@@ -71,7 +71,7 @@ Included scripts:
 Required labels:
 
 - Furnace and automation:
-  ADVANCED_FURNACE
+  ICAF_ADVANCED_FURNACE
   START_STOP_SWITCH (StructureLogicSwitch2 or ModularDeviceBigLever)
   ING (ModularDeviceBigLever)
   IGNITION
@@ -196,7 +196,7 @@ Scripts inclus :
 Etiquettes requises :
 
 - Four et automatisation :
-  ADVANCED_FURNACE
+  ICAF_ADVANCED_FURNACE
   START_STOP_SWITCH (StructureLogicSwitch2 ou ModularDeviceBigLever)
   ING (ModularDeviceBigLever)
   IGNITION

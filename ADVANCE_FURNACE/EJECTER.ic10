@@ -1,9 +1,9 @@
 # Required label:
-# ADVANCED_FURNACE = Advanced Furnace
+# ICAF_ADVANCED_FURNACE = Advanced Furnace
 # AUTO-EJECT = ModularDeviceBigLever
 # AUTO-EJECT = ModularDeviceLabelDiode3
 define FURNACE_TYPE HASH("StructureAdvancedFurnace")
-define FURNACE_NAME HASH("ADVANCED_FURNACE")
+define FURNACE_NAME HASH("ICAF_ADVANCED_FURNACE")
 define EJECT_SWITCH_TYPE HASH("ModularDeviceBigLever")
 define EJECT_SWITCH_NAME HASH("AUTO-EJECT")
 define AUTO_EJECT_TYPE HASH("ModularDeviceLabelDiode3")
