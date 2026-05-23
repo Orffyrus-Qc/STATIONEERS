@@ -36,7 +36,8 @@ Included scripts:
 - SETTING_IO.ic10
   Main furnace input/output controller. It only runs while memStartStop is on,
   uses the recipe target memories, switches hot/cold gas mode as needed, and
-  vents aggressively above the configured safe pressure.
+  vents aggressively above the configured safe pressure. When memStartStop is
+  off or missing, it forces furnace input off.
 
 - START_STOP.ic10
   Mirrors START_STOP_SWITCH into memStartStop, turns on the auto-mode flashing
@@ -159,7 +160,8 @@ Scripts inclus :
   Controleur principal des entrees/sorties du four. Il fonctionne seulement
   quand memStartStop est actif, utilise les memoires de consigne, choisit le
   mode gaz chaud/froid au besoin et ventile fortement au-dessus de la pression
-  de securite configuree.
+  de securite configuree. Quand memStartStop est eteint ou absent, il force
+  l'entree du four a zero.
 
 - START_STOP.ic10
   Copie START_STOP_SWITCH dans memStartStop, active le voyant clignotant du

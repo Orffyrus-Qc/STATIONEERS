@@ -23,7 +23,8 @@ yield
 move r5 0
 move r6 0
 lbn r14 MEMORY_TYPE M_START_STOP Setting Average
-beq r14 0 loop
+bnan r14 apply
+beq r14 0 apply
 lbn r10 MEMORY_TYPE TEMP_MIN_MEM Setting Average
 lbn r11 MEMORY_TYPE TEMP_MAX_MEM Setting Average
 lbn r12 MEMORY_TYPE PRESS_MIN_MEM Setting Average

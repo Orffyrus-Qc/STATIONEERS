@@ -26,7 +26,7 @@ the light script displays the active gas mode.
 | `RECIPES_Metal.ic10` | Writes recipe targets for copper, gold, iron, lead, nickel, silicon, and silver. |
 | `RECIPES_Alloy.ic10` | Writes recipe targets for steel, electrum, solder, constantan, and invar. |
 | `RECIPES_SuperAlloy.ic10` | Writes recipe targets for astroloy, hastelloy, inconel, waspaloy, and stellite. |
-| `SETTING_IO.ic10` | Main furnace controller. Reads recipe targets, controls furnace input/output, selects hot or cold gas mode, and vents over safe pressure. |
+| `SETTING_IO.ic10` | Main furnace controller. Reads recipe targets, controls furnace input/output, selects hot or cold gas mode, vents over safe pressure, and forces input off when stopped. |
 | `START_STOP.ic10` | Mirrors `START_STOP_SWITCH` into `memStartStop`, controls the auto-mode light, and forces a safe stopped furnace state. |
 | `IGNITION.ic10` | Activates Advanced Furnace ignition below 270 K while either start control is on, stops above 275 K or when both controls are off, and colors the ignition display red/green from the start-control state. |
 | `SwitchGas_HotCold.ic10` | Controls hot, cold, and purge pumps. Allows manual toggling with `HotCold_BUTTON` and automatic mode changes from the IO controller. |
