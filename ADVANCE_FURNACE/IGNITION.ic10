@@ -3,7 +3,7 @@
 # START_STOP_SWITCH = StructureLogicSwitch2 or ModularDeviceBigLever
 # ING = ModularDeviceBigLever
 # IGNITION = ModularDeviceLabelDiode3
-# Pulses furnace ignition below 270 K while either start control is on.
+# Activates furnace ignition below 270 K while either start control is on.
 # Hysteresis keeps ignition active until temperature rises above 275 K.
 # START_STOP_SWITCH and ING off stops furnace ignition.
 # IGNITION is green when either start control is on, red when both are off.
@@ -60,24 +60,20 @@ beqz r1 maybe_activate
 
 maybe_deactivate:
 sgt r2 r0 r3
-beqz r2 pulse_ignition
+beqz r2 write_state
 move r1 0
-j ignition_off
+j write_state
 
 maybe_activate:
 slt r2 r0 ACTIVATE_BELOW_K
-beqz r2 ignition_off
+beqz r2 write_state
 move r1 1
-
-pulse_ignition:
-sbn FURNACE_TYPE FURNACE_NAME Activate 1
-yield
-sbn FURNACE_TYPE FURNACE_NAME Activate 0
-yield
-j loop
+j write_state
 
 ignition_off:
 move r1 0
-sbn FURNACE_TYPE FURNACE_NAME Activate 0
+
+write_state:
+sbn FURNACE_TYPE FURNACE_NAME Activate r1
 yield
 j loop
