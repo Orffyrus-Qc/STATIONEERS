@@ -17,7 +17,8 @@ move r15 0 # EN: wanted generator state. FR: etat voulu du generateur.
 main:
 move r0 0 # EN: total battery ratio. FR: ratio total des batteries.
 move r1 0 # EN: found battery count. FR: nombre de batteries trouvees.
-# EN: Each battery is optional; normal battery is checked before large battery. FR: Chaque batterie est optionnelle; batterie normale puis grande.
+# EN: Each battery is optional; normal battery is checked before large battery.
+# FR: Chaque batterie est optionnelle; batterie normale puis grande.
 lbn r3 BatteryHash BATTERY_1 ReferenceId Maximum
 ble r3 ninf checkBattery1Large
 ld r2 r3 Ratio
@@ -97,7 +98,8 @@ j applyOutput
 noBatteries:
 move r15 0
 applyOutput:
-# EN: Finds named generator, then writes On. FR: Trouve le generateur nomme, puis ecrit On.
+# EN: Finds named generator, then writes On.
+# FR: Trouve le generateur nomme, puis ecrit On.
 lbn r3 SolidGeneratorHash GeneratorName ReferenceId Maximum
 bgt r3 ninf setGenerator
 lbn r3 SolidGeneratorHash GeneratorNameAlt ReferenceId Maximum
