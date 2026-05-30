@@ -1,3 +1,15 @@
+﻿> **REPOSITORY MOVED**
+>
+> This repository has been consolidated into the [GAME](https://github.com/Orffyrus-Qc/GAME) collection.
+>
+> **New canonical location:**  
+> https://github.com/Orffyrus-Qc/GAME/tree/main/STATIONEERS
+>
+> All scripts, documentation, server installer, TerraformingMod, and the IC10 logic database are now maintained under the GAME repository for better organization of game tooling.
+>
+> This standalone repo is preserved for reference and will be archived.
+
+---
 # STATIONEERS
 
 Stationeers IC10 scripts and logic reference files.
@@ -218,3 +230,5 @@ The `markup-language/TextMate/` folder contains `ic10.tmLanguage.json`, a TextMa
 GitHub syntax highlighting for `.ic10` files is limited by GitHub Linguist. This repo maps IC10 scripts to GitHub's closest built-in `Assembly` highlighter through `.gitattributes`, but exact IC10 highlighting would require IC10 support to be added upstream to GitHub Linguist.
 
 See `markup-language/Notepad++/README.md` for the Windows install path and setup notes.
+
+
