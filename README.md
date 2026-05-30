@@ -182,6 +182,16 @@ in the script.
 See `SOLAR_PANEL/README.md` for pin setup, configurable options, and supported
 panel types.
 
+## Trader Armageddon Swarm
+
+The `TRADER_ARMAGEDDON_SWARM/` folder contains a 10-chip trader satellite dish
+script pack built from a shared Grok answer. It coordinates four satellite
+dishes, priority filtering, fuel item hash filtering, auto-calling, landing pad
+rotation, status alerts, Morse telemetry, and multi-dish signal stability.
+
+See `TRADER_ARMAGEDDON_SWARM/README.md` for pin setup, script roles, status
+values, and the placeholder fuel hash notes.
+
 ## IC10 Logic Database
 
 The `logic-db/` folder contains a Codex-oriented Stationeers IC10 logic database generated from Stationeers wiki/reference material verified on 2026-05-06.

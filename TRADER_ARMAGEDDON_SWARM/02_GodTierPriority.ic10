@@ -1,0 +1,90 @@
+# 12-rank trader priority filter.
+# d0 = focused dish, d4 = minimum priority dial, d5 = status display.
+alias Dish d0
+alias Dial d4
+alias Status d5
+define ORES -1374574351
+define ALLOY 54412100
+define SEED -1077922067
+define BUILD 175935584
+define GAS -470575659
+define LIQUID 135244511
+define FOOD -82964957
+define TOOL 1325142661
+define SUNDRIES -1650376125
+define GADGET -1590718013
+define RARE 649254485
+define GEN -188927486
+alias Type r0
+alias Pri r1
+alias Min r2
+alias Sig r3
+alias SigID r4
+
+start:
+move Pri 0
+
+main:
+yield
+move Pri 0
+l Sig Dish SignalStrength
+blt Sig 0.68 main
+l Type Dish ContactTypeId
+beq Type GAS pri_gas
+beq Type FOOD pri_food
+beq Type ORES pri_ores
+beq Type ALLOY pri_alloy
+beq Type BUILD pri_build
+beq Type SEED pri_seed
+beq Type LIQUID pri_liquid
+beq Type TOOL pri_tool
+beq Type SUNDRIES pri_sundries
+beq Type GADGET pri_gadget
+beq Type RARE pri_rare
+beq Type GEN pri_gen
+j check_priority
+
+pri_gas:
+move Pri 12
+j check_priority
+pri_food:
+move Pri 11
+j check_priority
+pri_ores:
+move Pri 10
+j check_priority
+pri_alloy:
+move Pri 9
+j check_priority
+pri_build:
+move Pri 8
+j check_priority
+pri_seed:
+move Pri 7
+j check_priority
+pri_liquid:
+move Pri 6
+j check_priority
+pri_tool:
+move Pri 5
+j check_priority
+pri_sundries:
+move Pri 4
+j check_priority
+pri_gadget:
+move Pri 3
+j check_priority
+pri_rare:
+move Pri 2
+j check_priority
+pri_gen:
+move Pri 1
+
+check_priority:
+l Min Dial Setting
+blt Pri Min main
+beq Pri 0 main
+l SigID Dish SignalID
+s Dish BestContactFilter SigID
+s Status Setting Pri
+j main

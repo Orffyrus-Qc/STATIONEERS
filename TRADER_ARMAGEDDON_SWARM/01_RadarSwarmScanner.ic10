@@ -1,0 +1,115 @@
+# 4-dish scanner and lock controller.
+# d0 = primary dish, d6/d7/d8 = support dishes.
+# d1 = resume button, d2 = reset button, d5 = status display.
+alias D1 d0;alias D2 d6;alias D3 d7;alias D4 d8
+alias Resume d1;alias Reset d2;alias Status d5
+define MAXH 360;define MAXV 90;define STEPH 2.8;define STEPV 2.3
+define MINS 0.66;define RADAR 0.97
+alias State r0;alias H r1;alias V r2;alias Sig r3
+alias Best r4;alias T r5;alias Target r6;alias SigID r7
+
+start:
+s D1 On 1;s D2 On 1;s D3 On 1;s D4 On 1
+s D1 Horizontal 0;s D1 Vertical 0;move State 1;move Best 0
+
+main:
+yield
+l H D1 Horizontal;l V D1 Vertical
+l Sig D1 SignalStrength;l SigID D1 SignalID
+l T Resume On
+bgt T 0 do_resume
+l T Reset On
+bgt T 0 do_reset
+beq State 1 scan
+beq State 2 fine
+beq State 3 radar
+j main
+
+scan:
+add Target H STEPH
+blt Target MAXH scan_h_ok
+move Target 0
+add V V STEPV
+blt V MAXV scan_v_ok
+move V 0
+scan_v_ok:
+scan_h_ok:
+jal write_targets;sleep 0.65
+l Sig D1 SignalStrength;l SigID D1 SignalID
+blt Sig MINS main
+sub T Sig Best
+blt T 0.035 main
+move Best Sig
+jal set_filter
+bgt Sig RADAR start_radar
+j main
+
+start_radar:
+move State 3
+j main
+
+fine:
+sub T H 1;jal write_h;sleep 0.3;l Sig D1 SignalStrength
+bgt Sig Best best_now
+sub T H 2;jal write_h;sleep 0.3;l Sig D1 SignalStrength
+bgt Sig Best best_now
+add T V 1;jal write_v;sleep 0.3;l Sig D1 SignalStrength
+bgt Sig Best best_now
+sub T V 2;jal write_v;sleep 0.3;l Sig D1 SignalStrength
+bgt Sig Best best_now
+move State 1
+j main
+
+radar:
+sub T H 0.8;jal write_h;sleep 0.25;l Sig D1 SignalStrength
+bgt Sig Best best_now
+add T H 1.6;jal write_h;sleep 0.25;l Sig D1 SignalStrength
+bgt Sig Best best_now
+sub T V 0.8;jal write_v;sleep 0.25;l Sig D1 SignalStrength
+bgt Sig Best best_now
+add T V 1.6;jal write_v;sleep 0.25;l Sig D1 SignalStrength
+bgt Sig Best best_now
+j main
+
+best_now:
+move Best Sig
+l SigID D1 SignalID
+jal set_filter
+s Status Setting 1
+j main
+
+write_targets:
+s D1 Horizontal Target;s D1 Vertical V
+s D2 Horizontal Target;s D2 Vertical V
+s D3 Horizontal Target;s D3 Vertical V
+s D4 Horizontal Target;s D4 Vertical V
+j ra
+
+write_h:
+s D1 Horizontal T;s D2 Horizontal T
+s D3 Horizontal T;s D4 Horizontal T
+j ra
+
+write_v:
+s D1 Vertical T;s D2 Vertical T
+s D3 Vertical T;s D4 Vertical T
+j ra
+
+set_filter:
+s D1 BestContactFilter SigID;s D2 BestContactFilter SigID
+s D3 BestContactFilter SigID;s D4 BestContactFilter SigID
+j ra
+
+do_resume:
+move State 1;s Resume On 0
+j main
+
+do_reset:
+move Best 0
+s D1 Horizontal 0;s D1 Vertical 0
+s D2 Horizontal 0;s D2 Vertical 0
+s D3 Horizontal 0;s D3 Vertical 0
+s D4 Horizontal 0;s D4 Vertical 0
+s Reset On 0
+move State 1
+j main

@@ -1,0 +1,91 @@
+# Morse telemetry from the shared status display and db counter.
+alias Spk d10;alias Status d5
+alias T r0;alias Timer r1;alias Val r2
+
+start:
+s Spk On 1;s Spk Volume 100;move Timer 0
+
+main:
+yield
+l T Status Setting
+beq T 9 fuel_m
+beq T 4 call_m
+beq T 3 dive_m
+beq T 7 filt_m
+add Timer Timer 0.3
+blt Timer 25 main
+move Timer 0
+l Val db Setting
+jal num
+j main
+
+fuel_m:
+jal mF;jal mU;jal mE;jal mL;j main
+
+call_m:
+l Val db Setting;jal num;j main
+
+dive_m:
+jal mD;jal mI;jal mV;j main
+
+filt_m:
+jal mF;jal mI;jal mL;jal mT;jal space;j main
+
+dot:
+s Spk SoundAlert 1;sleep 0.15;s Spk SoundAlert 0;sleep 0.15;j ra
+
+dash:
+s Spk SoundAlert 1;sleep 0.45;s Spk SoundAlert 0;sleep 0.15;j ra
+
+space:
+s Spk SoundAlert 0;sleep 0.6;j ra
+
+mF:
+jal dot;jal dash;jal dot;jal dot;jal space;j ra
+
+mU:
+jal dot;jal dot;jal dash;jal space;j ra
+
+mE:
+jal dot;jal space;j ra
+
+mL:
+jal dot;jal dash;jal dot;jal dot;jal space;j ra
+
+mD:
+jal dash;jal dot;jal dot;jal space;j ra
+
+mI:
+jal dot;jal dot;jal space;j ra
+
+mV:
+jal dot;jal dot;jal dot;jal dash;jal space;j ra
+
+mT:
+jal dash;jal space;j ra
+
+num:
+beq Val 0 n0;beq Val 1 n1;beq Val 2 n2;beq Val 3 n3;beq Val 4 n4
+beq Val 5 n5;beq Val 6 n6;beq Val 7 n7;beq Val 8 n8;beq Val 9 n9
+j ra
+
+n0:
+jal dash;jal dash;jal dash;jal dash;jal dash;jal space;j ra
+n1:
+jal dot;jal dash;jal dash;jal dash;jal dash;jal space;j ra
+n2:
+jal dot;jal dot;jal dash;jal dash;jal dash;jal space;j ra
+n3:
+jal dot;jal dot;jal dot;jal dash;jal dash;jal space;j ra
+n4:
+jal dot;jal dot;jal dot;jal dot;jal dash;jal space;j ra
+n5:
+jal dot;jal dot;jal dot;jal dot;jal dot;jal space;j ra
+n6:
+jal dash;jal dot;jal dot;jal dot;jal dot;jal space;j ra
+n7:
+jal dash;jal dash;jal dot;jal dot;jal dot;jal space;j ra
+n8:
+jal dash;jal dash;jal dash;jal dot;jal dot;jal space;j ra
+n9:
+jal dash;jal dash;jal dash;jal dash;jal dot;jal space;j ra

@@ -1,0 +1,47 @@
+# Advanced multi-dish stability filter.
+alias D1 d0
+alias D2 d6
+alias D3 d7
+alias D4 d8
+alias Resume d1
+alias Status d5
+define MINSTAB 0.965
+define MAXDELTA 2
+alias T r0
+alias Sig1 r1
+alias Sig2 r2
+alias Sig3 r3
+alias Sig4 r4
+alias Avg r5
+alias Type r6
+alias H r7
+alias V r8
+alias SigID r9
+
+main:
+yield
+l T Resume On
+bgt T 0 main
+l Sig1 D1 SignalStrength
+l Sig2 D2 SignalStrength
+l Sig3 D3 SignalStrength
+l Sig4 D4 SignalStrength
+add Avg Sig1 Sig2
+add Avg Avg Sig3
+add Avg Avg Sig4
+mul Avg Avg 0.25
+blt Avg MINSTAB main
+l Type D1 ContactTypeId
+blt Type 0 main
+l H D1 Horizontal
+l V D1 Vertical
+sub T H V
+abs T T
+bgt T MAXDELTA main
+l SigID D1 SignalID
+s D1 BestContactFilter SigID
+s D2 BestContactFilter SigID
+s D3 BestContactFilter SigID
+s D4 BestContactFilter SigID
+s Status Setting 7
+j main

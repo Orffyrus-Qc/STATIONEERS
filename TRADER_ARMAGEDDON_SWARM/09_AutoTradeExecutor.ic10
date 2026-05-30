@@ -1,0 +1,61 @@
+# Post-call fuel confirmation and session trade counter.
+alias Dish d0
+alias Resume d1
+alias Status d5
+alias Spk d10
+define FUEL_CAN1 -987654321
+define FUEL_CAN2 1122334455
+define FUEL_CAN3 987654321
+alias Calls r0
+alias T r1
+alias HasFuel r2
+
+start:
+move Calls 0
+move HasFuel 0
+
+main:
+yield
+l T Resume On
+bgt T 0 reset_counter
+l T Dish Activate
+ble T 0 main
+move HasFuel 0
+stack clear
+push 6
+push 0
+push 32
+stack push Dish TraderInstruction
+push 13
+push FUEL_CAN1
+stack push Dish TraderInstruction
+l T Dish TraderInstruction
+bgt T 0 trade_ok
+push 13
+push FUEL_CAN2
+stack push Dish TraderInstruction
+l T Dish TraderInstruction
+bgt T 0 trade_ok
+push 13
+push FUEL_CAN3
+stack push Dish TraderInstruction
+l T Dish TraderInstruction
+bgt T 0 trade_ok
+j main
+
+trade_ok:
+move HasFuel 1
+add Calls Calls 1
+s Status Setting 10
+s Spk SoundAlert 4
+sleep 0.8
+s Spk SoundAlert 0
+s db Setting Calls
+move HasFuel 0
+sleep 8
+j main
+
+reset_counter:
+move Calls 0
+s Resume On 0
+j main

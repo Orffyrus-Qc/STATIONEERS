@@ -1,0 +1,54 @@
+# Deep stack fuel filter.
+# Replace FUEL_CAN values with the real prefab hashes for your save.
+alias Dish d0
+alias Resume d1
+alias Status d5
+define FUEL_CAN1 -987654321
+define FUEL_CAN2 1122334455
+define FUEL_CAN3 987654321
+alias HasFuel r0
+alias T r1
+
+start:
+move HasFuel 0
+
+main:
+yield
+l T Resume On
+bgt T 0 reset_filter
+l T Dish ContactTypeId
+blt T 0 main
+move HasFuel 0
+stack clear
+push 6
+push 0
+push 32
+stack push Dish TraderInstruction
+push 13
+push FUEL_CAN1
+stack push Dish TraderInstruction
+l T Dish TraderInstruction
+bgt T 0 fuel_found
+push 13
+push FUEL_CAN2
+stack push Dish TraderInstruction
+l T Dish TraderInstruction
+bgt T 0 fuel_found
+push 13
+push FUEL_CAN3
+stack push Dish TraderInstruction
+l T Dish TraderInstruction
+bgt T 0 fuel_found
+j main
+
+fuel_found:
+move HasFuel 1
+s Status Setting 9
+sleep 1.1
+j main
+
+reset_filter:
+stack clear
+move HasFuel 0
+s Resume On 0
+j main

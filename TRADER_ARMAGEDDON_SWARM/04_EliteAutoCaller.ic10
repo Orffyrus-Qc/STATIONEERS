@@ -1,0 +1,58 @@
+# Calls high-signal filtered traders with a 5 minute cooldown.
+# d0 = focused dish, d1 = resume, d2 = reset, d3 = manual contact.
+alias Dish d0
+alias Resume d1
+alias Reset d2
+alias Contact d3
+alias Status d5
+alias Cool r0
+alias Calls r1
+alias Sig r2
+alias T r3
+
+start:
+move Cool 0
+move Calls 0
+
+main:
+yield
+l T Resume On
+bgt T 0 clear_cool
+l T Reset On
+bgt T 0 reset_calls
+l T Contact On
+bgt T 0 manual_call
+l Sig Dish SignalStrength
+blt Sig 0.96 main
+bgt Cool 0 cool_down
+j call
+
+cool_down:
+sub Cool Cool 1
+sleep 1
+j main
+
+call:
+s Dish Activate 1
+add Calls Calls 1
+sleep 4
+move Cool 300
+s Status Setting 4
+s db Setting Calls
+j main
+
+clear_cool:
+move Cool 0
+s Resume On 0
+j main
+
+reset_calls:
+move Calls 0
+move Cool 0
+s Reset On 0
+j main
+
+manual_call:
+s Dish Activate 1
+s Contact On 0
+j main

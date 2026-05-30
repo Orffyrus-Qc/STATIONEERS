@@ -1,0 +1,59 @@
+# Multi-dish lock sync and pause control.
+alias D1 d0
+alias D2 d6
+alias D3 d7
+alias D4 d8
+alias Resume d1
+alias Reset d2
+alias Status d5
+alias State r0
+alias T r1
+alias SigID r2
+
+start:
+move State 0
+
+main:
+yield
+l T D1 SignalStrength
+blt T 0.9 main
+beq State 1 sync
+l T Resume On
+bgt T 0 arm_sync
+l T Reset On
+bgt T 0 reset_all
+j main
+
+arm_sync:
+move State 1
+s Resume On 0
+j main
+
+sync:
+l SigID D1 SignalID
+s D1 BestContactFilter SigID
+s D2 BestContactFilter SigID
+s D3 BestContactFilter SigID
+s D4 BestContactFilter SigID
+l T D1 Activate
+bgt T 0 pause
+s Status Setting 5
+sleep 0.75
+j main
+
+pause:
+move State 0
+j main
+
+reset_all:
+s D1 Horizontal 0
+s D1 Vertical 0
+s D2 Horizontal 0
+s D2 Vertical 0
+s D3 Horizontal 0
+s D3 Vertical 0
+s D4 Horizontal 0
+s D4 Vertical 0
+s Reset On 0
+move State 0
+j main

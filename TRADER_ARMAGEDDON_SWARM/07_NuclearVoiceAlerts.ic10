@@ -1,0 +1,71 @@
+# Speaker alerts for swarm states.
+alias Spk d10
+alias Status d5
+alias Dish d0
+alias Resume d1
+alias T r0
+alias Alert r1
+
+start:
+s Spk On 1
+s Spk Volume 80
+move Alert 0
+
+main:
+yield
+l T Resume On
+bgt T 0 reset_alert
+l T Status Setting
+beq T 1 scan_a
+beq T 9 fuel_a
+beq T 3 dive_a
+beq T 4 call_a
+beq T 5 pause_a
+l T Dish Activate
+bgt T 0 call_a
+j main
+
+scan_a:
+beq Alert 1 main
+move Alert 1
+s Spk SoundAlert 1
+sleep 0.6
+s Spk SoundAlert 0
+j main
+
+fuel_a:
+beq Alert 2 main
+move Alert 2
+s Spk SoundAlert 2
+sleep 0.8
+s Spk SoundAlert 0
+j main
+
+dive_a:
+beq Alert 3 main
+move Alert 3
+s Spk SoundAlert 3
+sleep 0.7
+s Spk SoundAlert 0
+j main
+
+call_a:
+beq Alert 4 main
+move Alert 4
+s Spk SoundAlert 4
+sleep 1.2
+s Spk SoundAlert 0
+j main
+
+pause_a:
+beq Alert 5 main
+move Alert 5
+s Spk SoundAlert 5
+sleep 0.5
+s Spk SoundAlert 0
+j main
+
+reset_alert:
+move Alert 0
+s Resume On 0
+j main
