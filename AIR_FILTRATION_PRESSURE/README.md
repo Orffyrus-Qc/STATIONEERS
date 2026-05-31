@@ -2,7 +2,8 @@
 
 Stationeers IC10 script that forces named air filtration units (`StructureFiltration`)
 to Idle and named Ice Crushers (`StructureIceCrusher`) off whenever a watched
-device's pressure reaches 15 MPa, with hysteresis to prevent rapid cycling.
+device's pressure reaches 15 MPa, then restores them when pressure falls to
+14.5 MPa or lower.
 
 ## Purpose
 
@@ -15,7 +16,10 @@ the following while the safety lock is active:
 - Forces all named `StructureFiltration` units (label `FILTRATION`) to `Mode 0`
 - Forces all named `StructureIceCrusher` units (label `CRUSHER`) to `On 0`
 
-The safe state is held (with hysteresis) until pressure drops to 14.5 MPa or lower.
+The safe state is held (with hysteresis) until pressure drops to 14.5 MPa or
+lower. On that release transition, the script restores the host to `Mode 1`
+if supported, named `FILTRATION` units to `Mode 1`, and named `CRUSHER` units
+to `On 1`.
 
 Typical use: put the chip inside a gas tank on the common output line of
 filtration units + crushers. If the shared output side gets too pressurized,
@@ -43,9 +47,9 @@ in-game device labels exactly.
 4. (Optional) Name Ice Crushers you want shut down as `CRUSHER`.
 5. Keep everything powered.
 
-The script tries to protect the device it is installed in via a guarded `db`
-`Mode 0` write. If that host does not support `Mode`, the script skips the
-direct host write and still controls the named devices on the network.
+The script tries to protect and restore the device it is installed in via
+guarded `db` `Mode` writes. If that host does not support `Mode`, the script
+skips direct host writes and still controls the named devices on the network.
 
 No IC housing pins are required. The script reads pressure from the host device
 using `db` and controls both the host + named devices on the network:
@@ -63,6 +67,13 @@ s db Mode 0
 skipHostMode:
 sbn FILTRATION_TYPE FILTRATION_NAME Mode 0
 sbn CRUSHER_TYPE CRUSHER_NAME On 0
+
+# On lock release:
+bdnvs db Mode skipHostActive
+s db Mode 1
+skipHostActive:
+sbn FILTRATION_TYPE FILTRATION_NAME Mode 1
+sbn CRUSHER_TYPE CRUSHER_NAME On 1
 ```
 
 ## Behavior
@@ -70,12 +81,12 @@ sbn CRUSHER_TYPE CRUSHER_NAME On 0
 | Host pressure        | Filtration + Crusher state             |
 | -------------------- | -------------------------------------- |
 | 15 MPa or higher     | Filtration -> Mode 0, Crusher -> On 0  |
-| 14.5 MPa or lower    | Script does nothing (normal control)   |
+| 14.5 MPa or lower    | Lock releases, Mode 1 and On 1 restored |
 | Between 14.5-15 MPa  | Keeps previous lock state (hysteresis) |
 
-The script only writes while the safety lock is engaged.
-Once pressure is safe again, it stops sending commands and returns full control
-to your regular systems.
+The script writes idle/off while the safety lock is engaged, then writes
+active/on once when the lock releases. While pressure is safe and no lock
+transition happens, it does nothing.
 
 ## Options
 
@@ -101,9 +112,9 @@ Values are in kPa. 15 MPa = 15,000 kPa.
   IC10 pressure logic uses kPa, so those values should be `15000` and `14500`.
 
 **Host device note**: We only write `Mode 0` to the host via `db` when the host
-supports `Mode`. We do not write `On 0` to the host. This is safer when the IC
-is installed inside a `StructureFiltration` because setting `On=0` can stop the
-running script.
+supports `Mode`, and write `Mode 1` back on lock release. We do not write
+`On 0` to the host. This is safer when the IC is installed inside a
+`StructureFiltration` because setting `On=0` can stop the running script.
 
 - Pressure values are in **kPa**.
 - The script uses `bge` so it triggers at the exact stop value.

@@ -9,10 +9,12 @@
 #     - Mode 0 on the host device via `db`
 #     - Mode 0 on all named FILTRATION (StructureFiltration)
 #     - On 0 on all named CRUSHER (StructureIceCrusher)
+#     At <= 14,500 kPa after a lock, it restores Mode 1 / On 1.
 # FR: À partir de 15 000 kPa :
 #     - Mode 0 sur l'hôte via db
 #     - Mode 0 sur les FILTRATION nommées
 #     - On 0 sur les CRUSHER nommés
+#     À <= 14 500 kPa après verrouillage, restaure Mode 1 / On 1.
 
 # EN: Named devices to control via network (optional).
 # FR: Appareils nommés à contrôler sur le réseau (optionnel).
@@ -60,7 +62,9 @@ move pressureLock 1
 j applySafety
 
 releaseLock:
+beqz pressureLock safe
 move pressureLock 0
+j restoreDevices
 
 applySafety:
 # EN: Safety active:
@@ -79,9 +83,25 @@ sbn FILTRATION_TYPE FILTRATION_NAME Mode 0
 sbn CRUSHER_TYPE CRUSHER_NAME On 0
 j wait
 
+restoreDevices:
+# EN: Safety released:
+#     - Mode 1 on host via db, if the host supports Mode
+#     - Mode 1 on all named FILTRATION
+#     - On 1 on all named CRUSHER
+# FR: Securite relachee :
+#     - Mode 1 sur l'hote via db, si l'hote supporte Mode
+#     - Mode 1 sur les FILTRATION nommees
+#     - On 1 sur les CRUSHER nommes
+bdnvs db Mode skipHostActive
+s db Mode 1
+skipHostActive:
+sbn FILTRATION_TYPE FILTRATION_NAME Mode 1
+sbn CRUSHER_TYPE CRUSHER_NAME On 1
+j wait
+
 safe:
-# EN: Pressure safe - do nothing.
-# FR: Pression OK - ne rien faire.
+# EN: Pressure safe and no lock transition - do nothing.
+# FR: Pression OK et aucune transition - ne rien faire.
 
 wait:
 # EN: Yield every tick.
