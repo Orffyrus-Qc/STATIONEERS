@@ -1,9 +1,9 @@
 # AIR_FILTRATION_PRESSURE.ic10
 # EN: Put this IC10 chip in any device that exposes the critical output
-#     pressure via PressureOutput2 (gas tank, filtration unit, or crusher).
+#     pressure via PressureOutput2 or Pressure.
 #     Reads pressure from `db` and activates safety when too high.
 # FR: Placer cette puce IC10 dans l'appareil exposant la pression critique
-#     sur PressureOutput2 (réservoir, filtration ou concasseur).
+#     via PressureOutput2 ou Pressure.
 #     Lit via `db` et déclenche la sécurité si trop haute.
 # EN: At >= 15,000 kPa the script does:
 #     - Mode 0 on the host device via `db`
@@ -22,10 +22,10 @@ define FILTRATION_NAME HASH("FILTRATION")
 define CRUSHER_TYPE HASH("StructureIceCrusher")
 define CRUSHER_NAME HASH("CRUSHER")
 
-# EN: Pressure limits in Pascals (Pa). 15,000 kPa = 15,000,000 Pa.
-# FR: Limites en Pascals (Pa). 15 000 kPa = 15 000 000 Pa.
-define PRESSURE_STOP   15000000   # trigger safety at/above this
-define PRESSURE_RESUME 14500000   # release safety at/below this
+# EN: Pressure limits are in kPa. 15 MPa = 15,000 kPa.
+# FR: Limites en kPa. 15 MPa = 15 000 kPa.
+define PRESSURE_STOP   15000   # trigger safety at/above this
+define PRESSURE_RESUME 14500   # release safety at/below this
 
 # EN: Working registers.
 # FR: Registres de travail.
@@ -35,7 +35,15 @@ alias pressureLock r1
 main:
 # EN: Read pressure from the device this IC is installed in.
 # FR: Lire la pression de l'appareil contenant la puce.
+bdnvl db PressureOutput2 readPressure
 l outputPress db PressureOutput2
+j checkPressure
+
+readPressure:
+bdnvl db Pressure applySafety
+l outputPress db Pressure
+
+checkPressure:
 
 # EN: Hysteresis:
 #     Lock when pressure >= PRESSURE_STOP
@@ -56,7 +64,7 @@ move pressureLock 0
 
 applySafety:
 # EN: Safety active:
-#     - Mode 0 on host via db (safe for onboard IC)
+#     - Mode 0 on host via db, if the host supports Mode
 #     - Mode 0 on all named FILTRATION
 #     - On 0 on all named CRUSHER
 # FR: Sécurité active :
@@ -64,7 +72,9 @@ applySafety:
 #     - Mode 0 sur les FILTRATION nommées
 #     - On 0 sur les CRUSHER nommés
 beqz pressureLock safe
+bdnvs db Mode skipHostMode
 s db Mode 0
+skipHostMode:
 sbn FILTRATION_TYPE FILTRATION_NAME Mode 0
 sbn CRUSHER_TYPE CRUSHER_NAME On 0
 j wait
