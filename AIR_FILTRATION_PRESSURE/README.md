@@ -78,19 +78,24 @@ Change these values directly in `AIR_FILTRATION_PRESSURE.ic10`:
 
 Values are in Pascals. 15 MPa = 15 000 000 Pa.
 
-## Notes
+## Notes & Troubleshooting
 
-- The script always directly controls the device it is installed in via `db`
-  (sets `Mode 0` + `On 0`).
-- It also shuts down **all** named `StructureFiltration` (label `FILTRATION`)
-  and `StructureIceCrusher` (label `CRUSHER`) devices on the data network.
-- Pressure values are in **Pascals** (15,000 kPa = 15,000,000 Pa).
-- The device holding the IC can have any label.
-- Best placed in a device that sees the critical output pressure you want to
-  protect (tank, filtration unit, etc.).
-- The IC loop uses `yield`, so it checks every tick.
-- You can change `FILTRATION_NAME` and `CRUSHER_NAME` at the top of the script
-  if you use different labels.
+**Most common reasons it appears "not working":**
+
+- Your system pressure never actually reaches 15,000 kPa (15 MPa). This is a very high pressure (150 bar). Normal gas systems often run at 100–500 kPa.
+- Devices are not labeled **exactly** `FILTRATION` and `CRUSHER` (case-sensitive, use the Labeler tool).
+- The IC and the target devices are not on the same Data Network.
+- You are looking at kPa on screen but expecting the script to use the number 15000 (it must use 15,000,000 because logic values are in Pa).
+
+**Host device note**: We only write `Mode 0` to the host via `db`. We no longer write `On 0` to the host. This is safer when the IC is installed inside a `StructureFiltration` (setting On=0 can kill the running script).
+
+- Pressure values are in **Pascals**.
+- The script uses `bge` so it triggers at the exact stop value.
+- You can change the two `NAME` defines at the top if you use different labels.
+
+## Debug Tip
+
+Wire a small light or LED to pin `d0`. Turn the light on when the lock is active so you can visually confirm the script detects high pressure.
 
 ## Files
 

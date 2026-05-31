@@ -6,13 +6,15 @@
 # FR: Placer cette puce dans l'appareil qui expose la pression critique sur
 #     PressureOutput2. Elle lit via `db` et contrôle l'hôte directement via `db`
 #     en cas de surpression.
-# EN: When PressureOutput2 is too high, sets the host device (via `db`) to a safe
-#     state (Mode 0 + On 0), and also forces any named StructureFiltration units
-#     (label FILTRATION) to Mode 0 and any named StructureIceCrusher units (label
-#     CRUSHER) to On = 0 via the data network.
-# FR: En cas de surpression, met l'appareil hôte en sécurité via `db`, et force
-#     les unités de filtration nommées (FILTRATION) en Mode 0 et les concasseurs
-#     nommés (CRUSHER) à On = 0 sur le réseau.
+# EN: When PressureOutput2 >= 15,000 kPa, the script activates safety:
+#     - Writes Mode 0 to the host device via `db` (the device this IC is inside).
+#     - Sends Mode 0 to all StructureFiltration devices labeled "FILTRATION".
+#     - Sends On 0 to all StructureIceCrusher devices labeled "CRUSHER".
+# FR: Quand PressureOutput2 >= 15 000 kPa, active la sécurité :
+#     - Mode 0 sur l'hôte via db
+#     - Mode 0 sur les filtrations nommées FILTRATION
+#     - On 0 sur les concasseurs nommés CRUSHER
+
 
 # EN: Filtration unit prefab hash and control label/name hash.
 # FR: Hash du prefab de l'unité de filtration et hash du nom/étiquette de contrôle.
@@ -24,10 +26,12 @@ define FILTRATION_NAME HASH("FILTRATION")
 define CRUSHER_TYPE HASH("StructureIceCrusher")
 define CRUSHER_NAME HASH("CRUSHER")
 
-# EN: Pressure safety limits in Pascals (Pa). 1 MPa = 1 000 000 Pa.
-# FR: Limites de sécurité de pression en Pascals (Pa). 1 MPa = 1 000 000 Pa.
-define PRESSURE_STOP   15000000   # 15 MPa - force idle above this
-define PRESSURE_RESUME 14500000   # 14.5 MPa - allow normal operation at or below
+# EN: Pressure safety limits. Values are in Pascals (Pa).
+#     15,000 kPa = 15,000,000 Pa. Most in-game pressure displays show kPa.
+# FR: Limites de sécurité de pression. Les valeurs sont en Pascals (Pa).
+#     15 000 kPa = 15 000 000 Pa. Les affichages en jeu montrent souvent des kPa.
+define PRESSURE_STOP   15000000   # 15 MPa / 15,000 kPa - trigger safety above this
+define PRESSURE_RESUME 14500000   # 14.5 MPa / 14,500 kPa - release safety at or below this
 
 # EN: Working registers.
 # FR: Registres de travail.
@@ -39,10 +43,13 @@ main:
 # FR: Lire la pression de sortie surveillée depuis l'appareil qui contient la puce.
 l outputPress db PressureOutput2
 
-# EN: Hysteresis lock: engage above 15 MPa, release only at 14.5 MPa or lower.
-# FR: Verrou avec hystérésis : s'active au-dessus de 15 MPa, se relâche seulement
-#     à 14.5 MPa ou moins.
-bgt outputPress PRESSURE_STOP engageLock
+# EN: Hysteresis lock:
+#     Engage safety as soon as pressure >= PRESSURE_STOP (15,000 kPa).
+#     Only release when pressure drops to PRESSURE_RESUME or lower.
+# FR: Verrou avec hystérésis :
+#     Active la sécurité dès que la pression >= PRESSURE_STOP.
+#     Ne relâche que quand la pression redescend à PRESSURE_RESUME ou moins.
+bge outputPress PRESSURE_STOP engageLock
 ble outputPress PRESSURE_RESUME releaseLock
 j applySafety
 
@@ -54,24 +61,25 @@ releaseLock:
 move pressureLock 0
 
 applySafety:
-# EN: While lock is active:
-#     - Directly control the host device (this IC's container) via `db`
-#     - Shut down all named StructureFiltration units (via sbn)
-#     - Shut down all named StructureIceCrusher units (via sbn)
-# FR: Quand le verrou est actif :
-#     - Contrôle direct de l'hôte via `db`
-#     - Arrêt des unités de filtration nommées via sbn
-#     - Arrêt des concasseurs nommés via sbn
+# EN: Safety active:
+#     - Tell the host device (the one this chip is in) to go idle via `db`.
+#       We only use `Mode 0` here. Avoid `On 0` on the host — if this IC is
+#       inside a StructureFiltration, turning On off can stop the script itself.
+#     - Force all named filtration units (FILTRATION) to Mode 0 via network.
+#     - Force all named ice crushers (CRUSHER) to On = 0 via network.
+# FR: Sécurité active :
+#     - Met l'appareil hôte en veille via `db` (uniquement Mode 0).
+#     - Force les filtrations nommées (FILTRATION) en Mode 0.
+#     - Force les concasseurs nommés (CRUSHER) à On = 0.
 beqz pressureLock safe
 s db Mode 0
-s db On 0
 sbn FILTRATION_TYPE FILTRATION_NAME Mode 0
 sbn CRUSHER_TYPE CRUSHER_NAME On 0
 j wait
 
 safe:
-# EN: Pressure safe - do not touch host or named devices.
-# FR: Pression sécuritaire - ne touche ni à l'hôte ni aux appareils nommés.
+# EN: Pressure safe - release control.
+# FR: Pression sécuritaire - relâche le contrôle.
 
 wait:
 # EN: Yield every tick to keep the safety check responsive.
