@@ -1,37 +1,31 @@
 # AIR_FILTRATION_PRESSURE.ic10
-# EN: Put this IC10 chip in any device that exposes the critical output pressure
-#     via PressureOutput2 (e.g. a gas tank, or directly inside a filtration unit
-#     or crusher). The chip reads pressure from `db` and controls the host device
-#     directly via `db` when pressure is too high.
-# FR: Placer cette puce dans l'appareil qui expose la pression critique sur
-#     PressureOutput2. Elle lit via `db` et contrôle l'hôte directement via `db`
-#     en cas de surpression.
-# EN: When PressureOutput2 >= 15,000 kPa, the script activates safety:
-#     - Writes Mode 0 to the host device via `db` (the device this IC is inside).
-#     - Sends Mode 0 to all StructureFiltration devices labeled "FILTRATION".
-#     - Sends On 0 to all StructureIceCrusher devices labeled "CRUSHER".
-# FR: Quand PressureOutput2 >= 15 000 kPa, active la sécurité :
+# EN: Put this IC10 chip in any device that exposes the critical output
+#     pressure via PressureOutput2 (gas tank, filtration unit, or crusher).
+#     Reads pressure from `db` and activates safety when too high.
+# FR: Placer cette puce IC10 dans l'appareil exposant la pression critique
+#     sur PressureOutput2 (réservoir, filtration ou concasseur).
+#     Lit via `db` et déclenche la sécurité si trop haute.
+# EN: At >= 15,000 kPa the script does:
+#     - Mode 0 on the host device via `db`
+#     - Mode 0 on all named FILTRATION (StructureFiltration)
+#     - On 0 on all named CRUSHER (StructureIceCrusher)
+# FR: À partir de 15 000 kPa :
 #     - Mode 0 sur l'hôte via db
-#     - Mode 0 sur les filtrations nommées FILTRATION
-#     - On 0 sur les concasseurs nommés CRUSHER
+#     - Mode 0 sur les FILTRATION nommées
+#     - On 0 sur les CRUSHER nommés
 
-
-# EN: Filtration unit prefab hash and control label/name hash.
-# FR: Hash du prefab de l'unité de filtration et hash du nom/étiquette de contrôle.
+# EN: Named devices to control via network (optional).
+# FR: Appareils nommés à contrôler sur le réseau (optionnel).
 define FILTRATION_TYPE HASH("StructureFiltration")
 define FILTRATION_NAME HASH("FILTRATION")
 
-# EN: Ice Crusher (commonly called "crusher") prefab and label for safety shutdown.
-# FR: Hash du prefab du concasseur à glace et étiquette pour l'arrêt de sécurité.
 define CRUSHER_TYPE HASH("StructureIceCrusher")
 define CRUSHER_NAME HASH("CRUSHER")
 
-# EN: Pressure safety limits. Values are in Pascals (Pa).
-#     15,000 kPa = 15,000,000 Pa. Most in-game pressure displays show kPa.
-# FR: Limites de sécurité de pression. Les valeurs sont en Pascals (Pa).
-#     15 000 kPa = 15 000 000 Pa. Les affichages en jeu montrent souvent des kPa.
-define PRESSURE_STOP   15000000   # 15 MPa / 15,000 kPa - trigger safety above this
-define PRESSURE_RESUME 14500000   # 14.5 MPa / 14,500 kPa - release safety at or below this
+# EN: Pressure limits in Pascals (Pa). 15,000 kPa = 15,000,000 Pa.
+# FR: Limites en Pascals (Pa). 15 000 kPa = 15 000 000 Pa.
+define PRESSURE_STOP   15000000   # trigger safety at/above this
+define PRESSURE_RESUME 14500000   # release safety at/below this
 
 # EN: Working registers.
 # FR: Registres de travail.
@@ -39,16 +33,16 @@ alias outputPress r0
 alias pressureLock r1
 
 main:
-# EN: Read the watched output pressure from the device hosting this IC chip.
-# FR: Lire la pression de sortie surveillée depuis l'appareil qui contient la puce.
+# EN: Read pressure from the device this IC is installed in.
+# FR: Lire la pression de l'appareil contenant la puce.
 l outputPress db PressureOutput2
 
-# EN: Hysteresis lock:
-#     Engage safety as soon as pressure >= PRESSURE_STOP (15,000 kPa).
-#     Only release when pressure drops to PRESSURE_RESUME or lower.
-# FR: Verrou avec hystérésis :
-#     Active la sécurité dès que la pression >= PRESSURE_STOP.
-#     Ne relâche que quand la pression redescend à PRESSURE_RESUME ou moins.
+# EN: Hysteresis:
+#     Lock when pressure >= PRESSURE_STOP
+#     Unlock only when pressure <= PRESSURE_RESUME
+# FR: Hystérésis :
+#     Verrouille si >= PRESSURE_STOP
+#     Déverrouille seulement si <= PRESSURE_RESUME
 bge outputPress PRESSURE_STOP engageLock
 ble outputPress PRESSURE_RESUME releaseLock
 j applySafety
@@ -62,15 +56,13 @@ move pressureLock 0
 
 applySafety:
 # EN: Safety active:
-#     - Tell the host device (the one this chip is in) to go idle via `db`.
-#       We only use `Mode 0` here. Avoid `On 0` on the host — if this IC is
-#       inside a StructureFiltration, turning On off can stop the script itself.
-#     - Force all named filtration units (FILTRATION) to Mode 0 via network.
-#     - Force all named ice crushers (CRUSHER) to On = 0 via network.
+#     - Mode 0 on host via db (safe for onboard IC)
+#     - Mode 0 on all named FILTRATION
+#     - On 0 on all named CRUSHER
 # FR: Sécurité active :
-#     - Met l'appareil hôte en veille via `db` (uniquement Mode 0).
-#     - Force les filtrations nommées (FILTRATION) en Mode 0.
-#     - Force les concasseurs nommés (CRUSHER) à On = 0.
+#     - Mode 0 sur l'hôte via db
+#     - Mode 0 sur les FILTRATION nommées
+#     - On 0 sur les CRUSHER nommés
 beqz pressureLock safe
 s db Mode 0
 sbn FILTRATION_TYPE FILTRATION_NAME Mode 0
@@ -78,11 +70,11 @@ sbn CRUSHER_TYPE CRUSHER_NAME On 0
 j wait
 
 safe:
-# EN: Pressure safe - release control.
-# FR: Pression sécuritaire - relâche le contrôle.
+# EN: Pressure safe - do nothing.
+# FR: Pression OK - ne rien faire.
 
 wait:
-# EN: Yield every tick to keep the safety check responsive.
-# FR: Yield à chaque tick pour garder la vérification de sécurité réactive.
+# EN: Yield every tick.
+# FR: Yield à chaque tick.
 yield
 j main
