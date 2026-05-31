@@ -62,7 +62,6 @@ move pressureLock 1
 j applySafety
 
 releaseLock:
-beqz pressureLock safe
 move pressureLock 0
 j restoreDevices
 

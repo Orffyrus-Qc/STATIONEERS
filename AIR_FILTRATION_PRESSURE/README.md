@@ -2,7 +2,7 @@
 
 Stationeers IC10 script that forces named air filtration units (`StructureFiltration`)
 to Idle and named Ice Crushers (`StructureIceCrusher`) off whenever a watched
-device's pressure reaches 15 MPa, then restores them when pressure falls to
+device's pressure reaches 15 MPa, then restores them whenever pressure is
 14.5 MPa or lower.
 
 ## Purpose
@@ -16,10 +16,9 @@ the following while the safety lock is active:
 - Forces all named `StructureFiltration` units (label `FILTRATION`) to `Mode 0`
 - Forces all named `StructureIceCrusher` units (label `CRUSHER`) to `On 0`
 
-The safe state is held (with hysteresis) until pressure drops to 14.5 MPa or
-lower. On that release transition, the script restores the host to `Mode 1`
-if supported, named `FILTRATION` units to `Mode 1`, and named `CRUSHER` units
-to `On 1`.
+The safe state is held (with hysteresis) until pressure is 14.5 MPa or lower.
+At or below that value, the script restores the host to `Mode 1` if supported,
+named `FILTRATION` units to `Mode 1`, and named `CRUSHER` units to `On 1`.
 
 Typical use: put the chip inside a gas tank on the common output line of
 filtration units + crushers. If the shared output side gets too pressurized,
@@ -68,7 +67,7 @@ skipHostMode:
 sbn FILTRATION_TYPE FILTRATION_NAME Mode 0
 sbn CRUSHER_TYPE CRUSHER_NAME On 0
 
-# On lock release:
+# At or below PRESSURE_RESUME:
 bdnvs db Mode skipHostActive
 s db Mode 1
 skipHostActive:
@@ -81,12 +80,11 @@ sbn CRUSHER_TYPE CRUSHER_NAME On 1
 | Host pressure        | Filtration + Crusher state             |
 | -------------------- | -------------------------------------- |
 | 15 MPa or higher     | Filtration -> Mode 0, Crusher -> On 0  |
-| 14.5 MPa or lower    | Lock releases, Mode 1 and On 1 restored |
+| 14.5 MPa or lower    | Mode 1 and On 1 restored                |
 | Between 14.5-15 MPa  | Keeps previous lock state (hysteresis) |
 
-The script writes idle/off while the safety lock is engaged, then writes
-active/on once when the lock releases. While pressure is safe and no lock
-transition happens, it does nothing.
+The script writes idle/off while the safety lock is engaged. At or below
+14.5 MPa, it actively writes active/on, including after an IC restart.
 
 ## Options
 

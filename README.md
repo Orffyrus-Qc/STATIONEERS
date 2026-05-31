@@ -169,9 +169,8 @@ See `AIR_FILTRATION_IDLE/README.md` for gas hash configuration and setup.
 The `AIR_FILTRATION_PRESSURE/` folder contains an IC10 script that provides a
 hard pressure safety interlock. It forces all `StructureFiltration` units named
 `FILTRATION` to Idle (`Mode 0`) **and** all `StructureIceCrusher` units named
-`CRUSHER` Off when the watched host pressure reaches 15 MPa. It holds
-the safe state until pressure falls to 14.5 MPa or lower (hysteresis), then
-restores Filtration `Mode 1` and Crusher `On 1`.
+`CRUSHER` Off when the watched host pressure reaches 15 MPa. At 14.5 MPa or
+lower, it restores Filtration `Mode 1` and Crusher `On 1`.
 
 See `AIR_FILTRATION_PRESSURE/README.md` for labels, pressure values (in kPa),
 and installation.
