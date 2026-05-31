@@ -1,0 +1,70 @@
+# AIR_FILTRATION_PRESSURE.ic10
+# EN: Put this IC10 chip in any device that exposes the critical output pressure
+#     via PressureOutput2 (e.g. a gas tank on the filtration output, a pipe
+#     sensor, or even inside a StructureFiltration unit itself).
+# FR: Placer cette puce IC10 dans tout appareil exposant la pression de sortie
+#     critique via PressureOutput2 (ex: réservoir de gaz sur la ligne de sortie,
+#     capteur de tuyau, ou même à l'intérieur d'une unité StructureFiltration).
+# EN: Forces all named air filtration units to Idle (Mode 0) when PressureOutput2
+#     exceeds the stop threshold. Holds idle until pressure drops to resume value.
+# FR: Force toutes les unités de filtration d'air nommées en Idle (Mode 0) quand
+#     PressureOutput2 dépasse le seuil d'arrêt. Maintient l'état jusqu'à la
+#     valeur de reprise.
+
+# EN: Filtration unit prefab hash and control label/name hash.
+# FR: Hash du prefab de l'unité de filtration et hash du nom/étiquette de contrôle.
+define FILTRATION_TYPE HASH("StructureFiltration")
+define FILTRATION_NAME HASH("FILTRATION")
+
+# EN: Pressure safety limits in Pascals (Pa). 1 MPa = 1 000 000 Pa.
+# FR: Limites de sécurité de pression en Pascals (Pa). 1 MPa = 1 000 000 Pa.
+define PRESSURE_STOP   15000000   # 15 MPa - force idle above this
+define PRESSURE_RESUME 14500000   # 14.5 MPa - allow normal operation at or below
+
+# EN: Working registers.
+# FR: Registres de travail.
+alias outputPress r0
+alias pressureLock r1
+
+main:
+# EN: Read the watched output pressure from the device hosting this IC chip.
+# FR: Lire la pression de sortie surveillée depuis l'appareil qui contient la puce.
+l outputPress db PressureOutput2
+
+# EN: Hysteresis lock: engage above 15 MPa, release only at 14.5 MPa or lower.
+# FR: Verrou avec hystérésis : s'active au-dessus de 15 MPa, se relâche seulement
+#     à 14.5 MPa ou moins.
+bgt outputPress PRESSURE_STOP engageLock
+ble outputPress PRESSURE_RESUME releaseLock
+j applySafety
+
+engageLock:
+move pressureLock 1
+j applySafety
+
+releaseLock:
+move pressureLock 0
+
+applySafety:
+# EN: While lock is active, keep forcing all named filtration units to Idle.
+#     This provides a hard safety interlock on the output pressure.
+#     When safe, this script does nothing and lets normal controls (levers,
+#     consoles, other scripts) manage the filtration Mode.
+# FR: Tant que le verrou est actif, on force continuellement les unités de
+#     filtration nommées en Idle. Cela fournit un interverrouillage de sécurité
+#     dur sur la pression de sortie.
+#     Quand c'est sécuritaire, ce script ne fait rien et laisse les contrôles
+#     normaux (leviers, consoles, autres scripts) gérer le Mode des filtrations.
+beqz pressureLock safe
+sbn FILTRATION_TYPE FILTRATION_NAME Mode 0
+j wait
+
+safe:
+# EN: Pressure safe - do not touch the filtration units.
+# FR: Pression sécuritaire - ne pas toucher aux unités de filtration.
+
+wait:
+# EN: Yield every tick to keep the safety check responsive.
+# FR: Yield à chaque tick pour garder la vérification de sécurité réactive.
+yield
+j main
