@@ -5,16 +5,22 @@
 # FR: Placer cette puce IC10 dans tout appareil exposant la pression de sortie
 #     critique via PressureOutput2 (ex: réservoir de gaz sur la ligne de sortie,
 #     capteur de tuyau, ou même à l'intérieur d'une unité StructureFiltration).
-# EN: Forces all named air filtration units to Idle (Mode 0) when PressureOutput2
-#     exceeds the stop threshold. Holds idle until pressure drops to resume value.
-# FR: Force toutes les unités de filtration d'air nommées en Idle (Mode 0) quand
-#     PressureOutput2 dépasse le seuil d'arrêt. Maintient l'état jusqu'à la
-#     valeur de reprise.
+# EN: Forces all named air filtration units to Idle (Mode 0) and named crushers
+#     (Ice Crusher) off when PressureOutput2 exceeds the stop threshold.
+#     Holds the safety state until pressure drops to the resume value.
+# FR: Force les unités de filtration nommées en Idle (Mode 0) et les concasseurs
+#     (Ice Crusher) à l'arrêt quand PressureOutput2 dépasse le seuil.
+#     Maintient l'état de sécurité jusqu'à la valeur de reprise.
 
 # EN: Filtration unit prefab hash and control label/name hash.
 # FR: Hash du prefab de l'unité de filtration et hash du nom/étiquette de contrôle.
 define FILTRATION_TYPE HASH("StructureFiltration")
 define FILTRATION_NAME HASH("FILTRATION")
+
+# EN: Ice Crusher (commonly called "crusher") prefab and label for safety shutdown.
+# FR: Hash du prefab du concasseur à glace et étiquette pour l'arrêt de sécurité.
+define CRUSHER_TYPE HASH("StructureIceCrusher")
+define CRUSHER_NAME HASH("CRUSHER")
 
 # EN: Pressure safety limits in Pascals (Pa). 1 MPa = 1 000 000 Pa.
 # FR: Limites de sécurité de pression en Pascals (Pa). 1 MPa = 1 000 000 Pa.
@@ -46,22 +52,21 @@ releaseLock:
 move pressureLock 0
 
 applySafety:
-# EN: While lock is active, keep forcing all named filtration units to Idle.
+# EN: While lock is active, keep forcing all named filtration units to Idle (Mode 0)
+#     AND all named crushers (StructureIceCrusher) to On = 0.
 #     This provides a hard safety interlock on the output pressure.
-#     When safe, this script does nothing and lets normal controls (levers,
-#     consoles, other scripts) manage the filtration Mode.
-# FR: Tant que le verrou est actif, on force continuellement les unités de
-#     filtration nommées en Idle. Cela fournit un interverrouillage de sécurité
-#     dur sur la pression de sortie.
-#     Quand c'est sécuritaire, ce script ne fait rien et laisse les contrôles
-#     normaux (leviers, consoles, autres scripts) gérer le Mode des filtrations.
+#     When safe, this script does nothing and lets normal controls manage the devices.
+# FR: Tant que le verrou est actif, on force les filtrations en Idle (Mode 0) ET
+#     les concasseurs nommés à On = 0. Interverrouillage de sécurité sur la
+#     pression de sortie. Quand c'est sécuritaire, le script ne touche à rien.
 beqz pressureLock safe
 sbn FILTRATION_TYPE FILTRATION_NAME Mode 0
+sbn CRUSHER_TYPE CRUSHER_NAME On 0
 j wait
 
 safe:
-# EN: Pressure safe - do not touch the filtration units.
-# FR: Pression sécuritaire - ne pas toucher aux unités de filtration.
+# EN: Pressure safe - do not touch the filtration units or crushers.
+# FR: Pression sécuritaire - ne pas toucher aux filtrations ni aux concasseurs.
 
 wait:
 # EN: Yield every tick to keep the safety check responsive.
