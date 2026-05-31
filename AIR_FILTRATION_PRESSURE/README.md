@@ -7,10 +7,14 @@ device's `PressureOutput2` exceeds 15 MPa, with hysteresis to prevent rapid cycl
 ## Purpose
 
 `AIR_FILTRATION_PRESSURE.ic10` watches `PressureOutput2` of the device the IC10
-chip is installed in (read via `db`). When pressure rises above 15 MPa, it
-directly controls the host device using `db` (sets `Mode 0` and `On 0`) and also
-forces any Ice Crushers named `CRUSHER` on the data network to Off. The safe
-state is held until pressure drops to 14.5 MPa or lower.
+chip is installed in (read via `db`). When pressure rises above 15 MPa (15,000 kPa),
+it does the following while the safety lock is active:
+
+- Directly forces the host device (via `db`) into safe state (`Mode 0` + `On 0`)
+- Forces all named `StructureFiltration` units (label `FILTRATION`) to `Mode 0`
+- Forces all named `StructureIceCrusher` units (label `CRUSHER`) to `On 0`
+
+The safe state is held (with hysteresis) until pressure drops to 14.5 MPa or lower.
 
 Typical use: put the chip inside a gas tank on the common output line of
 filtration units + crushers. If the shared output side gets too pressurized,
@@ -41,13 +45,13 @@ The script always protects the device it is installed in via direct `db` writes.
 The `CRUSHER` label is only needed if you want to control additional crushers over the network.
 
 No IC housing pins are required. The script reads pressure from the host device
-using `db` and writes directly to the host with `db` for safety (plus optional
-network control for named crushers):
+using `db` and controls both the host + named devices on the network:
 
 ```ic10
 l outputPress db PressureOutput2
 s db Mode 0
 s db On 0
+sbn FILTRATION_TYPE FILTRATION_NAME Mode 0
 sbn CRUSHER_TYPE CRUSHER_NAME On 0
 ```
 
@@ -77,16 +81,16 @@ Values are in Pascals. 15 MPa = 15 000 000 Pa.
 ## Notes
 
 - The script always directly controls the device it is installed in via `db`
-  (sets `Mode 0` and `On 0`).
-- It additionally shuts down any `StructureIceCrusher` devices labeled `CRUSHER`
-  on the data network.
+  (sets `Mode 0` + `On 0`).
+- It also shuts down **all** named `StructureFiltration` (label `FILTRATION`)
+  and `StructureIceCrusher` (label `CRUSHER`) devices on the data network.
+- Pressure values are in **Pascals** (15,000 kPa = 15,000,000 Pa).
 - The device holding the IC can have any label.
-- Best placed inside (or monitoring) the device whose `PressureOutput2` you want
-  to protect.
+- Best placed in a device that sees the critical output pressure you want to
+  protect (tank, filtration unit, etc.).
 - The IC loop uses `yield`, so it checks every tick.
-- Change `CRUSHER_NAME` if you use a different label for your crushers.
-- This is especially useful as an onboard safety script inside a filtration unit
-  or crusher.
+- You can change `FILTRATION_NAME` and `CRUSHER_NAME` at the top of the script
+  if you use different labels.
 
 ## Files
 

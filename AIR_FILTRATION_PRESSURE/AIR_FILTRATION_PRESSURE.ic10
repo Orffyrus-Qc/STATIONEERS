@@ -7,9 +7,12 @@
 #     PressureOutput2. Elle lit via `db` et contrôle l'hôte directement via `db`
 #     en cas de surpression.
 # EN: When PressureOutput2 is too high, sets the host device (via `db`) to a safe
-#     state (Mode 0 + On 0) and also turns off any named Ice Crushers on the network.
-# FR: En cas de surpression, met l'appareil hôte en sécurité via `db` et arrête
-#     les concasseurs nommés sur le réseau.
+#     state (Mode 0 + On 0), and also forces any named StructureFiltration units
+#     (label FILTRATION) to Mode 0 and any named StructureIceCrusher units (label
+#     CRUSHER) to On = 0 via the data network.
+# FR: En cas de surpression, met l'appareil hôte en sécurité via `db`, et force
+#     les unités de filtration nommées (FILTRATION) en Mode 0 et les concasseurs
+#     nommés (CRUSHER) à On = 0 sur le réseau.
 
 # EN: Filtration unit prefab hash and control label/name hash.
 # FR: Hash du prefab de l'unité de filtration et hash du nom/étiquette de contrôle.
@@ -51,20 +54,24 @@ releaseLock:
 move pressureLock 0
 
 applySafety:
-# EN: While lock is active, control the host device (the one this IC is plugged
-#     into) directly via `db`, plus any named crushers on the network.
-#     This is more reliable for the device reporting the pressure.
-# FR: Quand le verrou est actif, on contrôle directement l'appareil hôte via `db`
-#     (celui dans lequel la puce est insérée) + les concasseurs nommés sur le réseau.
+# EN: While lock is active:
+#     - Directly control the host device (this IC's container) via `db`
+#     - Shut down all named StructureFiltration units (via sbn)
+#     - Shut down all named StructureIceCrusher units (via sbn)
+# FR: Quand le verrou est actif :
+#     - Contrôle direct de l'hôte via `db`
+#     - Arrêt des unités de filtration nommées via sbn
+#     - Arrêt des concasseurs nommés via sbn
 beqz pressureLock safe
 s db Mode 0
 s db On 0
+sbn FILTRATION_TYPE FILTRATION_NAME Mode 0
 sbn CRUSHER_TYPE CRUSHER_NAME On 0
 j wait
 
 safe:
-# EN: Pressure safe - do not touch the host device or crushers.
-# FR: Pression sécuritaire - ne pas toucher à l'appareil hôte ni aux concasseurs.
+# EN: Pressure safe - do not touch host or named devices.
+# FR: Pression sécuritaire - ne touche ni à l'hôte ni aux appareils nommés.
 
 wait:
 # EN: Yield every tick to keep the safety check responsive.
