@@ -6,16 +6,11 @@ device's `PressureOutput2` exceeds 15 MPa, with hysteresis to prevent rapid cycl
 
 ## Purpose
 
-`AIR_FILTRATION_PRESSURE.ic10` watches `PressureOutput2` of the device that
-contains the IC10 chip. When that pressure rises above 15 MPa, every
-`StructureFiltration` unit named `FILTRATION` is forced to Mode 0 (Idle) **and**
-every Ice Crusher named `CRUSHER` is forced Off. Both stay in the safe state
-until `PressureOutput2` falls to 14.5 MPa or lower.
-
-This is a pure safety interlock. While the pressure is safe, the script does
-nothing and lets whatever normally controls your devices operate them. When
-over-pressure is detected, it forces the protected filtration units and crushers
-into their safe states.
+`AIR_FILTRATION_PRESSURE.ic10` watches `PressureOutput2` of the device the IC10
+chip is installed in (read via `db`). When pressure rises above 15 MPa, it
+directly controls the host device using `db` (sets `Mode 0` and `On 0`) and also
+forces any Ice Crushers named `CRUSHER` on the data network to Off. The safe
+state is held until pressure drops to 14.5 MPa or lower.
 
 Typical use: put the chip inside a gas tank on the common output line of
 filtration units + crushers. If the shared output side gets too pressurized,
@@ -27,10 +22,9 @@ further pressure buildup.
 All labels are case-sensitive. The names inside `HASH("name")` must match the
 in-game device labels exactly.
 
-| Label        | Device                                           |
-| ------------ | ------------------------------------------------ |
-| `FILTRATION` | One or more air filtration units to protect.     |
-| `CRUSHER`    | One or more Ice Crushers (`StructureIceCrusher`) to shut down on high pressure. |
+| Label     | Device (optional) |
+| --------- | ----------------- |
+| `CRUSHER` | Additional Ice Crushers you want to shut down over the network (the host device this chip is in is always protected directly via `db`). |
 
 ## Installation
 
@@ -40,16 +34,20 @@ in-game device labels exactly.
    filtration units themselves).
 2. Connect the host device and all target filtration units to the same data
    network.
-3. Name every filtration unit you want protected as `FILTRATION`.
-4. Name every Ice Crusher you want protected as `CRUSHER`.
-5. Keep everything powered.
+3. (Optional) Name Ice Crushers you want shut down as `CRUSHER`.
+4. Keep everything powered.
 
-No IC housing pins are required. The script reads the host via `db` and uses
-batch name/hash writes:
+The script always protects the device it is installed in via direct `db` writes.
+The `CRUSHER` label is only needed if you want to control additional crushers over the network.
+
+No IC housing pins are required. The script reads pressure from the host device
+using `db` and writes directly to the host with `db` for safety (plus optional
+network control for named crushers):
 
 ```ic10
 l outputPress db PressureOutput2
-sbn FILTRATION_TYPE FILTRATION_NAME Mode 0
+s db Mode 0
+s db On 0
 sbn CRUSHER_TYPE CRUSHER_NAME On 0
 ```
 
@@ -78,16 +76,17 @@ Values are in Pascals. 15 MPa = 15 000 000 Pa.
 
 ## Notes
 
-- The script controls all `StructureFiltration` devices named `FILTRATION` and all
-  `StructureIceCrusher` devices named `CRUSHER`.
-- The device holding the IC can have any label (values read through `db`).
-- Use `PressureOutput2` on the host device that best represents the "output"
-  pressure you want to protect (often the downstream tank or manifold).
+- The script always directly controls the device it is installed in via `db`
+  (sets `Mode 0` and `On 0`).
+- It additionally shuts down any `StructureIceCrusher` devices labeled `CRUSHER`
+  on the data network.
+- The device holding the IC can have any label.
+- Best placed inside (or monitoring) the device whose `PressureOutput2` you want
+  to protect.
 - The IC loop uses `yield`, so it checks every tick.
-- Change `FILTRATION_NAME` or `CRUSHER_NAME` in the script if you use different
-  labels for your devices.
-- This script is complementary to gas-based filtration control scripts. It only
-  acts on pressure, regardless of what gases are present.
+- Change `CRUSHER_NAME` if you use a different label for your crushers.
+- This is especially useful as an onboard safety script inside a filtration unit
+  or crusher.
 
 ## Files
 

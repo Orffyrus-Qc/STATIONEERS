@@ -1,16 +1,15 @@
 # AIR_FILTRATION_PRESSURE.ic10
 # EN: Put this IC10 chip in any device that exposes the critical output pressure
-#     via PressureOutput2 (e.g. a gas tank on the filtration output, a pipe
-#     sensor, or even inside a StructureFiltration unit itself).
-# FR: Placer cette puce IC10 dans tout appareil exposant la pression de sortie
-#     critique via PressureOutput2 (ex: réservoir de gaz sur la ligne de sortie,
-#     capteur de tuyau, ou même à l'intérieur d'une unité StructureFiltration).
-# EN: Forces all named air filtration units to Idle (Mode 0) and named crushers
-#     (Ice Crusher) off when PressureOutput2 exceeds the stop threshold.
-#     Holds the safety state until pressure drops to the resume value.
-# FR: Force les unités de filtration nommées en Idle (Mode 0) et les concasseurs
-#     (Ice Crusher) à l'arrêt quand PressureOutput2 dépasse le seuil.
-#     Maintient l'état de sécurité jusqu'à la valeur de reprise.
+#     via PressureOutput2 (e.g. a gas tank, or directly inside a filtration unit
+#     or crusher). The chip reads pressure from `db` and controls the host device
+#     directly via `db` when pressure is too high.
+# FR: Placer cette puce dans l'appareil qui expose la pression critique sur
+#     PressureOutput2. Elle lit via `db` et contrôle l'hôte directement via `db`
+#     en cas de surpression.
+# EN: When PressureOutput2 is too high, sets the host device (via `db`) to a safe
+#     state (Mode 0 + On 0) and also turns off any named Ice Crushers on the network.
+# FR: En cas de surpression, met l'appareil hôte en sécurité via `db` et arrête
+#     les concasseurs nommés sur le réseau.
 
 # EN: Filtration unit prefab hash and control label/name hash.
 # FR: Hash du prefab de l'unité de filtration et hash du nom/étiquette de contrôle.
@@ -52,21 +51,20 @@ releaseLock:
 move pressureLock 0
 
 applySafety:
-# EN: While lock is active, keep forcing all named filtration units to Idle (Mode 0)
-#     AND all named crushers (StructureIceCrusher) to On = 0.
-#     This provides a hard safety interlock on the output pressure.
-#     When safe, this script does nothing and lets normal controls manage the devices.
-# FR: Tant que le verrou est actif, on force les filtrations en Idle (Mode 0) ET
-#     les concasseurs nommés à On = 0. Interverrouillage de sécurité sur la
-#     pression de sortie. Quand c'est sécuritaire, le script ne touche à rien.
+# EN: While lock is active, control the host device (the one this IC is plugged
+#     into) directly via `db`, plus any named crushers on the network.
+#     This is more reliable for the device reporting the pressure.
+# FR: Quand le verrou est actif, on contrôle directement l'appareil hôte via `db`
+#     (celui dans lequel la puce est insérée) + les concasseurs nommés sur le réseau.
 beqz pressureLock safe
-sbn FILTRATION_TYPE FILTRATION_NAME Mode 0
+s db Mode 0
+s db On 0
 sbn CRUSHER_TYPE CRUSHER_NAME On 0
 j wait
 
 safe:
-# EN: Pressure safe - do not touch the filtration units or crushers.
-# FR: Pression sécuritaire - ne pas toucher aux filtrations ni aux concasseurs.
+# EN: Pressure safe - do not touch the host device or crushers.
+# FR: Pression sécuritaire - ne pas toucher à l'appareil hôte ni aux concasseurs.
 
 wait:
 # EN: Yield every tick to keep the safety check responsive.
