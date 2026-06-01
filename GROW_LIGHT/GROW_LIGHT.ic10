@@ -4,7 +4,7 @@ sbn HASH("StructureHydroponicsStation") HASH("Hydroponic Station") On 1   # Turn
 start:
 sleep 840                            # 14 minutes (840 seconds)
 sbn HASH("StructureGrowLight") HASH("Grow Light") On 0   # Turn lights OFF
-sbn HASH("StructureHydroponicsStation") HASH("Hydroponic Station") On 0   # Turn lights OFF
+sbn HASH("StructureHydroponicsStation") HASH("Hydroponic Station") On 0  # Turn lights OFF
 sleep 360                            # 6 minutes (360 seconds)
 sbn HASH("StructureGrowLight") HASH("Grow Light") On 1   # Turn lights ON
 sbn HASH("StructureHydroponicsStation") HASH("Hydroponic Station") On 1   # Turn lights ON
