@@ -66,10 +66,10 @@ See `GARAGE_DOOR/README.md` for labels, feature toggles, and timing values.
 ## Grow Light Cycle
 
 The `GROW_LIGHT/` folder contains an IC10 script that cycles named grow lights
-on a timer. It turns the lights on when the IC boots, keeps them on for 14
-minutes, turns them off for 6 minutes, then repeats.
+and hydroponics stations on a timer. It turns both groups on when the IC boots,
+keeps them on for 14 minutes, turns them off for 6 minutes, then repeats.
 
-See `GROW_LIGHT/README.md` for the required label and timing notes.
+See `GROW_LIGHT/README.md` for the required labels and timing notes.
 
 ## LArRE Hydroponics Patrol
 
