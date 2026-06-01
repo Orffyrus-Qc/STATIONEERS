@@ -1,9 +1,6 @@
 # Default to ON on every IC boot before entering the timed cycle.
 sbn HASH("StructureGrowLight") HASH("Grow Light") On 1   # Turn lights ON
 sbn HASH("StructureHydroponicsStation") HASH("Hydroponic Station") On 1   # Turn lights ON
-
-StructureHydroponicsStation
-
 start:
 sleep 840                            # 14 minutes (840 seconds)
 sbn HASH("StructureGrowLight") HASH("Grow Light") On 0   # Turn lights OFF
