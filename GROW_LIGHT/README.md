@@ -47,3 +47,4 @@ Change these values directly in `GROW_LIGHT.ic10`:
 
 - `GROW_LIGHT.ic10` - name/hash version for grow light and hydroponics station
   label groups.
+- `FR-README.md` - French version of this README.
